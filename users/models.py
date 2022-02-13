@@ -8,7 +8,6 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=100, null=True, unique=True)
     first_name = models.CharField(max_length=200, null=True, blank=True)
     last_name = models.CharField(max_length=200, null=True, blank=True)
-    is_notification_on = models.BooleanField(default=True)
     image = models.TextField(blank=True, null=True)
     date_of_birth = models.DateField(null=True)
     is_staff = models.BooleanField(default=False)

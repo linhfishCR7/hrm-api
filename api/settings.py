@@ -40,7 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'tests',
-    'users'
+    'users',
+    'degree_types',
+    'certificate_types',
+    'day_off_types',
+    'employment_contract_types',
+    'addresses'
 ]
 
 MIDDLEWARE = [

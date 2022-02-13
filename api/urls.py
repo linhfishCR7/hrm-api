@@ -17,7 +17,20 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # Auth
     path('api/auth/', include('users.auth.urls')),
+    #################################################################################
+    # User
+    
+    #################################################################################
+    # Admin
+    
+    path('admin/', admin.site.urls),
     path('api/admin/user/', include('users.admin.urls')),
+    #################################################################################
+
+    # Hrm
+    path('api/hrm/certificate-types/', include('certificate_types.hrm.urls')),
+    path('api/hrm/day-off-types/', include('day_off_types.hrm.urls')),
+    #################################################################################
 ]
