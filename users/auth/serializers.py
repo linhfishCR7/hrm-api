@@ -1,3 +1,4 @@
+from dataclasses import field
 from users.models import User
 from rest_framework import serializers
 
@@ -29,3 +30,21 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.set_password(password)
         account.save()
         return account
+    
+
+class ProfileUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'image',
+            'date_of_birth',
+            'is_staff',
+            'is_superuser',
+            
+        ]

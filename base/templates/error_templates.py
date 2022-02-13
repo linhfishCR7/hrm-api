@@ -50,6 +50,11 @@ class ErrorTemplate:
             code='AUTH_8',
             message='Cannot found user account! Please try again'
         )
+
+        HRM_REQUIRED = dict(
+            code='AUTH_9',
+            message='Hrm required.'
+        )
     
     class UUIDError:
         @staticmethod

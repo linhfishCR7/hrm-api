@@ -1,9 +1,15 @@
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import RegistrationSerializer
+
+from base.permissions import IsUser
+from users.models import User
+from .serializers import (
+    RegistrationSerializer,
+    ProfileUserSerializer
+)
 from rest_framework.authtoken.models import Token
-from rest_framework import  status
+from rest_framework import filters, generics, serializers, status, viewsets
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -39,4 +45,20 @@ def  registration_view(request):
             data = serializer.errors
 
         return Response(data, status=status.HTTP_201_CREATED)
+    
+
+class GetProfileAPIView(generics.RetrieveAPIView):
+    
+    model = User
+    serializer_class = ProfileUserSerializer
+    permission_classes = [IsUser]
+    
+    # def get_queryset(self):
+    #     return User.objects.filter(
+    #         is_deleted=False,
+    #         deleted_at=None,
+    #         id=self.request.user.id
+    #     )
+    def get_object(self):
+        return self.request.user
     
