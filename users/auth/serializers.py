@@ -1,6 +1,7 @@
 from dataclasses import field
 from users.models import User
 from rest_framework import serializers
+from base.serializers import ApplicationMethodFieldSerializer
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
@@ -48,3 +49,15 @@ class ProfileUserSerializer(serializers.ModelSerializer):
             'is_superuser',
             
         ]
+    
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+            
+        response['image'] = ApplicationMethodFieldSerializer.get_list_image("4b3ddbe0-b14test.png")
+        
+        return response
+
+    

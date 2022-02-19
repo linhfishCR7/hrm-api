@@ -1,16 +1,17 @@
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from rest_framework.authtoken.models import Token
+from rest_framework import filters, generics, serializers, status, viewsets
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings 
 from base.permissions import IsUser
 from users.models import User
 from .serializers import (
     RegistrationSerializer,
     ProfileUserSerializer
 )
-from rest_framework.authtoken.models import Token
-from rest_framework import filters, generics, serializers, status, viewsets
-from rest_framework_simplejwt.tokens import RefreshToken
+
 
 
 # @api_view(['POST',])
@@ -61,4 +62,3 @@ class GetProfileAPIView(generics.RetrieveAPIView):
     #     )
     def get_object(self):
         return self.request.user
-    

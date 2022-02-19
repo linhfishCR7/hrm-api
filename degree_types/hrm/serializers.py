@@ -1,21 +1,21 @@
-from day_off_types.models import DayOffTypes
+from degree_types.models import DegreeTypes
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-class DayOffTypesSerializer(serializers.ModelSerializer):
-    day_off_types = serializers.CharField(
+class DegreeTypesSerializer(serializers.ModelSerializer):
+    degree_types = serializers.CharField(
         max_length=255,
         validators=[UniqueValidator(
-            queryset=DayOffTypes.objects.filter(
+            queryset=DegreeTypes.objects.filter(
                 is_deleted=False,
                 deleted_at=None
             )
         )]
     )
     class Meta:
-        model = DayOffTypes
+        model = DegreeTypes
         fields = [
             'id',
-            'day_off_types',
+            'degree_types',
             'name'
         ]

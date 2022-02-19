@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     'certificate_types',
     'day_off_types',
     'employment_contract_types',
-    'addresses'
+    'addresses',
+    'ethnicities',
+    'religions',
+    'nationalities'
 ]
 
 MIDDLEWARE = [
@@ -173,3 +176,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True,
 }
+
+# S3 SETTINGS (for upload media)
+S3_ACCESS_KEY = 'AKIA5ALBTZTIKCAYPGWN'
+S3_SECRET_KEY = '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'
+S3_REGION = 'ap-southeast-1'
+S3_BUCKET_NAME = 'hrm-dev-media'
+S3_URL = None

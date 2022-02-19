@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    # COMMON API METHODS.
+    path('api/common/', include('base.urls'), name='common'),
     # Auth
     path('api/auth/', include('users.auth.urls')),
     #################################################################################
@@ -32,5 +34,10 @@ urlpatterns = [
     # Hrm
     path('api/hrm/certificate-types/', include('certificate_types.hrm.urls')),
     path('api/hrm/day-off-types/', include('day_off_types.hrm.urls')),
+    path('api/hrm/degree-types/', include('degree_types.hrm.urls')),
+    path('api/hrm/employment-contract-types/', include('employment_contract_types.hrm.urls')),
+    path('api/hrm/nationalities/', include('nationalities.hrm.urls')),
+    path('api/hrm/religions/', include('religions.hrm.urls')),
+    path('api/hrm/ethnicities/', include('ethnicities.hrm.urls')),
     #################################################################################
 ]
