@@ -1,9 +1,9 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
-from certificate_types.models import CertificateTypes
+from degree_types.models import DegreeTypes
 from .serializers import (
-    CertificateTypesSerializer
+    DegreeTypesSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -12,21 +12,21 @@ from django_filters.rest_framework import (
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class ListCreateCertificateTypesAPIView(generics.ListCreateAPIView):
+class ListCreateDegreeTypesAPIView(generics.ListCreateAPIView):
     
-    model = CertificateTypes
-    serializer_class = CertificateTypesSerializer
+    model = DegreeTypes
+    serializer_class = DegreeTypesSerializer
     permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['name', 'certificate_types']
+    search_fields = ['name', 'degree_types']
     filter_fields = {
-        'certificate_types': ['exact', 'in'],
+        'degree_types': ['exact', 'in'],
     }
     
     def get_queryset(self):
-        return CertificateTypes.objects.filter(
+        return DegreeTypes.objects.filter(
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
@@ -37,15 +37,15 @@ class ListCreateCertificateTypesAPIView(generics.ListCreateAPIView):
             return None
         return super().paginator
 
-class RetrieveUpdateDestroyCertificateTypesAPIView(generics.RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyDegreeTypesAPIView(generics.RetrieveUpdateDestroyAPIView):
     
-    model = CertificateTypes
-    serializer_class = CertificateTypesSerializer
+    model = DegreeTypes
+    serializer_class = DegreeTypesSerializer
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):
-        return CertificateTypes.objects.filter(
+        return DegreeTypes.objects.filter(
             is_deleted=False,
             deleted_at=None,
         )

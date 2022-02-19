@@ -1,9 +1,9 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
-from certificate_types.models import CertificateTypes
+from ethnicities.models import Ethnicities
 from .serializers import (
-    CertificateTypesSerializer
+    EthnicitiesSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -12,21 +12,21 @@ from django_filters.rest_framework import (
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class ListCreateCertificateTypesAPIView(generics.ListCreateAPIView):
+class ListCreateEthnicitiesAPIView(generics.ListCreateAPIView):
     
-    model = CertificateTypes
-    serializer_class = CertificateTypesSerializer
+    model = Ethnicities
+    serializer_class = EthnicitiesSerializer
     permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['name', 'certificate_types']
+    search_fields = ['name', 'ethnicity']
     filter_fields = {
-        'certificate_types': ['exact', 'in'],
+        'ethnicity': ['exact', 'in'],
     }
     
     def get_queryset(self):
-        return CertificateTypes.objects.filter(
+        return Ethnicities.objects.filter(
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
@@ -37,15 +37,15 @@ class ListCreateCertificateTypesAPIView(generics.ListCreateAPIView):
             return None
         return super().paginator
 
-class RetrieveUpdateDestroyCertificateTypesAPIView(generics.RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyEthnicitiesAPIView(generics.RetrieveUpdateDestroyAPIView):
     
-    model = CertificateTypes
-    serializer_class = CertificateTypesSerializer
+    model = Ethnicities
+    serializer_class = EthnicitiesSerializer
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):
-        return CertificateTypes.objects.filter(
+        return Ethnicities.objects.filter(
             is_deleted=False,
             deleted_at=None,
         )

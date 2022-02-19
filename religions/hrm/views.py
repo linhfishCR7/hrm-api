@@ -1,9 +1,9 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
-from certificate_types.models import CertificateTypes
+from religions.models import Religions
 from .serializers import (
-    CertificateTypesSerializer
+    ReligionsSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -12,21 +12,21 @@ from django_filters.rest_framework import (
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class ListCreateCertificateTypesAPIView(generics.ListCreateAPIView):
+class ListCreateReligionsAPIView(generics.ListCreateAPIView):
     
-    model = CertificateTypes
-    serializer_class = CertificateTypesSerializer
+    model = Religions
+    serializer_class = ReligionsSerializer
     permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['name', 'certificate_types']
+    search_fields = ['name', 'religion']
     filter_fields = {
-        'certificate_types': ['exact', 'in'],
+        'religion': ['exact', 'in'],
     }
     
     def get_queryset(self):
-        return CertificateTypes.objects.filter(
+        return Religions.objects.filter(
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
@@ -37,15 +37,15 @@ class ListCreateCertificateTypesAPIView(generics.ListCreateAPIView):
             return None
         return super().paginator
 
-class RetrieveUpdateDestroyCertificateTypesAPIView(generics.RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyReligionsAPIView(generics.RetrieveUpdateDestroyAPIView):
     
-    model = CertificateTypes
-    serializer_class = CertificateTypesSerializer
+    model = Religions
+    serializer_class = ReligionsSerializer
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):
-        return CertificateTypes.objects.filter(
+        return Religions.objects.filter(
             is_deleted=False,
             deleted_at=None,
         )
