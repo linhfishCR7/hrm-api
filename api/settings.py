@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'addresses',
     'ethnicities',
     'religions',
-    'nationalities'
+    'nationalities',
+    'positions',
+    'companies',
 ]
 
 MIDDLEWARE = [
