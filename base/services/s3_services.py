@@ -24,6 +24,8 @@ from base.templates.error_templates import ErrorTemplate
 
 from botocore.config import Config
 
+from base.utils import print_value
+
 
 class MediaUpLoad:
     s3_url = 'https://s3-{0}.amazonaws.com/{1}/{2}'
@@ -68,6 +70,7 @@ class MediaUpLoad:
 
     def presign_url(self, key, file_extension, file_type):
         mime_type = mimetypes.guess_type(str(key))
+        print_value(mime_type)
         if file_extension in ['.vrx', '.pvt']:
             content_type = 'application/octet-stream'
         elif file_extension in ['.heic']:
@@ -137,6 +140,8 @@ class MediaUpLoad:
         return data
 
     def presign_image_url(self, key):
+        mime_type = mimetypes.guess_type(str(key))
+        content_type = mime_type[0]
         links = boto3.client(
             's3', aws_access_key_id=settings.S3_ACCESS_KEY, aws_secret_access_key=settings.S3_SECRET_KEY,
             config=Config(
@@ -148,5 +153,8 @@ class MediaUpLoad:
             settings.S3_BUCKET_NAME,
             key,
             ExpiresIn=300,
+             Fields={"Content-Type": content_type},
+                Conditions=[
+                    ["starts-with", "$Content-Type", content_type]],
         )
         return links

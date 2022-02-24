@@ -32,6 +32,7 @@ from base.serializers import (
     BaseUploadFileSerializer,
     UploadResourceSerializer
 )
+from base.utils import print_value
 
 
 # Upload Media - Large and Multiple File - Presigned
@@ -83,7 +84,6 @@ class FilePolicyAPI(generics.CreateAPIView):
         data = serializer.validated_data
         key = str(uuid.uuid4())
         file_name = str(key[:12]) + str(data['file_name'])
-        
         """ Validate file extension """
         file_extension = "." +file_name.split(".")[len(file_name.split(".")) - 1]
         if file_extension.lower() not in AppConstants.VALID_FILE_EXTENSION:
