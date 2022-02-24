@@ -49,15 +49,23 @@ class ProfileUserSerializer(serializers.ModelSerializer):
             'is_superuser',
             
         ]
+        read_only_fields = [
+            'id',
+            'is_staff',
+            'is_superuser',
+        ]
     
     def to_representation(self, instance):
         """
         To show the data response to users
         """
         response = super().to_representation(instance)
-            
-        response['image'] = ApplicationMethodFieldSerializer.get_list_image("4b3ddbe0-b14test.png")
+        if instance.image:
+            response['image'] = ApplicationMethodFieldSerializer.get_list_image(instance.image)
         
         return response
 
+    def update(self, instance, validated_data):
+        # Validate input data (if any)
+        return super().update(instance, validated_data)
     

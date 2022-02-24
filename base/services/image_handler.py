@@ -28,21 +28,22 @@ class ImageHandler:
         if self.url == '':
             return MediaUpLoad().get_image_url(image)
         
-        request = {
-            'bucket': self.bucket,
-            'key': image,
-            'edits': {
-            }
-        }
-        if width != '' and height != '':
-            request['edits']['resize'] = {
-                "width": width,
-                "height": width,
-                "fit": mode
-            }
-        if edit_options != '':
-            for edit in edit_options:
-                if edit in ImageConstants.EDIT_MODE:
-                    request['edits'][edit] = True
+        # request = {
+        #     'bucket': self.bucket,
+        #     'key': image,
+        #     'edits': {
+        #     }
+        # }
+        # if width != '' and height != '':
+        #     request['edits']['resize'] = {
+        #         "width": width,
+        #         "height": width,
+        #         "fit": mode
+        #     }
+        # if edit_options != '':
+        #     for edit in edit_options:
+        #         if edit in ImageConstants.EDIT_MODE:
+        #             request['edits'][edit] = True
 
-        return f'{self.url}/{b64encode(json.dumps(request).encode()).decode()}'
+        return f'{self.url}/{image}'
+        # return f'{self.url}/{b64encode(json.dumps(request).encode()).decode()}'

@@ -48,17 +48,18 @@ def  registration_view(request):
         return Response(data, status=status.HTTP_201_CREATED)
     
 
-class GetProfileAPIView(generics.RetrieveAPIView):
+class GetUpdateProfileAPIView(generics.RetrieveAPIView, generics.UpdateAPIView):
     
     model = User
     serializer_class = ProfileUserSerializer
     permission_classes = [IsUser]
     
-    # def get_queryset(self):
-    #     return User.objects.filter(
-    #         is_deleted=False,
-    #         deleted_at=None,
-    #         id=self.request.user.id
-    #     )
-    def get_object(self):
-        return self.request.user
+    def get(self, request, *args, **kwargs):
+        return Response(self.serializer_class(self.request.user).data)
+
+    def put(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.serializer_class(user, data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

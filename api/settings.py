@@ -180,8 +180,8 @@ SIMPLE_JWT = {
 }
 
 # S3 SETTINGS (for upload media)
-S3_ACCESS_KEY = 'AKIA5ALBTZTIKCAYPGWN'
-S3_SECRET_KEY = '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'
+S3_ACCESS_KEY = 'AKIAUGGPXTHHSLWFA662'
+S3_SECRET_KEY = '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'
 S3_REGION = 'ap-southeast-1'
-S3_BUCKET_NAME = 'hrm-dev-media'
-S3_URL = None
+S3_BUCKET_NAME = 'hrm-s3'
+S3_URL = "https://hrm-s3.s3.amazonaws.com"

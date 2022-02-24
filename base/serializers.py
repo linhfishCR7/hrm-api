@@ -50,35 +50,35 @@ class ApplicationMethodFieldSerializer(CommonSerializer):
         url = image_handler.generate(image)
         result['image_s3_url'] = url
 
-        list_image_size = []
-        size = []
-        for item in AppConstants.ImageSize.__dict__.items():
-            if '__' not in item[0]:
-                list_image_size.append(item[1][1])
-                size.append(item[1][0][0])
-        image_size_dict = {value: key for key, value in dict(list_image_size).items()}
+        # list_image_size = []
+        # size = []
+        # for item in AppConstants.ImageSize.__dict__.items():
+        #     if '__' not in item[0]:
+        #         list_image_size.append(item[1][1])
+        #         size.append(item[1][0][0])
+        # image_size_dict = {value: key for key, value in dict(list_image_size).items()}
 
-        image_sizes = dict()
-        for index in range(len(size)):
-            url_resize = image_handler.generate(image, width=str(size[index]))
-            image_dict = dict(
-                height=0,
-                width=size[index],
-                image_s3_url=url_resize
-            )
-            image_sizes[image_size_dict[index]] = image_dict
-        result['image_size'] = image_sizes
+        # image_sizes = dict()
+        # for index in range(len(size)):
+        #     url_resize = image_handler.generate(image, width=str(size[index]))
+        #     image_dict = dict(
+        #         height=0,
+        #         width=size[index],
+        #         image_s3_url=url_resize
+        #     )
+        #     image_sizes[image_size_dict[index]] = image_dict
+        # result['image_size'] = image_sizes
         result['image_key'] = image
         return result
 
-    @staticmethod
-    def get_video_url(video):
-        image_handler = ImageHandler()
-        result = dict()
-        url = image_handler.generate(video)
-        result['video_s3_url'] = url
-        result['video_key'] = video
-        return result
+    # @staticmethod
+    # def get_video_url(video):
+    #     image_handler = ImageHandler()
+    #     result = dict()
+    #     url = image_handler.generate(video)
+    #     result['video_s3_url'] = url
+    #     result['video_key'] = video
+    #     return result
 
 
 class UserBaseMethodsSerializer(CommonSerializer):
