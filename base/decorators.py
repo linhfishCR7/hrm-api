@@ -21,6 +21,28 @@ from base.templates.error_templates import ErrorTemplate
 from users.models import User
 
 
+# COGNITO
+def cognito_error_handler(func):
+    def check_and_call(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except ClientError as e:
+            # User already exists
+            if e.response['Error']['Code'] == 'EntityAlreadyExists':
+                raise ValidationError(ErrorTemplate.CognitoError.USER_ALREADY_EXIST_ERROR)
+            # User not confirmed
+            elif e.response['Error']['Code'] == 'UserNotConfirmedException':
+                raise ValidationError(ErrorTemplate.CognitoError.USER_NOT_CONFIRM_ERROR)
+            else:
+                raise ValidationError(ErrorTemplate.CognitoError.create_cognito_error(e))
+        except ParamValidationError as e:
+            raise ValidationError(ErrorTemplate.CognitoError.create_cognito_error(e))
+        except UnknownParameterError as e:
+            raise ValidationError(ErrorTemplate.CognitoError.create_cognito_error(e))
+        except MissingParametersError as e:
+            raise ValidationError(ErrorTemplate.CognitoError.create_cognito_error(e))
+    return check_and_call
+
 
 # Validate UUID error handler
 def check_uuid(key, uuid_str):

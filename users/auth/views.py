@@ -3,13 +3,18 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import filters, generics, serializers, status, viewsets
+from rest_framework.permissions import IsAuthenticated
+
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings 
 from base.permissions import IsUser
 from users.models import User
 from .serializers import (
     RegistrationSerializer,
-    ProfileUserSerializer
+    ProfileUserSerializer,
+    BESignUpSerializer,
+    ConfirmCognitoSignUpSerializer,
+    LoginWebSerializer
 )
 
 
@@ -52,7 +57,7 @@ class GetUpdateProfileAPIView(generics.RetrieveAPIView, generics.UpdateAPIView):
     
     model = User
     serializer_class = ProfileUserSerializer
-    permission_classes = [IsUser]
+    permission_classes = [IsAuthenticated,]
     
     def get(self, request, *args, **kwargs):
         return Response(self.serializer_class(self.request.user).data)
@@ -63,3 +68,21 @@ class GetUpdateProfileAPIView(generics.RetrieveAPIView, generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class BESignUpView(generics.CreateAPIView):
+    model = User
+    serializer_class = BESignUpSerializer
+    permission_classes = ()
+
+
+
+class BEConfirmCognitoSignUpView(generics.CreateAPIView):
+    model = User
+    serializer_class = ConfirmCognitoSignUpSerializer
+    permission_classes = ()        
+
+
+class LoginWebView(generics.CreateAPIView):
+    permission_classes = []
+    serializer_class = LoginWebSerializer

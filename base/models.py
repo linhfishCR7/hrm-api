@@ -45,14 +45,14 @@ class BaseModel(models.Model):
             
         super().save(*args, **kwargs)
 
-
+    
 # User Base Config Model
 class AbstractUserManager(UserManager):
     def get_or_create_for_cognito(self, payload):
         # In case Cognito user missed email
         user = self.filter(
-            Q(id=payload['cognito:username']) |
-            Q(phone=payload['phone_number'])
+            Q(username=payload['cognito:username']) |
+            Q(email=payload['email'])
         ).first()
         if user:
             if not user.username:
@@ -61,7 +61,6 @@ class AbstractUserManager(UserManager):
             return user
         else:
             raise ValidationError(ErrorTemplate.AuthorizedError.INCORRECT_AUTH_CRED)
-
 
 class AbstractBaseUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
@@ -77,6 +76,11 @@ class AbstractBaseUser(AbstractUser):
     deleted_at = models.DateTimeField(default=None, null=True)
     deleted_by = models.UUIDField(null=True)
 
+    REQUIRED_FIELDS = ('email',)
+    USERNAME_FIELD = 'username'
+    is_anonymous = False
+    is_authenticated = True
+    
     objects = AbstractUserManager()
 
     class Meta:

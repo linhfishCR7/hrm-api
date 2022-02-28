@@ -88,19 +88,45 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 # Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': '123456789',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'client_encoding': 'UTF-8'  # Need to set when create new database
+#         },
+#     },
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': '123456789',
-        'HOST': 'localhost',
+        'PASSWORD': 'uW06pQxsUE14kSK4uNl6',
+        'HOST': 'hrm-db.cpfohkhof9ad.ap-southeast-1.rds.amazonaws.com',
         'PORT': '5432',
         'OPTIONS': {
             'client_encoding': 'UTF-8'  # Need to set when create new database
         },
     },
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'f6pv!Tsu',
+#         'HOST': 'hrm-test.cpfohkhof9ad.ap-southeast-1.rds.amazonaws.com',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'client_encoding': 'UTF-8'  # Need to set when create new database
+#         },
+#     },
+# }
 AUTH_USER_MODEL = 'users.User'
 
 # Password validation
@@ -165,18 +191,20 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'django_cognito_jwt.JSONWebTokenAuthentication'
     ],
     
     # Pagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'PAGINATE_BY_PARAM': 'page_size',
+    
+    'EXCEPTION_HANDLER': 'base.utils.custom_exception_handler',
 }
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
+    'JWT_ALLOW_REFRESH': True
 }
 
 # S3 SETTINGS (for upload media)
@@ -185,3 +213,9 @@ S3_SECRET_KEY = '6VTQtyG8LC1cgqq4eoSrZDmnqB5DAIctqRkrrEZE'
 S3_REGION = 'ap-southeast-1'
 S3_BUCKET_NAME = 'hrm-s3'
 S3_URL = "https://hrm-s3.s3.amazonaws.com"
+
+# COGNITO SETTINGS
+COGNITO_AWS_REGION = 'ap-southeast-1'
+COGNITO_USER_POOL = 'ap-southeast-1_8Floj89lt'
+COGNITO_AUDIENCE = '3tg4c27ft0da820h919g1p3943'
+COGNITO_AUDIENCE_SECRET = None
