@@ -1,8 +1,15 @@
 from dataclasses import field
+import uuid
+
+from rest_framework.exceptions import ValidationError
+from django.utils import timezone
+
+from base.services.cognito import CognitoService
+from base.templates.error_templates import ErrorTemplate
 from users.models import User
 from rest_framework import serializers
 from base.serializers import ApplicationMethodFieldSerializer
-
+from base.utils import print_value
 class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     class Meta:
@@ -47,12 +54,16 @@ class ProfileUserSerializer(serializers.ModelSerializer):
             'date_of_birth',
             'is_staff',
             'is_superuser',
+            'is_active'
             
         ]
         read_only_fields = [
             'id',
+            'username',
+            'email',
             'is_staff',
             'is_superuser',
+            'is_active'
         ]
     
     def to_representation(self, instance):
@@ -68,4 +79,115 @@ class ProfileUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # Validate input data (if any)
         return super().update(instance, validated_data)
+
+
+class BESignUpSerializer(serializers.ModelSerializer):
+    email = serializers.CharField()
+    password = serializers.CharField(max_length=255)
+    first_name = serializers.CharField(max_length=255)
+    last_name = serializers.CharField(max_length=255)
+
+    class Meta:
+        model = User
+        fields = (
+            'password',
+            'email',
+            'first_name',
+            'last_name'
+        )
+
+    def create(self, validated_data):        
+        # Check phone, username already a unique field
+        existed_user = User.objects.filter(
+            email=validated_data['email'].lower(),
+            is_deleted=False
+        )
+        if existed_user.exists():
+            raise ValidationError(ErrorTemplate().UserError().EMAIL_IS_USED)
+
+        username = str(uuid.uuid4())
+        
+        response = CognitoService().User().register(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            username=username,
+            custom_attributes={
+                "first_name": validated_data['first_name'],
+                "last_name": validated_data['last_name']
+            }
+
+        )
+        
+
+        return dict(
+            user=response,
+            username=username
+        )
+
+    def to_representation(self, instance):
+        return instance
+
+
+
+class ConfirmCognitoSignUpSerializer(serializers.ModelSerializer):
+    email = serializers.CharField()
+    verified_code = serializers.CharField(max_length=6)
+    is_staff = serializers.BooleanField(default=False)
+    is_superuser = serializers.BooleanField(default=False)
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'verified_code',
+            'is_staff',
+            'is_superuser'
+        )
+
+    def create(self, validated_data):
+        user = User.objects.filter(email=validated_data['email']).first()
+        if not user:
+            raise ValidationError(ErrorTemplate.UserError.USER_NOT_EXIST)
+
+        response = CognitoService().User().confirm_verified_email_code(
+            verified_code=validated_data['verified_code'],
+            username=str(user.username),
+        )
+        if validated_data['is_staff']==True:
+            user.is_staff = True
+            user.is_superuser = False
+            
+        if validated_data['is_superuser']==True:
+            user.is_superuser = True  
+            user.is_staff = True
+             
+        user.is_verified_email = True
+        user.is_active = True
+        user.verified_email_at = timezone.now()
+        user.save()
+
+        return dict(response=response)
+
+    def to_representation(self, instance):
+        return instance
+
+
+class LoginWebSerializer(serializers.Serializer):
+    email = serializers.CharField(max_length=100)
+    password = serializers.CharField(max_length=200)
+
+    def create(self, validated_data):
+        result = CognitoService.User().authenticate(
+            username=validated_data['email'],
+            password=validated_data['password']
+        )
+        token = result['cognito_id_token']
+        access_token = result['cognito_access_token']
+        return dict(
+            token=token,
+            access_token=access_token
+        )
+
+    def to_representation(self, instance):
+        return instance
+        
     
