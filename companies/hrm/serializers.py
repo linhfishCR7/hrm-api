@@ -122,4 +122,22 @@ class CompaniesSerializer(serializers.ModelSerializer):
         company.addresses.add(*addresses_data)
         
         return company
-    
+
+    def update(self, instance, validated_data):
+
+        """ Add new address """
+        addresses_body = validated_data['addresses']
+        del validated_data['addresses']
+        """ Delete old company address """
+        Companies.objects.filter(id=instance.id).first().addresses.all().delete()
+        """ Add new address """
+        new_address_data = []
+        for new_address in addresses_body:
+            new_address_data.append(
+                Address(**new_address)
+            )
+        
+        new_address = Address.objects.bulk_create(new_address_data)
+        Companies.objects.filter(id=instance.id).first().addresses.add(*new_address)
+        updated_instance = super().update(instance, validated_data)
+        return updated_instance

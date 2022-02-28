@@ -57,6 +57,12 @@ class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIVie
             deleted_at=None,
         )
     
+    def perform_update(self, serializer):
+        serializer.save(
+            modified_at=timezone.now(),
+            modified_by=self.request.user.id,
+        )
+    
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.deleted_at = timezone.now()
