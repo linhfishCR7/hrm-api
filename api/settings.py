@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'nationalities',
     'positions',
     'companies',
+    'kinds_of_work',
+    'literacy'
 ]
 
 MIDDLEWARE = [
@@ -219,3 +221,8 @@ COGNITO_AWS_REGION = 'ap-southeast-1'
 COGNITO_USER_POOL = 'ap-southeast-1_8Floj89lt'
 COGNITO_AUDIENCE = '3tg4c27ft0da820h919g1p3943'
 COGNITO_AUDIENCE_SECRET = None
+#########Test##########
+# COGNITO_AWS_REGION = 'ap-southeast-1'
+# COGNITO_USER_POOL = 'ap-southeast-1_8Floj89lt'
+# COGNITO_AUDIENCE = '6g9upj5l9g1uektacus5l2u8m6'
+# COGNITO_AUDIENCE_SECRET = None

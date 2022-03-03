@@ -1,9 +1,10 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
-from companies.models import Companies
+from base.utils import print_value
+from kinds_of_work.models import KindsOfWork
 from .serializers import (
-    CompaniesSerializer
+    KindsOfWorkSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -12,28 +13,21 @@ from django_filters.rest_framework import (
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
+class ListCreateKindsOfWorkAPIView(generics.ListCreateAPIView):
     
-    model = Companies
-    serializer_class = CompaniesSerializer
+    model = KindsOfWork
+    serializer_class = KindsOfWorkSerializer
     permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['name', 'company']
+    search_fields = ['name', 'work']
     filter_fields = {
-        'company': ['exact', 'in'],
+        'work': ['exact', 'in'],
     }
     
-    def perform_create(self, serializer):
-        serializer.save(
-            user=self.request.user,
-            created_at=timezone.now(),
-            created_by=self.request.user.id,
-        )
-    
     def get_queryset(self):
-        return Companies.objects.filter(
+        return KindsOfWork.objects.filter(
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
@@ -44,23 +38,17 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
             return None
         return super().paginator
 
-class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIView):
+class RetrieveUpdateDestroyKindsOfWorkAPIView(generics.RetrieveUpdateDestroyAPIView):
     
-    model = Companies
-    serializer_class = CompaniesSerializer
+    model = KindsOfWork
+    serializer_class = KindsOfWorkSerializer
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):
-        return Companies.objects.filter(
+        return KindsOfWork.objects.filter(
             is_deleted=False,
             deleted_at=None,
-        )
-    
-    def perform_update(self, serializer):
-        serializer.save(
-            modified_at=timezone.now(),
-            modified_by=self.request.user.id,
         )
     
     def perform_destroy(self, instance):
