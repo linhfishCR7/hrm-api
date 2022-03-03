@@ -43,9 +43,9 @@ class AddressesSerializer(serializers.ModelSerializer):
         """
         response = super().to_representation(instance)
         
-        # response_without_addresses = without_keys(response,'addresses')
         # if instance.logo:  
         #     response['logo'] = ApplicationMethodFieldSerializer.get_list_image(instance.logo)
+            
         if instance.is_head_office_address==True:
             del response['is_working_office_address']
             
@@ -94,6 +94,14 @@ class CompaniesSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id']
     
+    def to_representation(self, instance):
+        
+        response = super().to_representation(instance)
+        if instance.logo:  
+            response['logo'] = ApplicationMethodFieldSerializer.get_list_image(instance.logo)
+        
+        return response
+    
     def create(self, validated_data):
     
         """ Add Company """
@@ -141,3 +149,6 @@ class CompaniesSerializer(serializers.ModelSerializer):
         Companies.objects.filter(id=instance.id).first().addresses.add(*new_address)
         updated_instance = super().update(instance, validated_data)
         return updated_instance
+    
+    
+        

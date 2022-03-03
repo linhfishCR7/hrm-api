@@ -160,9 +160,9 @@ class ConfirmCognitoSignUpSerializer(serializers.ModelSerializer):
             user.is_superuser = True  
             user.is_staff = True
              
-        user.is_verified_email = True
-        user.is_active = True
-        user.verified_email_at = timezone.now()
+        # user.is_verified_email = True
+        # user.is_active = True
+        # user.verified_email_at = timezone.now()
         user.save()
 
         return dict(response=response)
