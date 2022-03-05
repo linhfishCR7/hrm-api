@@ -83,5 +83,18 @@ class AbstractBaseUser(AbstractUser):
     
     objects = AbstractUserManager()
 
+    # def get_full_name(self):
+    #        return "{fname} {lname}".format(fname=self.first_name, lname=self.last_name)
+
+    # def get_short_name(self):
+    #     return self.first_name
+
+    # def get_role(self):
+    #     return self.role
+
+    # def __str__(self):
+    #     return self.email
+    
     class Meta:
         abstract = True
+        

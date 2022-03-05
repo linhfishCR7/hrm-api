@@ -14,7 +14,7 @@ from base.paginations import ItemIndexPagination
 
 class GetListUsers(generics.ListAPIView):
     serializer_class = ListUsersSerializer
-    permission_classes = (IsAdmin)
+    permission_classes = [IsAdmin, ]
     pagination_class = ItemIndexPagination
     
     def get_queryset(self):
