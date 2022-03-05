@@ -161,9 +161,9 @@ class ConfirmCognitoSignUpSerializer(serializers.ModelSerializer):
             user.is_superuser = True  
             user.is_staff = True
              
-        # user.is_verified_email = True
-        # user.is_active = True
-        # user.verified_email_at = timezone.now()
+        user.is_verified_email = True
+        user.is_active = True
+        user.verified_email_at = timezone.now()
         user.save()
         welcome_email.delay(dict(email=user.email, name=user.first_name))
         push_admin_notification_account_created.delay(metadata=user.id, name=f'{user.first_name} {user.last_name}')
