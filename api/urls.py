@@ -43,5 +43,7 @@ urlpatterns = [
     path('api/hrm/companies/', include('companies.hrm.urls')),
     path('api/hrm/kinds-of-work/', include('kinds_of_work.hrm.urls')),
     path('api/hrm/literacy/', include('literacy.hrm.urls')),
+    path('api/hrm/customers/', include('customers.hrm.urls')),
+    path('api/hrm/projects/', include('projects.hrm.urls')),
     #################################################################################
 ]

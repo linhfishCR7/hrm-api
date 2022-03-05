@@ -1,9 +1,11 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
-from companies.models import Companies
+from base.utils import print_value
+from customers.models import Customers
 from .serializers import (
-    CompaniesSerializer
+    CustomersSerializer,
+    RetrieveAndListCustomersSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -12,17 +14,16 @@ from django_filters.rest_framework import (
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
+class ListCreateCustomersAPIView(generics.ListCreateAPIView):
     
-    model = Companies
-    serializer_class = CompaniesSerializer
+    model = Customers
     permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['name', 'company']
+    search_fields = ['name', 'phone', 'email']
     filter_fields = {
-        'company': ['exact', 'in'],
+        'name': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):
@@ -32,7 +33,7 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
         )
     
     def get_queryset(self):
-        return Companies.objects.filter(
+        return Customers.objects.filter(
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
@@ -42,16 +43,21 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
         if self.request.query_params.get("no_pagination", "") == "true":
             return None
         return super().paginator
-
-class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIView):
     
-    model = Companies
-    serializer_class = CompaniesSerializer
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RetrieveAndListCustomersSerializer
+        if self.request.method == 'POST':
+            return CustomersSerializer
+
+class RetrieveUpdateDestroyCustomersAPIView(generics.RetrieveUpdateDestroyAPIView):
+    
+    model = Customers
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):
-        return Companies.objects.filter(
+        return Customers.objects.filter(
             is_deleted=False,
             deleted_at=None,
         )
@@ -67,3 +73,9 @@ class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIVie
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
         instance.save()
+
+    def get_serializer_class(self):
+        if self.request.method == 'PUT':
+            return CustomersSerializer
+        else: 
+            return RetrieveAndListCustomersSerializer
