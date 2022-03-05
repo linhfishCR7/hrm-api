@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'positions',
     'companies',
     'kinds_of_work',
-    'literacy'
+    'literacy',
+    'customers',
+    'projects'
 ]
 
 MIDDLEWARE = [
@@ -103,32 +105,32 @@ WSGI_APPLICATION = 'api.wsgi.application'
 #         },
 #     },
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'uW06pQxsUE14kSK4uNl6',
-        'HOST': 'hrm-db.cpfohkhof9ad.ap-southeast-1.rds.amazonaws.com',
-        'PORT': '5432',
-        'OPTIONS': {
-            'client_encoding': 'UTF-8'  # Need to set when create new database
-        },
-    },
-}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
 #         'NAME': 'postgres',
 #         'USER': 'postgres',
-#         'PASSWORD': 'f6pv!Tsu',
-#         'HOST': 'hrm-test.cpfohkhof9ad.ap-southeast-1.rds.amazonaws.com',
+#         'PASSWORD': 'uW06pQxsUE14kSK4uNl6',
+#         'HOST': 'hrm-db.cpfohkhof9ad.ap-southeast-1.rds.amazonaws.com',
 #         'PORT': '5432',
 #         'OPTIONS': {
 #             'client_encoding': 'UTF-8'  # Need to set when create new database
 #         },
 #     },
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': '123456789',
+        'HOST': 'fish.cq4efxsnalrb.ap-southeast-1.rds.amazonaws.com',
+        'PORT': '5432',
+        'OPTIONS': {
+            'client_encoding': 'UTF-8'  # Need to set when create new database
+        },
+    },
+}
 AUTH_USER_MODEL = 'users.User'
 
 # Password validation
@@ -217,12 +219,13 @@ S3_BUCKET_NAME = 'hrm-s3'
 S3_URL = "https://hrm-s3.s3.amazonaws.com"
 
 # COGNITO SETTINGS
-COGNITO_AWS_REGION = 'ap-southeast-1'
-COGNITO_USER_POOL = 'ap-southeast-1_8Floj89lt'
-COGNITO_AUDIENCE = '3tg4c27ft0da820h919g1p3943'
-COGNITO_AUDIENCE_SECRET = None
-#########Test##########
 # COGNITO_AWS_REGION = 'ap-southeast-1'
 # COGNITO_USER_POOL = 'ap-southeast-1_8Floj89lt'
-# COGNITO_AUDIENCE = '6g9upj5l9g1uektacus5l2u8m6'
+# COGNITO_AUDIENCE = '3tg4c27ft0da820h919g1p3943'
 # COGNITO_AUDIENCE_SECRET = None
+
+#########Test##########
+COGNITO_AWS_REGION = 'ap-southeast-1'
+COGNITO_USER_POOL = 'ap-southeast-1_UJZhQJCZ1'
+COGNITO_AUDIENCE = '7jnefe37ur0ndm5pvjgtvgc12n'
+COGNITO_AUDIENCE_SECRET = None

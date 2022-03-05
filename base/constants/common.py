@@ -131,69 +131,11 @@ class Permissions:
         ),
     }
 
-class SocialMedia:
-    
-    default_data = dict(
-        facebook = "",
-        instagram = "",
-        linkedin = "",
-        twitter = "",
-    )
 
-    # Weekday:
-    # """ weekday format """
-    
-    # MONDAY = dict(
-    #     code=1,
-    #     title="monday"
-    # )
-    # TUESDAY = dict(
-    #     code=2,
-    #     title="tuesday"
-    # )
-    # WEDNESDAY = dict(
-    #     code=3,
-    #     title="wednesday"
-    # )
-    # THURSDAY = dict(
-    #     code=4,
-    #     title="thursday"
-    # )
-    # FRIDAY = dict(
-    #     code=5,
-    #     title="friday"
-    # )
-    # SATURDAY = dict(
-    #     code=6,
-    #     title="saturday"
-    # )
-    # SUNDAY = dict(
-    #     code=7,
-    #     title="sunday"
-    # )
-    
-class BusinessStatus:
-    
-    ACTIVE = "Active"
-    PENDING = "Pending"
-    REJECTED = "Rejected"
-    BLOCKED = "Blocked"
-    
 
 class ResponseMessage:
     SUCCESS = "SUCCESS"
     FAIL = "FAIL"
-
-
-class Webhook:
-    class Event:
-        PAYMENT_SUCCEEDED="invoice.payment_succeeded"
-        PAYMENT_FAILED="invoice.payment_failed"
-
-
-class TransactionStatus:
-    PAID = "paid"
-    FAILED = "failed"
 
 
 class UserStatus:
@@ -202,40 +144,8 @@ class UserStatus:
     BLOCKED = "Blocked"  
 
 
-class PostStatus:
-    
-    PUBLISHED = "Published"
-    DRAFT = "Draft"
-
-class InputType(ConstantBase):
-    """ Advanced field input type """
-    TEXTBOX = "textbox"
-    DROPDOWN = "dropdown"
-    RADIO_BUTTON = "radio_button"
-    CHECKBOX = "checkbox"
-
-
-class NotificationType:
-    """Type notification"""
-    NEW_PENDING_BUSINESS = 1
-    BUSINESS_UPDATE = 2
-    BUSINESS_APPROVED = 3
-    BUSINESS_REJECTED = 4
-    BUSINESS_BLOCKED = 5
-    BUSINESS_UNBLOCKED = 6
-    FAIL_SUBSCRIPTION_BUSINESS = 7
-    NEW_UPDATE_SUBSCRIPTION_PLAN_BUSINESS = 8
-    PAYMENT_SUCCEEDED = 9
-    PAYMENT_FAILED =10
-
-
-class Notification:
-    default_data = dict(
-        business_id = None
-    )
-
-
-class LikeStatus:
-    LIKE = "liked"
-    UNLIKE = "unliked"
-    
+class ProjectStatus:
+    PENDING_PROJECT = 1
+    RUNNING_PROJECT = 2
+    FINISH_PROJECT = 3
+   

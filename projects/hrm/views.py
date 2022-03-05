@@ -1,9 +1,11 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
-from companies.models import Companies
+from base.utils import print_value
+from projects.models import Projects
 from .serializers import (
-    CompaniesSerializer
+    ProjectsSerializer,
+    RetrieveAndListProjectsSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -12,17 +14,16 @@ from django_filters.rest_framework import (
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
-class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
+class ListCreateProjectsAPIView(generics.ListCreateAPIView):
     
-    model = Companies
-    serializer_class = CompaniesSerializer
+    model = Projects
     permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['name', 'company']
+    search_fields = ['name', 'project', 'signing_date']
     filter_fields = {
-        'company': ['exact', 'in'],
+        'name': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):
@@ -32,7 +33,7 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
         )
     
     def get_queryset(self):
-        return Companies.objects.filter(
+        return Projects.objects.filter(
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
@@ -42,28 +43,34 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
         if self.request.query_params.get("no_pagination", "") == "true":
             return None
         return super().paginator
-
-class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIView):
     
-    model = Companies
-    serializer_class = CompaniesSerializer
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RetrieveAndListProjectsSerializer
+        if self.request.method == 'POST':
+            return ProjectsSerializer
+
+class RetrieveUpdateDestroyProjectsAPIView(generics.RetrieveUpdateDestroyAPIView):
+    
+    model = Projects
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):
-        return Companies.objects.filter(
+        return Projects.objects.filter(
             is_deleted=False,
             deleted_at=None,
         )
     
-    def perform_update(self, serializer):
-        serializer.save(
-            modified_at=timezone.now(),
-            modified_by=self.request.user.id,
-        )
     
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
         instance.save()
+
+    def get_serializer_class(self):
+        if self.request.method == 'PUT':
+            return ProjectsSerializer
+        else: 
+            return RetrieveAndListProjectsSerializer

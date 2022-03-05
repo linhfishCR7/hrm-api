@@ -20,3 +20,4 @@ class Address(BaseModel):
     is_permanent_address = models.BooleanField(default=False) # Where lived for a long time
     is_head_office_address = models.BooleanField(default=False) # The main place that company is located
     is_working_office_address = models.BooleanField(default=False) # The office of company is located
+    is_customer_address = models.BooleanField(default=False) # address of customer
