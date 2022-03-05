@@ -1,5 +1,5 @@
 from django.db import models
-from base.models import AbstractBaseUser
+from base.models import AbstractBaseUser, BaseModel
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
@@ -15,3 +15,24 @@ class User(AbstractBaseUser):
     is_verified_email = models.BooleanField(default=False)
     verified_email_at = models.DateTimeField(null=True)
     phone = PhoneNumberField(null=True)
+
+
+class UserFCMDevice(BaseModel):
+    TYPES = (
+        ('P', 'PORTAL'),
+        ('M', 'MOBILE')
+    )
+    DEVICE_TYPES = (
+        ('A', 'ANDROID'),
+        ('I', 'IOS'),
+        ('B', 'BROWSER')
+    )
+
+    user = models.ForeignKey(
+        'users.User', on_delete=models.Case, blank=True, null=True, default=0, related_name='UserFCMDevices'
+    )
+    type = models.CharField(max_length=50, choices=TYPES, null=True)
+    device = models.CharField(max_length=200, choices=DEVICE_TYPES, null=True)
+    user_type = models.CharField(max_length=200, null=True)
+    meid = models.CharField(max_length=200, null=True)
+    token = models.TextField()

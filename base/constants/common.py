@@ -148,4 +148,15 @@ class ProjectStatus:
     PENDING_PROJECT = 1
     RUNNING_PROJECT = 2
     FINISH_PROJECT = 3
-   
+    
+class NotificationType:
+    """Type notification"""
+    NEW_USER = 1
+    BLOCK_USER = 2
+    UNBLOCK_USER = 3
+
+class NotificationMetadata:
+    default_data = dict(
+        business_id = None
+    )
+    

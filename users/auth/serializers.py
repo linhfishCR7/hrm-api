@@ -5,8 +5,9 @@ from rest_framework.exceptions import ValidationError
 from django.utils import timezone
 
 from base.services.cognito import CognitoService
+from base.tasks import push_admin_notification_account_created, welcome_email
 from base.templates.error_templates import ErrorTemplate
-from users.models import User
+from users.models import User, UserFCMDevice
 from rest_framework import serializers
 from base.serializers import ApplicationMethodFieldSerializer
 from base.utils import print_value
@@ -160,11 +161,12 @@ class ConfirmCognitoSignUpSerializer(serializers.ModelSerializer):
             user.is_superuser = True  
             user.is_staff = True
              
-        # user.is_verified_email = True
-        # user.is_active = True
-        # user.verified_email_at = timezone.now()
+        user.is_verified_email = True
+        user.is_active = True
+        user.verified_email_at = timezone.now()
         user.save()
-
+        welcome_email.delay(dict(email=user.email, name=user.first_name))
+        push_admin_notification_account_created.delay(metadata=user.id, name=f'{user.first_name} {user.last_name}')
         return dict(response=response)
 
     def to_representation(self, instance):
@@ -190,4 +192,31 @@ class LoginWebSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return instance
         
+
+# FMC DEVICE SERIALIZERS
+class UserFCMSerializer(serializers.ModelSerializer):
+    type = serializers.ChoiceField(default='N', choices=UserFCMDevice.TYPES, required=False)
+    device = serializers.ChoiceField(choices=UserFCMDevice.DEVICE_TYPES, allow_null=True, allow_blank=True, required=False)
+    meid = serializers.CharField(max_length=100, allow_null=True ,required=False, allow_blank=True)
+    token = serializers.CharField(max_length=500, allow_blank=True, allow_null=True)
+
+    class Meta:
+        model = UserFCMDevice
+        fields = (
+            'user',
+            'device',
+            'meid',
+            'token',
+            'type',
+        )
     
+    def create(self, validated_data):
+        fcm_register_token = UserFCMDevice.objects.filter(
+            token=validated_data['token'],
+            is_deleted=False
+        ).first()
+
+        if fcm_register_token:
+            return fcm_register_token
+
+        return super().create(validated_data)

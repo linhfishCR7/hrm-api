@@ -6,7 +6,8 @@ from .views import (
     GetUpdateProfileAPIView,
     BEConfirmCognitoSignUpView,
     BESignUpView,
-    LoginWebView
+    LoginWebView,
+    UserFCMDeviceAPIView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -30,4 +31,7 @@ urlpatterns = [
     path('be-confirm-sign-up/', BEConfirmCognitoSignUpView.as_view(), name='be-confirm-sign-up'),
     path('be-signup/', BESignUpView.as_view(), name='be-sign-up'),
     path('login/', LoginWebView.as_view(), name='login'),
+    
+    # FMC Devices.
+    path('me/fcm-device/', UserFCMDeviceAPIView.as_view(), name='create-update-user-fcm-device'),
 ]

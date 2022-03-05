@@ -4,17 +4,19 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import filters, generics, serializers, status, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings 
 from base.permissions import IsUser
-from users.models import User
+from users.models import User, UserFCMDevice
 from .serializers import (
     RegistrationSerializer,
     ProfileUserSerializer,
     BESignUpSerializer,
     ConfirmCognitoSignUpSerializer,
-    LoginWebSerializer
+    LoginWebSerializer,
+    UserFCMSerializer
 )
 
 
@@ -86,3 +88,16 @@ class BEConfirmCognitoSignUpView(generics.CreateAPIView):
 class LoginWebView(generics.CreateAPIView):
     permission_classes = []
     serializer_class = LoginWebSerializer
+    
+
+# FCM DEVICES FUNCTIONS
+class UserFCMDeviceAPIView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserFCMSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,
+            created_by=self.request.user.id
+        )
+    

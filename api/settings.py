@@ -9,24 +9,35 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import environ
+import os
 import datetime
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+APP_VERSION = "1.0"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Setup environment variables.
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#*8-+-i=f33!g0002u%vb)3pkf^cp11a_hqc8=d&0-2j5b^j*6'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition
@@ -54,7 +65,8 @@ INSTALLED_APPS = [
     'kinds_of_work',
     'literacy',
     'customers',
-    'projects'
+    'projects',
+    'notification'
 ]
 
 MIDDLEWARE = [
@@ -90,47 +102,21 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
 # Database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456789',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#         'OPTIONS': {
-#             'client_encoding': 'UTF-8'  # Need to set when create new database
-#         },
-#     },
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': 'uW06pQxsUE14kSK4uNl6',
-#         'HOST': 'hrm-db.cpfohkhof9ad.ap-southeast-1.rds.amazonaws.com',
-#         'PORT': '5432',
-#         'OPTIONS': {
-#             'client_encoding': 'UTF-8'  # Need to set when create new database
-#         },
-#     },
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': '123456789',
-        'HOST': 'fish.cq4efxsnalrb.ap-southeast-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
         'OPTIONS': {
             'client_encoding': 'UTF-8'  # Need to set when create new database
         },
     },
 }
+
 AUTH_USER_MODEL = 'users.User'
 
 # Password validation
@@ -168,17 +154,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# COGNITO SETTINGS
-# COGNITO_AWS_REGION = 'us-east-1'
-# COGNITO_USER_POOL = 'us-east-1_U4rLqa4hp'  # <user pool id>
-# COGNITO_AUDIENCE = '1m7hhkbtqqq12a7q6bi74hr038'  # <client id>
-# COGNITO_AUDIENCE_SECRET = None
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
@@ -211,21 +192,44 @@ JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True
 }
 
+
 # S3 SETTINGS (for upload media)
-S3_ACCESS_KEY = 'AKIAUGGPXTHHSLWFA662'
-S3_SECRET_KEY = '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'
-S3_REGION = 'ap-southeast-1'
-S3_BUCKET_NAME = 'hrm-s3'
-S3_URL = "https://hrm-s3.s3.amazonaws.com"
+S3_ACCESS_KEY = env('S3_ACCESS_KEY')
+S3_SECRET_KEY = env('S3_SECRET_KEY')
+S3_REGION = env('S3_REGION')
+S3_BUCKET_NAME = env('S3_BUCKET_NAME')
+S3_URL = env('S3_URL')  # Using .cloudfront.net url for auto resize and adjust media
 
 # COGNITO SETTINGS
-# COGNITO_AWS_REGION = 'ap-southeast-1'
-# COGNITO_USER_POOL = 'ap-southeast-1_8Floj89lt'
-# COGNITO_AUDIENCE = '3tg4c27ft0da820h919g1p3943'
-# COGNITO_AUDIENCE_SECRET = None
+COGNITO_AWS_REGION = env('COGNITO_AWS_REGION')
+COGNITO_USER_POOL = env('COGNITO_USER_POOL')  # <user pool id>
+COGNITO_AUDIENCE = env('COGNITO_AUDIENCE')  # <client id>
+COGNITO_AUDIENCE_SECRET = env('COGNITO_AUDIENCE_SECRET')
 
-#########Test##########
-COGNITO_AWS_REGION = 'ap-southeast-1'
-COGNITO_USER_POOL = 'ap-southeast-1_UJZhQJCZ1'
-COGNITO_AUDIENCE = '7jnefe37ur0ndm5pvjgtvgc12n'
-COGNITO_AUDIENCE_SECRET = None
+# REDIS & CELERY SETTINGS
+REDIS_HOST = env('REDIS_HOST')
+REDIS_PASSWORD = env('REDIS_PASSWORD')
+REDIS_PORT = env('REDIS_PORT')
+REDIS_CHANNEL = env('REDIS_CHANNEL')
+REDIS_CELERY_CHANNEL = env('REDIS_CELERY_CHANNEL')
+CELERY_BROKER_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_CHANNEL}"
+CELERY_RESULT_BACKEND = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_CHANNEL}"
+CELERY_IMPORTS = (
+    "base.tasks",
+)
+
+CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'HRM <havanlinh19042000@gmail.com>'
+
+# FIREBASE SETTINGS
+FCM_SERVER_KEY = env('FCM_SERVER_KEY')
