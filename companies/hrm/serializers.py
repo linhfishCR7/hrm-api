@@ -31,8 +31,7 @@ class AddressesSerializer(serializers.ModelSerializer):
             'postcode',
             'lat',
             'lng',
-            'is_head_office_address',
-            'is_working_office_address'
+            'type'
         ]
         
         read_only_fields = ['id']   
@@ -45,12 +44,6 @@ class AddressesSerializer(serializers.ModelSerializer):
         
         # if instance.logo:  
         #     response['logo'] = ApplicationMethodFieldSerializer.get_list_image(instance.logo)
-            
-        if instance.is_head_office_address==True:
-            del response['is_working_office_address']
-            
-        else:
-            del response['is_head_office_address']
             
         return response
     
@@ -113,7 +106,7 @@ class CompaniesSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             website=validated_data['website'],
             fax=validated_data['fax'],
-            logo=validated_data['logo'],
+            logo=validated_data['logo']
         )
                 
         # """ add addresses """

@@ -159,4 +159,16 @@ class NotificationMetadata:
     default_data = dict(
         business_id = None
     )
+
+
+class AddressType:
+    """Type Address"""
+    PLACE_OF_BIRTH_ADDRESS = "place_of_birth_address"
+    DOMICILE = "domicile"
+    TEMPORARY_RESIDENCE_ADDRESS = "temporary_residence_address"
+    PERMANENT_ADDRESS = "permanent_address"
+    HEAD_OFFICE_ADDRESS = "head_office_address"
+    WORKING_OFFICE_ADDRESS = "working_office_address"
+    CUSTOMER_ADDRESS = "customer_address"
+
     

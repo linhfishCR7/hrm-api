@@ -66,7 +66,9 @@ INSTALLED_APPS = [
     'literacy',
     'customers',
     'projects',
-    'notification'
+    'notification',
+    'branchs',
+    'departments',
 ]
 
 MIDDLEWARE = [
