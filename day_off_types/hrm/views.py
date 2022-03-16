@@ -1,5 +1,5 @@
 from django.utils import timezone
-from base.permissions import IsHrm
+from base.permissions import IsHrm, IsUser
 from base.paginations import ItemIndexPagination
 from day_off_types.models import DayOffTypes
 from .serializers import (

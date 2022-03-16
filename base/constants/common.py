@@ -1,3 +1,6 @@
+from django.db import ProgrammingError
+
+
 class AppConstants:
     
     VALID_FILE_EXTENSION = [
@@ -154,9 +157,54 @@ class NotificationType:
     NEW_USER = 1
     BLOCK_USER = 2
     UNBLOCK_USER = 3
+    USER_CREATED_DAY_OF_YEAR = 4
 
 class NotificationMetadata:
     default_data = dict(
         business_id = None
     )
+
+
+class AddressType:
+    """Type Address"""
+    PLACE_OF_BIRTH_ADDRESS = "place_of_birth_address"
+    DOMICILE = "domicile"
+    TEMPORARY_RESIDENCE_ADDRESS = "temporary_residence_address"
+    PERMANENT_ADDRESS = "permanent_address"
+    HEAD_OFFICE_ADDRESS = "head_office_address"
+    WORKING_OFFICE_ADDRESS = "working_office_address"
+    CUSTOMER_ADDRESS = "customer_address"
+
+
+class GenderStatus:
+    """Gender"""
+    MALE = "male",
+    FEMALE = "female"
+    UNKNOWN = "unknown"
+
+class MaritalStatus:
+    """Marital"""
+    GOT_MARRIED = "got_married",
+    SINGLE = "single"
     
+
+class CodeConstants:
+    
+    class StaffRandomConstant:
+        MIN = 100000
+        MAX = 999999
+
+
+class SkillTypes:
+    """SkillTypes"""
+    PROGRAMMING = "Lập trình",
+    OFFICE = "Văn phòng"
+    DESIGN = "Thiết kế"
+
+
+class RelationshipType:
+    """RelationshipType"""
+    FATHER = "Ba",
+    MOTHER = "Mẹ"
+    HUSBAND = "Chồng"
+    WIFE = "Vợ"

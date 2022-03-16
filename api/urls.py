@@ -24,6 +24,10 @@ urlpatterns = [
     #################################################################################
     # User
     
+    path('api/user/day-off-years/', include('day_off_years.user.urls')),
+    path('api/user/day-off-year-details/', include('day_off_year_details.user.urls')),
+    path('api/user/day-off-types/', include('day_off_types.user.urls')),
+
     #################################################################################
     # Admin
     
@@ -45,5 +49,13 @@ urlpatterns = [
     path('api/hrm/literacy/', include('literacy.hrm.urls')),
     path('api/hrm/customers/', include('customers.hrm.urls')),
     path('api/hrm/projects/', include('projects.hrm.urls')),
+    path('api/hrm/branchs/', include('branchs.hrm.urls')),
+    path('api/hrm/departments/', include('departments.hrm.urls')),
+    path('api/hrm/staffs/', include('staffs.hrm.urls')),
+    path('api/hrm/promotions/', include('promotions.hrm.urls')),
+    path('api/hrm/skills/', include('skills.hrm.urls')),
+    path('api/hrm/urgent-contacts/', include('urgent_contacts.hrm.urls')),
+    path('api/hrm/bonuses/', include('bonuses.hrm.urls')),
+    path('api/hrm/health-status/', include('health_status.hrm.urls')),
     #################################################################################
 ]
