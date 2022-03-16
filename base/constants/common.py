@@ -171,4 +171,21 @@ class AddressType:
     WORKING_OFFICE_ADDRESS = "working_office_address"
     CUSTOMER_ADDRESS = "customer_address"
 
+
+class GenderStatus:
+    """Gender"""
+    MALE = "male",
+    FEMALE = "female"
+    UNKNOWN = "unknown"
+
+class MaritalStatus:
+    """Marital"""
+    GOT_MARRIED = "got_married",
+    SINGLE = "single"
     
+
+class CodeConstants:
+    
+    class StaffRandomConstant:
+        MIN = 100000
+        MAX = 999999

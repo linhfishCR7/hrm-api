@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'notification',
     'branchs',
     'departments',
+    'staffs',
+    'promotions'
 ]
 
 MIDDLEWARE = [

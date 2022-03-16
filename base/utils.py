@@ -1,8 +1,12 @@
+import random
 from rest_framework.views import exception_handler
 from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnList
+from django.utils.text import slugify
+from base.constants.common import CodeConstants
 
 from base.templates.error_templates import ErrorTemplate
+from staffs.models import Staffs
 
 
 def error_by_status_code(exc, response):
@@ -75,3 +79,21 @@ def print_value(*args):
 def without_keys(dictionany, keys):
     """ Return a new dictionary without specific keys """
     return {x: dictionany[x] for x in dictionany if x not in keys}
+
+def radom_number(min,max):
+    n = random.randint(min,max)
+    return n
+
+def generate_staff(department, first_name, last_name, staff_number=''):
+    """ Generate staff for staff """
+    
+    slug = slugify(f"{department} {first_name} {last_name} {staff_number}")
+    staff = Staffs.objects.filter(staff=slug).first()
+    if not staff:
+        return slug
+    else:
+        staff_number = radom_number(
+            min = CodeConstants().StaffRandomConstant().MIN,
+            max = CodeConstants().StaffRandomConstant().MAX,
+        )
+        return generate_staff(department, first_name, last_name, staff_number)
