@@ -1,3 +1,6 @@
+from django.db import ProgrammingError
+
+
 class AppConstants:
     
     VALID_FILE_EXTENSION = [
@@ -154,6 +157,7 @@ class NotificationType:
     NEW_USER = 1
     BLOCK_USER = 2
     UNBLOCK_USER = 3
+    USER_CREATED_DAY_OF_YEAR = 4
 
 class NotificationMetadata:
     default_data = dict(
@@ -189,3 +193,18 @@ class CodeConstants:
     class StaffRandomConstant:
         MIN = 100000
         MAX = 999999
+
+
+class SkillTypes:
+    """SkillTypes"""
+    PROGRAMMING = "Lập trình",
+    OFFICE = "Văn phòng"
+    DESIGN = "Thiết kế"
+
+
+class RelationshipType:
+    """RelationshipType"""
+    FATHER = "Ba",
+    MOTHER = "Mẹ"
+    HUSBAND = "Chồng"
+    WIFE = "Vợ"

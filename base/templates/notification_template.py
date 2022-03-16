@@ -5,4 +5,12 @@ class NotificationTemplate:
             return f"New account {name} has been created"
         
         BODY = "New account has been created"
+        
+        
+    class UserCreateDayOffYear:
+        """ Send notification to hrm that the user has been created day off year"""
+        def TITLE(name):  
+            return f"The user {name} has been created day off year"
+        
+        BODY = "The user has been created day off year"
     

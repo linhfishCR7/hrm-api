@@ -70,7 +70,13 @@ INSTALLED_APPS = [
     'branchs',
     'departments',
     'staffs',
-    'promotions'
+    'promotions',
+    'skills',
+    'urgent_contacts',
+    'bonuses',
+    'health_status',
+    'day_off_years',
+    'day_off_year_details'
 ]
 
 MIDDLEWARE = [
@@ -237,3 +243,5 @@ DEFAULT_FROM_EMAIL = 'HRM <havanlinh19042000@gmail.com>'
 
 # FIREBASE SETTINGS
 FCM_SERVER_KEY = env('FCM_SERVER_KEY')
+
+FRONTEND_URL = env('FRONTEND_URL')
