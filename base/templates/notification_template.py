@@ -14,3 +14,9 @@ class NotificationTemplate:
         
         BODY = "The user has been created day off year"
     
+    
+    class HrmApprovedDayOffYear:
+        """ Send notification to user that the hrm has been approved day off year"""
+        TITLE = "The hrm has been approved day off year"
+        BODY = "The hrm has been approved day off year"
+    
