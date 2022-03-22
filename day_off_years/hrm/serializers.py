@@ -1,4 +1,6 @@
 from base.serializers import ApplicationMethodFieldSerializer
+from base.tasks import day_off_year_email_to_user, push_user_notification_hrm_approved_day_off_year
+from base.utils import print_value
 from day_off_years.models import DayOffYears
 from staffs.models import Staffs
 from users.models import User
@@ -52,30 +54,26 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             'status',
             'hand_over',
             'approved_by',
-            'staff',
         ]
         
-    def create(self, validated_data):
-
-        day_off_year = DayOffYears.objects.create(
-            date=validated_data['date'],
-            reason=validated_data['reason'],
-            contact=validated_data['contact'],
-            hand_over=validated_data['hand_over'],
-            status=False,
-            approved_by=None,
-            staff=validated_data['staff'],
-        )
-        
-        return day_off_year
-    
     def update(self, instance, validated_data):
         
-        day_off_year = DayOffYears.objects.filter(id=instance.id).first()
-        day_off_year.status=False,
-        day_off_year.approved_by=instance.approved_by
+        day_off_year = DayOffYears.objects.filter(id=instance.id).first()        
+        day_off_year.status=validated_data['status']
         day_off_year.save()
         updated_instance = super().update(instance, validated_data)
+        
+        staff = Staffs.objects.filter(id=instance.staff.id).first()
+        
+        user = User.objects.filter(
+            id=staff.user_id,
+            is_deleted=False,
+            deleted_at=None
+        ).first()
+        
+        if validated_data['status']==True:
+            day_off_year_email_to_user.delay(dict(name=f'{user.first_name} {user.last_name}', link=instance.id, user_id=user.id))
+            push_user_notification_hrm_approved_day_off_year.delay(metadata=user.id, user_id=user.id)
         
         return updated_instance
     

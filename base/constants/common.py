@@ -158,6 +158,7 @@ class NotificationType:
     BLOCK_USER = 2
     UNBLOCK_USER = 3
     USER_CREATED_DAY_OF_YEAR = 4
+    HRM_APPROVED_DAY_OF_YEAR = 5
 
 class NotificationMetadata:
     default_data = dict(

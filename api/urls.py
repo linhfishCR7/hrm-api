@@ -57,5 +57,7 @@ urlpatterns = [
     path('api/hrm/urgent-contacts/', include('urgent_contacts.hrm.urls')),
     path('api/hrm/bonuses/', include('bonuses.hrm.urls')),
     path('api/hrm/health-status/', include('health_status.hrm.urls')),
+    path('api/hrm/day-off-years/', include('day_off_years.hrm.urls')),
+
     #################################################################################
 ]
