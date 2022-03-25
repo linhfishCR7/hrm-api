@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'day_off_year_details',
     'certificate',
     'degree',
+    'discipline'
 ]
 
 MIDDLEWARE = [
