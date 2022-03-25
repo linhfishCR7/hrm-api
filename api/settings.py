@@ -77,7 +77,8 @@ INSTALLED_APPS = [
     'health_status',
     'day_off_years',
     'day_off_year_details',
-    'certificate'
+    'certificate',
+    'degree',
 ]
 
 MIDDLEWARE = [
