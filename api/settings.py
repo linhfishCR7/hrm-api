@@ -76,7 +76,8 @@ INSTALLED_APPS = [
     'bonuses',
     'health_status',
     'day_off_years',
-    'day_off_year_details'
+    'day_off_year_details',
+    'certificate'
 ]
 
 MIDDLEWARE = [
