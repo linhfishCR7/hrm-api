@@ -209,3 +209,29 @@ class RelationshipType:
     MOTHER = "Mẹ"
     HUSBAND = "Chồng"
     WIFE = "Vợ"
+
+
+class SalaryContant:
+    """Salary"""
+    STANDARD_TIME = 160
+    ALLOWANCE = 0.105
+    M5 = 5000000
+    M10 = 10000000
+    M18 = 18000000
+    M32 = 32000000
+    M52 = 52000000
+    M80 = 80000000
+    M0_M5 = 0.05
+    UP_M5_M10 = 0.10
+    UP_M10_M18 = 0.15
+    UP_M18_M32 = 0.20
+    UP_M32_M52 = 0.25
+    UP_M52_M80 = 0.30
+    UP_M80 = 0.35
+
+
+class TypeTimeKeeping:
+    ADMININISTRATION = 1
+    OVERTIME = 1.5
+    DAY_OFF = 2.0
+    HOLIDAY_VACATION = 3.0
