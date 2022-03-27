@@ -28,8 +28,7 @@ class AddressesSerializer(serializers.ModelSerializer):
             'postcode',
             'lat',
             'lng',
-            'is_head_office_address',
-            'is_working_office_address'
+            'type',
         ]
         
         read_only_fields = ['id']   

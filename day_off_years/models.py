@@ -5,7 +5,7 @@ from base.models import BaseModel
 # Create your models here.
 class DayOffYears(BaseModel):
     # DayOffYears
-    date = models.DateField(default=timezone.now())
+    date = models.DateField()
     reason = models.TextField(default=None, null=True, blank=True)
     contact = models.TextField(default=None, null=True, blank=True)
     status = models.BooleanField(default=False)
