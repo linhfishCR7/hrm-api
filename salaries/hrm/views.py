@@ -12,6 +12,9 @@ from django_filters.rest_framework import (
     DjangoFilterBackend,
 )
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.views import APIView
+from base.tasks import push_all_user_notification_hrm_approved_send_salary, salary_email_to_all_user
+from rest_framework.response import Response
 
 
 class ListCreateSalaryAPIView(generics.ListCreateAPIView):
@@ -80,3 +83,25 @@ class RetrieveUpdateDestroySalaryAPIView(generics.RetrieveUpdateDestroyAPIView):
             return SalarySerializer
         else: 
             return RetrieveAndListSalarySerializer
+
+
+class ActiveSalaryAPIView(APIView):
+    
+    model = Salary
+    permission_classes = [IsHrm]
+
+    def get(self, request, *args, **kwargs):
+
+        Salary.objects.filter(
+            is_deleted=False,
+            date__month=timezone.now().month-1,
+            date__year=timezone.now().year
+        ).update(is_active=True)
+
+        salary_email_to_all_user.delay()
+        push_all_user_notification_hrm_approved_send_salary.delay()
+        return Response(dict(message='OK'))
+
+        
+
+

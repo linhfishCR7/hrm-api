@@ -19,4 +19,11 @@ class NotificationTemplate:
         """ Send notification to user that the hrm has been approved day off year"""
         TITLE = "The hrm has been approved day off year"
         BODY = "The hrm has been approved day off year"
+
+    
+    class HrmSendSalaryToAllUser:
+        """ Send salary notification to all user but admin """
+        def TITLE(month, year):  
+            return f"The Hrm has been sent salary {month} in {year}"
+        BODY = "The Hrm has been sent salary to you"
     
