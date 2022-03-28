@@ -10,6 +10,8 @@ from base.templates.email_templates import BaseTemplate, EmailTemplate
 from base.services.firebase_services import FirebaseNotificationService
 from base.templates.notification_template import NotificationTemplate
 from base.utils import print_value
+from salaries.models import Salary
+from staffs.models import Staffs
 from users.models import User, UserFCMDevice
 from notification.models import Notification
 
@@ -87,7 +89,6 @@ def day_off_year_email(self, data):
         is_deleted=False,
         is_active=True
     ).values_list('email', flat=True)
-    print_value(hrms)
      
     recipient_list = hrms
     email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
@@ -190,6 +191,86 @@ def push_user_notification_hrm_approved_day_off_year(metadata, user_id):
             body=notification_body,
             notification_type=notification_type,
             metadata={"user_id": str(metadata)}
+        ) for user in users
+    ]
+
+    """ Add notification to database """
+    Notification.objects.bulk_create(notification_data)    
+    return True
+
+
+@shared_task(bind=True)
+def salary_email_to_all_user(self):
+    email_from = settings.DEFAULT_FROM_EMAIL
+
+    user = User.objects.filter(
+        is_staff=True,
+        is_superuser=False,
+        is_deleted=False,
+        is_active=True
+    ).values()
+    for data in user:
+        # staff = Staffs.objects.filter(
+        #     user_id=data['id']
+        # ).get()
+        # salary = Salary.objects.filter(
+        #     staff_id=staff.id,
+        #     is_deleted=False,
+        #     date__month=timezone.now().month-1,
+        #     date__year=timezone.now().year
+        # ).values()
+
+        message = BaseTemplate.BASE.format(
+                year=timezone.now().year,
+                section=EmailTemplate.SalaryEmailToAllUser.BODY(
+                    name=f"{data['first_name']} {data['last_name']}", 
+                    link=f"{settings.FRONTEND_URL}salary/"
+                )
+            )
+        subject = EmailTemplate.SalaryEmailToAllUser.SUBJECT(month=timezone.now().month, year=timezone.now().year)
+        
+        
+        recipient_list = [data['email']]
+        email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
+
+
+@shared_task(retries=3)
+def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().month, year=timezone.now().year):
+    """ Send notification to all user after the hrm has been approved day off year"""
+
+    """ Find all user registration ids but admin """
+    user_registration_ids = UserFCMDevice.objects.filter(
+        user__is_staff=True,
+        user__is_superuser=False,
+        is_deleted=False,
+        is_active=True
+    ).values_list("token", flat=True)
+
+    notification_title = NotificationTemplate.HrmSendSalaryToAllUser.TITLE(month, year)
+    notification_body = NotificationTemplate.HrmSendSalaryToAllUser.BODY
+    notification_type = NotificationType.HRM_SEND_SALARY_TO_ALL_USER
+
+    """ Push notification to all user but admin  """
+    fcm_client.send_notification_multiple_user(
+        list_registration_id=user_registration_ids,
+        title=notification_title,
+        body=notification_body
+    )
+
+    """ All users but admin """
+    users = User.objects.filter(
+        is_staff=True,
+        is_superuser=False,
+        is_deleted=False,
+        is_active=True
+    )
+    notification_data = [
+        Notification(
+            user=user,
+            title=notification_title,
+            body=notification_body,
+            notification_type=notification_type,
+            metadata={}
         ) for user in users
     ]
 

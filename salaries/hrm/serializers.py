@@ -107,7 +107,8 @@ class SalarySerializer(serializers.ModelSerializer):
         if staff_project:
             overtime = Timekeeping.objects.filter(
                 staff_project=staff_project.id,
-                date__month=timezone.now().month-1
+                date__month=timezone.now().month-1,
+                date__year=timezone.now().year
             ).values()
             total = 0
             for overtime_data in overtime:
