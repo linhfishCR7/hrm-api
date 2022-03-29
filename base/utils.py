@@ -1,4 +1,5 @@
 import random
+from employment_contracts.models import EmploymentContract
 from rest_framework.views import exception_handler
 from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnList
@@ -97,3 +98,10 @@ def generate_staff(department, first_name, last_name, staff_number=''):
             max = CodeConstants().StaffRandomConstant().MAX,
         )
         return generate_staff(department, first_name, last_name, staff_number)
+
+def generate_number_contract():
+    """ Generate number contract """
+    contract = EmploymentContract.objects.all().count()
+    number_contract = f"MTC-{contract+1}"
+    
+    return number_contract
