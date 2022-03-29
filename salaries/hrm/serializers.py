@@ -4,11 +4,13 @@ from base.serializers import ApplicationMethodFieldSerializer
 from base.utils import print_value
 from day_off_year_details.models import DayOffYearDetails
 from day_off_years.models import DayOffYears
+from employment_contracts.models import EmploymentContract
 from projects.models import Projects
 from salaries.models import Salary
 from staff_project.models import StaffProject
 from staffs.models import Staffs
 from timekeeping.models import Timekeeping
+from up_salaries.models import UpSalary
 from users.models import User
 from rest_framework import serializers
 from django.utils import timezone
@@ -52,7 +54,9 @@ class StaffsSerializer(serializers.ModelSerializer):
 class SalarySerializer(serializers.ModelSerializer):
     allowance = serializers.DecimalField(required=False, max_digits=20, decimal_places=2)
     tax = serializers.DecimalField(required=False, max_digits=20, decimal_places=2)
-    # allowance = serializers.DecimalField(required=False, max_digits=20, decimal_places=2)
+    extra = serializers.IntegerField(required=False)
+    basic_salary = serializers.IntegerField(required=False)
+    coefficient = serializers.FloatField(required=False)
     class Meta:
         model = Salary
         fields = [
@@ -93,12 +97,15 @@ class SalarySerializer(serializers.ModelSerializer):
         ).first()
 
 
-        #TODO get coefficient
+        # get coefficient
 
+        up_salary = UpSalary.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+            staff=validated_data['staff']
+        ).order_by("-created_at").first()
 
-        print_value(day_off_year_detail)
         # work project by overtime
-
         staff_project = StaffProject.objects.filter(
             staff=validated_data['staff'],
             project__status=2
@@ -116,20 +123,29 @@ class SalarySerializer(serializers.ModelSerializer):
         else:
             total = 0
             
-
+        employment_contract = EmploymentContract.objects.filter(
+            is_active=True,
+            is_deleted=False,
+            staff=validated_data['staff']
+        ).order_by('-created_at').first()
         
-        basic_salary=validated_data['basic_salary'],
-        coefficient=validated_data['coefficient'] if validated_data['coefficient'] else 0.0
-        extra=validated_data['extra'] if validated_data['extra'] else 0.0
-        other_support=validated_data['other_support'] if validated_data['other_support'] else 0.0
+        basic_salary=employment_contract.basic_salary,
+        coefficient=up_salary.coefficient if up_salary.coefficient else SalaryContant.BASIC_COEFFICIENT
+
+        if not 'extra' in validated_data:
+            extra=employment_contract.extra
+        else:
+            extra=validated_data['extra']
+
+        other_support=validated_data['other_support'] if validated_data['other_support'] else employment_contract.other_support
         
         other=validated_data['other'] if validated_data['other'] else 0.0
 
         basic_salary=int(basic_salary[0])
-        coefficient=int(coefficient)
+        coefficient=coefficient
         extra=int(extra) 
         other_support=int(other_support)
-        other=int(other[0])
+        other=int(other)
         # overtime=int(overtime[0])
 
         actual_time = total+SalaryContant.STANDARD_TIME-(day_off_year_detail.amount*8) if day_off_year_detail else total+SalaryContant.STANDARD_TIME
@@ -137,9 +153,7 @@ class SalarySerializer(serializers.ModelSerializer):
         # caculate tax
         total_salary = basic_salary*coefficient+extra+other_support+other
         salary_allowance = (basic_salary*coefficient+extra)*(SalaryContant.ALLOWANCE)
-        print_value(salary_allowance)
         month_salary = total_salary*(actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance
-        print_value(month_salary)
         
         if month_salary <= SalaryContant.M5:
             tax = month_salary * (SalaryContant.M0_M5)
