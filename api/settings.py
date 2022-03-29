@@ -83,7 +83,8 @@ INSTALLED_APPS = [
     'salaries',
     'timekeeping',
     'staff_project',
-    'employment_contracts'
+    'employment_contracts',
+    'up_salaries'
 ]
 
 MIDDLEWARE = [

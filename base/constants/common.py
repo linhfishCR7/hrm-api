@@ -229,6 +229,7 @@ class SalaryContant:
     UP_M32_M52 = 0.25
     UP_M52_M80 = 0.30
     UP_M80 = 0.35
+    BASIC_COEFFICIENT = 1.2
 
 
 class TypeTimeKeeping:
