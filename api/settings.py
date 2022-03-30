@@ -87,7 +87,8 @@ INSTALLED_APPS = [
     'up_salaries',
     'recruitment_requirements',
     'recruitment_requirement_details',
-    'recruitment_tracking'
+    'recruitment_tracking',
+    'trainning_requirement'
 ]
 
 MIDDLEWARE = [
