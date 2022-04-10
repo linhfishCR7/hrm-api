@@ -17,13 +17,14 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 class ListCreateBranchsAPIView(generics.ListCreateAPIView):
     
     model = Branchs
-    permission_classes = [IsHrm]
+    permission_classes = []
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
     search_fields = ['name', 'branch']
     filter_fields = {
         'name': ['exact', 'in'],
+        'company__id': ['exact', 'in'],
     }
     
     def get_queryset(self):

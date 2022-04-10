@@ -7,7 +7,8 @@ from .views import (
     BEConfirmCognitoSignUpView,
     BESignUpView,
     LoginWebView,
-    UserFCMDeviceAPIView
+    UserFCMDeviceAPIView,
+    AuthorizationAPIView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -26,6 +27,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     #################################
     path('profile/', GetUpdateProfileAPIView.as_view(), name='get-update-profile'),
+    path('authorization/', AuthorizationAPIView.as_view(), name='get-update-profile'),
     
     # BE Test Cognito Authentication.
     path('be-confirm-sign-up/', BEConfirmCognitoSignUpView.as_view(), name='be-confirm-sign-up'),

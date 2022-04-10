@@ -1,5 +1,8 @@
 from dataclasses import field
 import uuid
+from branchs.models import Branchs
+from companies.models import Companies
+from departments.models import Departments
 
 from rest_framework.exceptions import ValidationError
 from django.utils import timezone
@@ -7,6 +10,7 @@ from django.utils import timezone
 from base.services.cognito import CognitoService
 from base.tasks import push_admin_notification_account_created, welcome_email
 from base.templates.error_templates import ErrorTemplate
+from staffs.models import Staffs
 from users.models import User, UserFCMDevice
 from rest_framework import serializers
 from base.serializers import ApplicationMethodFieldSerializer
@@ -220,3 +224,24 @@ class UserFCMSerializer(serializers.ModelSerializer):
             return fcm_register_token
 
         return super().create(validated_data)
+
+
+class AuthorizationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id']
+
+    def to_representation(self, instance):
+
+        response = super().to_representation(instance)
+
+        staff = Staffs.objects.filter(user_id=instance.id).first()
+        department = Departments.objects.filter(id=staff.department_id).first()
+        branch = Branchs.objects.filter(id=department.branch_id).first()
+        company = Companies.objects.filter(id=branch.company_id).first()
+
+        response['branch'] = branch.id
+        response['company'] = company.id
+        
+        return response
