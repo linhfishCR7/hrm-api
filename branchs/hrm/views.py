@@ -17,7 +17,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 class ListCreateBranchsAPIView(generics.ListCreateAPIView):
     
     model = Branchs
-    permission_classes = []
+    permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
@@ -68,3 +68,22 @@ class RetrieveUpdateDestroyBranchsAPIView(generics.RetrieveUpdateDestroyAPIView)
             return BranchsSerializer
         else: 
             return RetrieveAndListBranchsSerializer
+
+
+class ListBranchsAPIView(generics.ListAPIView):
+    
+    model = Branchs
+    permission_classes = []
+    serializer_class = BranchsSerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['name', 'branch']
+    filter_fields = {
+        'name': ['exact', 'in'],
+        'company__id': ['exact', 'in'],
+    }
+    def get_queryset(self):
+        return Branchs.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")

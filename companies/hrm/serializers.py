@@ -108,7 +108,6 @@ class CompaniesSerializer(serializers.ModelSerializer):
             fax=validated_data['fax'],
             logo=validated_data['logo']
         )
-                
         # """ add addresses """
         addresses_body = validated_data['addresses']
         address_data = []
