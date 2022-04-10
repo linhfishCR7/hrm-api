@@ -16,7 +16,8 @@ from .serializers import (
     BESignUpSerializer,
     ConfirmCognitoSignUpSerializer,
     LoginWebSerializer,
-    UserFCMSerializer
+    UserFCMSerializer,
+    AuthorizationSerializer
 )
 
 
@@ -101,3 +102,11 @@ class UserFCMDeviceAPIView(generics.CreateAPIView):
             created_by=self.request.user.id
         )
     
+
+class AuthorizationAPIView(generics.RetrieveAPIView):
+    model = User
+    serializer_class = AuthorizationSerializer
+    permission_classes = [IsAuthenticated,]
+    
+    def get(self, request, *args, **kwargs):
+        return Response(self.serializer_class(self.request.user).data)

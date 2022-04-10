@@ -16,7 +16,7 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
     
     model = Companies
     serializer_class = CompaniesSerializer
-    permission_classes = [IsHrm]
+    permission_classes = []
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'

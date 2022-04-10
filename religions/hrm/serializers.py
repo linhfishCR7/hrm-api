@@ -10,7 +10,7 @@ class ReligionsSerializer(serializers.ModelSerializer):
             queryset=Religions.objects.filter(
                 is_deleted=False,
                 deleted_at=None
-            )
+            ),
         )]
     )
     class Meta:
