@@ -16,7 +16,7 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
     
     model = Companies
     serializer_class = CompaniesSerializer
-    permission_classes = []
+    permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
@@ -67,3 +67,15 @@ class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIVie
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
         instance.save()
+
+
+class ListCompaniesAPIView(generics.ListAPIView):
+    
+    model = Companies
+    permission_classes = []
+    serializer_class = CompaniesSerializer
+    def get_queryset(self):
+        return Companies.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")
