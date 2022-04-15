@@ -101,7 +101,8 @@ INSTALLED_APPS = [
     'recruitment_requirement_details',
     'recruitment_tracking',
     'trainning_requirement',
-    'trainning_requirement_detail'
+    'trainning_requirement_detail',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
