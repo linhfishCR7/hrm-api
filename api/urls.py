@@ -71,6 +71,7 @@ urlpatterns = [
     path('api/hrm/recruitment-tracking/', include('recruitment_tracking.hrm.urls')),
     path('api/hrm/trainning-requirement/', include('trainning_requirement.hrm.urls')),
     path('api/hrm/trainning-requirement-detail/', include('trainning_requirement_detail.hrm.urls')),
+    path('api/hrm/dashboard/', include('dashboard.hrm.urls')),
 
     #################################################################################
 ]

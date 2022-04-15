@@ -49,7 +49,7 @@ class AddressesSerializer(serializers.ModelSerializer):
     
         
 class CompaniesSerializer(serializers.ModelSerializer):
-    addresses = AddressesSerializer(many=True)
+    addresses = AddressesSerializer(many=True, allow_null=True, required=False)
     company = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     name = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     tax_code = serializers.CharField(allow_blank=True, allow_null=True, required=False)
@@ -110,6 +110,7 @@ class CompaniesSerializer(serializers.ModelSerializer):
         )
         # """ add addresses """
         addresses_body = validated_data['addresses']
+        del validated_data['addresses']
         address_data = []
         for address in addresses_body:
             address_data.append(
