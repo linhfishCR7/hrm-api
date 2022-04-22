@@ -1,7 +1,10 @@
 from django.utils import timezone
+from django.utils.timezone import now    
+
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
 from base.utils import print_value
+from salaries.hrm.filter import SalaryFilter
 from salaries.models import Salary
 from .serializers import (
     SalarySerializer,
@@ -15,6 +18,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.views import APIView
 from base.tasks import push_all_user_notification_hrm_approved_send_salary, salary_email_to_all_user
 from rest_framework.response import Response
+from django.db.models import Subquery, OuterRef, Q
 
 
 class ListCreateSalaryAPIView(generics.ListCreateAPIView):
@@ -25,10 +29,7 @@ class ListCreateSalaryAPIView(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
     search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
-    filter_fields = {
-        'staff__user__first_name': ['exact', 'in'],
-        'staff__user__last_name': ['exact', 'in']
-    }
+    # filter_class = SalaryFilter
     
     def perform_create(self, serializer):
         serializer.save(
@@ -38,8 +39,10 @@ class ListCreateSalaryAPIView(generics.ListCreateAPIView):
     
     def get_queryset(self):
         return Salary.objects.filter(
-            is_deleted=False,
-            deleted_at=None,
+             Q(is_deleted=False)&
+             Q(deleted_at=None)&
+            Q(date__month=now().month) & 
+            Q(date__year=now().year)
         ).order_by("-created_at")
     
     @property
@@ -53,6 +56,33 @@ class ListCreateSalaryAPIView(generics.ListCreateAPIView):
             return RetrieveAndListSalarySerializer
         if self.request.method == 'POST':
             return SalarySerializer
+
+
+class ListPastalaryAPIView(generics.ListAPIView):
+    
+    model = Salary
+    permission_classes = [IsHrm]
+    pagination_class = ItemIndexPagination
+    serializer_class = RetrieveAndListSalarySerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
+    # filter_class = SalaryFilter
+    
+
+    def get_queryset(self):
+        return Salary.objects.filter(
+             Q(is_deleted=False)&
+             Q(deleted_at=None)&
+            ~Q(date__month=now().month,date__year=now().year)
+        ).order_by("-created_at")
+
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
+    
 
 class RetrieveUpdateDestroySalaryAPIView(generics.RetrieveUpdateDestroyAPIView):
     

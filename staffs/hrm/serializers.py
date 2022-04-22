@@ -6,27 +6,36 @@ from departments.models import Departments
 from ethnicities.models import Ethnicities
 from literacy.models import Literacy
 from nationalities.models import Nationalities
+from positions.models import Positions
 from religions.models import Religions
 from staffs.models import Staffs
 from users.models import User
 
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator,UniqueTogetherValidator
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 from base.serializers import ApplicationMethodFieldSerializer
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import ugettext_lazy as _
 
 
 class AddressesSerializer(serializers.ModelSerializer):
-    address = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-    city = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-    province = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-    district = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-    commune = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-    country = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-    postcode = serializers.CharField(allow_blank=True, allow_null=True, required=False)
+    address = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
+    city = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
+    province = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
+    district = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
+    commune = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
+    country = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
+    postcode = serializers.CharField(
+        allow_blank=True, allow_null=True, required=False)
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
+
     class Meta:
         model = Address
         fields = [
@@ -42,8 +51,8 @@ class AddressesSerializer(serializers.ModelSerializer):
             'lng',
             'type'
         ]
-        
-        read_only_fields = ['id']   
+
+        read_only_fields = ['id']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -61,7 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_staff',
             'is_superuser',
             'is_active'
-            
+
         ]
         read_only_fields = [
             'id',
@@ -71,15 +80,16 @@ class UserSerializer(serializers.ModelSerializer):
             'is_superuser',
             'is_active'
         ]
-    
+
     def to_representation(self, instance):
         """
         To show the data response to users
         """
         response = super().to_representation(instance)
         if instance.image:
-            response['image'] = ApplicationMethodFieldSerializer.get_list_image(instance.image)
-        
+            response['image'] = ApplicationMethodFieldSerializer.get_list_image(
+                instance.image)
+
         return response
 
 
@@ -95,7 +105,7 @@ class NationalitiesSerializer(serializers.ModelSerializer):
 
 
 class EthnicitiesSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Ethnicities
         fields = [
@@ -106,7 +116,7 @@ class EthnicitiesSerializer(serializers.ModelSerializer):
 
 
 class ReligionsSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Religions
         fields = [
@@ -117,7 +127,7 @@ class ReligionsSerializer(serializers.ModelSerializer):
 
 
 class LiteracySerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Literacy
         fields = [
@@ -139,6 +149,7 @@ class CompaniesSerializer(serializers.ModelSerializer):
 
 class BranchSerializer(serializers.ModelSerializer):
     company = CompaniesSerializer(read_only=True)
+
     class Meta:
         model = Branchs
         fields = [
@@ -150,6 +161,7 @@ class BranchSerializer(serializers.ModelSerializer):
 
 class DepartmentsSerializer(serializers.ModelSerializer):
     branch = BranchSerializer(read_only=True)
+
     class Meta:
         model = Departments
         fields = [
@@ -159,12 +171,23 @@ class DepartmentsSerializer(serializers.ModelSerializer):
             'branch'
         ]
 
-     
+
+class PositionsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Positions
+        fields = [
+            'id',
+            'position',
+            'name',
+        ]
+
+
 class StaffsSerializer(serializers.ModelSerializer):
 
     addresses = AddressesSerializer(many=True, required=False,)
     # staff = serializers.CharField(max_length=255, required=False, allow_blank=True, allow_null=True)
-   
+
     class Meta:
         model = Staffs
         fields = [
@@ -193,10 +216,12 @@ class StaffsSerializer(serializers.ModelSerializer):
             'ethnicity',
             'religion',
             'literacy',
+            'position',
             'user',
+            'is_active',
             'addresses',
         ]
-    
+
     def create(self, validated_data):
         """ Add Company """
         staff = Staffs.objects.create(
@@ -208,7 +233,8 @@ class StaffsSerializer(serializers.ModelSerializer):
             place_of_issuance=validated_data['place_of_issuance'],
             start_work_date=validated_data['start_work_date'] if validated_data['start_work_date'] else None,
             probationary_end_date=validated_data['probationary_end_date'] if validated_data['probationary_end_date'] else None,
-            labor_contract_signing_date=validated_data['labor_contract_signing_date'] if validated_data['labor_contract_signing_date'] else None,
+            labor_contract_signing_date=validated_data[
+                'labor_contract_signing_date'] if validated_data['labor_contract_signing_date'] else None,
             personal_email=validated_data['personal_email'],
             facebook=validated_data['facebook'],
             social_insurance_number=validated_data['social_insurance_number'],
@@ -223,16 +249,16 @@ class StaffsSerializer(serializers.ModelSerializer):
             ethnicity=validated_data['ethnicity'],
             religion=validated_data['religion'],
             literacy=validated_data['literacy'],
+            position=validated_data['position'],
             user=validated_data['user'],
             is_active=False,
             staff=generate_staff(
-                department=validated_data['department'].name, 
-                first_name=validated_data['user'].first_name, 
+                first_name=validated_data['user'].first_name,
                 last_name=validated_data['user'].last_name
             ),
-            
+
         )
-                
+
         """ add addresses """
         if validated_data['addresses']:
             addresses_body = validated_data['addresses']
@@ -242,33 +268,34 @@ class StaffsSerializer(serializers.ModelSerializer):
                     Address(
                         **address
                     )
-                )   
+                )
             addresses_data = Address.objects.bulk_create(address_data)
-            
+
             staff.addresses.add(*addresses_data)
-            
+
         return staff
 
     def update(self, instance, validated_data):
-
         """ Add new address """
         addresses_body = validated_data['addresses']
         del validated_data['addresses']
         """ Delete old company address """
         Staffs.objects.filter(id=instance.id).first().addresses.all().delete()
+
         """ Add new address """
         new_address_data = []
         for new_address in addresses_body:
             new_address_data.append(
                 Address(**new_address)
             )
-        
+
         new_address = Address.objects.bulk_create(new_address_data)
-        Staffs.objects.filter(id=instance.id).first().addresses.add(*new_address)
+        Staffs.objects.filter(
+            id=instance.id).first().addresses.add(*new_address)
         updated_instance = super().update(instance, validated_data)
         return updated_instance
-    
-    
+
+
 class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
     department = DepartmentsSerializer()
     nationality = NationalitiesSerializer()
@@ -277,6 +304,8 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
     literacy = LiteracySerializer()
     user = UserSerializer()
     addresses = AddressesSerializer(many=True)
+    position = PositionsSerializer()
+
     class Meta:
         model = Staffs
         fields = [
@@ -305,7 +334,56 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             'ethnicity',
             'religion',
             'literacy',
+            'position',
             'user',
+            'is_active',
             'addresses',
         ]
         read_only_fields = ['id']
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['first_name'] = instance.user.first_name
+        response['last_name'] = instance.user.last_name
+        response['email'] = instance.user.email
+        if not instance.department == None:
+            response['department_data'] = instance.department.name
+        else:
+            response['department_data'] = ''
+
+        if not instance.position == None:
+            response['position_data'] = instance.position.name
+        else:
+            response['position_data'] = ''
+
+        if not instance.literacy == None:
+            response['literacy_data'] = instance.literacy.name
+        else:
+            response['literacy_data'] = ''
+
+        if not instance.religion == None:
+            response['religion_data'] = instance.religion.name
+        else:
+            response['religion_data'] = ''
+
+        if not instance.ethnicity == None:
+            response['ethnicity_data'] = instance.ethnicity.name
+        else:
+            response['ethnicity_data'] = ''
+
+        if not instance.nationality == None:
+            response['nationality_data'] = instance.nationality.name
+        else:
+            response['nationality_data'] = ''
+
+        if not instance.user.image == None:
+            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + instance.user.image
+        else:
+            response['logo_url'] = ''
+
+        response['phone'] = str(instance.user.phone)
+
+        return response

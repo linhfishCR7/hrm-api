@@ -2,9 +2,9 @@ from django.db import ProgrammingError
 
 
 class AppConstants:
-    
+
     VALID_FILE_EXTENSION = [
-        #VIDEO
+        # VIDEO
         '.mp4',
         '.avi',
         '.flv',
@@ -12,7 +12,7 @@ class AppConstants:
         '.mpeg',
         '.3gp',
         '.wmv',
-        #IMAGE
+        # IMAGE
         '.jpeg',
         '.jpg',
         '.png',
@@ -69,13 +69,17 @@ class AppConstants:
             'Saturday': 'sat',
             'Sunday': 'sun'
         }
-        
-        CODE_TO_TITLE = [0,"Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+
+        CODE_TO_TITLE = [0, "Monday", "Tuesday", "Wednesday",
+                         "Thursday", "Friday", "Saturday", "Sunday"]
+
 
 class ConstantBase:
     def __get_list_attr_value__(self):
-       members = [getattr(self,attr) for attr in dir(self) if not attr.startswith("__")]
-       return members
+        members = [getattr(self, attr)
+                   for attr in dir(self) if not attr.startswith("__")]
+        return members
+
 
 class AppChoices:
     ROLES_FOR_REGISTER = [
@@ -135,7 +139,6 @@ class Permissions:
     }
 
 
-
 class ResponseMessage:
     SUCCESS = "SUCCESS"
     FAIL = "FAIL"
@@ -144,14 +147,15 @@ class ResponseMessage:
 class UserStatus:
 
     ACTIVE = "Active"
-    BLOCKED = "Blocked"  
+    BLOCKED = "Blocked"
 
 
 class ProjectStatus:
     PENDING_PROJECT = 1
     RUNNING_PROJECT = 2
     FINISH_PROJECT = 3
-    
+
+
 class NotificationType:
     """Type notification"""
     NEW_USER = 1
@@ -161,9 +165,10 @@ class NotificationType:
     HRM_APPROVED_DAY_OF_YEAR = 5
     HRM_SEND_SALARY_TO_ALL_USER = 6
 
+
 class NotificationMetadata:
     default_data = dict(
-        business_id = None
+        business_id=None
     )
 
 
@@ -184,14 +189,15 @@ class GenderStatus:
     FEMALE = "female"
     UNKNOWN = "unknown"
 
+
 class MaritalStatus:
     """Marital"""
     GOT_MARRIED = "got_married",
     SINGLE = "single"
-    
+
 
 class CodeConstants:
-    
+
     class StaffRandomConstant:
         MIN = 100000
         MAX = 999999
@@ -237,3 +243,43 @@ class TypeTimeKeeping:
     OVERTIME = 1.5
     DAY_OFF = 2.0
     HOLIDAY_VACATION = 3.0
+
+
+class Data:
+    address = [
+        {
+            "address": "",
+            "city": "",
+            "province": "",
+            "district": "",
+            "commune": "",
+            "country": "",
+            "postcode": "",
+            "lat": 0,
+            "lng": 0,
+            "type": "place_of_birth_address"
+        },
+        {
+            "address": "",
+            "city": "",
+            "province": "",
+            "district": "",
+            "commune": "",
+            "country": "",
+            "postcode": "",
+            "lat": 0,
+            "lng": 0,
+            "type": "permanent_address"
+        },
+        {
+            "address": "",
+            "city": "",
+            "province": "",
+            "district": "",
+            "commune": "",
+            "country": "",
+            "postcode": "",
+            "lat": 0,
+            "lng": 0,
+            "type": "temporary_residence_address"
+        }]
