@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework import views
 from rest_framework.authtoken.views import obtain_auth_token
 from .views import (
+    CompleteSignupAPIView,
     registration_view, 
     GetUpdateProfileAPIView,
     BEConfirmCognitoSignUpView,
@@ -33,6 +34,8 @@ urlpatterns = [
     path('be-confirm-sign-up/', BEConfirmCognitoSignUpView.as_view(), name='be-confirm-sign-up'),
     path('be-signup/', BESignUpView.as_view(), name='be-sign-up'),
     path('login/', LoginWebView.as_view(), name='login'),
+    path('signup/', CompleteSignupAPIView.as_view(), name='signup'),
+
     
     # FMC Devices.
     path('me/fcm-device/', UserFCMDeviceAPIView.as_view(), name='create-update-user-fcm-device'),

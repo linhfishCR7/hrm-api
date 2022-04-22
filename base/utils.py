@@ -85,7 +85,7 @@ def radom_number(min,max):
     n = random.randint(min,max)
     return n
 
-def generate_staff(department, first_name, last_name, staff_number=''):
+def generate_staff(first_name, last_name, staff_number='', department=''):
     """ Generate staff for staff """
     
     slug = slugify(f"{department} {first_name} {last_name} {staff_number}")

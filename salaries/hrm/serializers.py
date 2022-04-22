@@ -87,7 +87,6 @@ class SalarySerializer(serializers.ModelSerializer):
             staff=validated_data['staff'],
             status=True
         ).first()
-        print_value(day_off_year)
 
         day_off_year_detail = DayOffYearDetails.objects.filter(
             day_off_years=day_off_year.id,

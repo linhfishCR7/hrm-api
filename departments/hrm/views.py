@@ -67,3 +67,22 @@ class RetrieveUpdateDestroyDepartmentsAPIView(generics.RetrieveUpdateDestroyAPIV
             return DepartmentsSerializer
         else: 
             return RetrieveAndListDepartmentsSerializer
+
+
+class ListDepartmentsAPIView(generics.ListAPIView):
+    
+    model = Departments
+    permission_classes = []
+    serializer_class = DepartmentsSerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['name', 'branch']
+    filter_fields = {
+        'name': ['exact', 'in'],
+        'branch__id': ['exact', 'in'],
+    }
+    def get_queryset(self):
+        return Departments.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")
