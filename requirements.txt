@@ -62,3 +62,4 @@ urllib3==1.26.9
 vine==5.0.0
 virtualenv==20.8.1
 wcwidth==0.2.5
+whitenoise
