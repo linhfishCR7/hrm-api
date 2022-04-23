@@ -26,6 +26,7 @@ class ListCreateDegreeAPIView(generics.ListCreateAPIView):
         'name': ['exact', 'in'],
         'staff__user__last_name': ['exact', 'in'],
         'staff__user__first_name': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def get_queryset(self):

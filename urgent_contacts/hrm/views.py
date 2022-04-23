@@ -23,7 +23,8 @@ class ListCreateUrgentContactsAPIView(generics.ListCreateAPIView):
     ordering_fields = '__all__'
     search_fields = ['full_name']
     filter_fields = {
-        'type': ['exact', 'in']
+        'type': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):

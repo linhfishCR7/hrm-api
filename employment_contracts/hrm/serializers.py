@@ -86,7 +86,10 @@ class EmploymentContractSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        number_contract = generate_number_contract()
+        type = EmploymentContractTypes.objects.filter(
+            id=validated_data['type'].id
+        ).first()
+        number_contract = generate_number_contract(type.employment_contract_types)
         validated_data['number_contract'] = number_contract
         return super().create(validated_data)
 
@@ -124,3 +127,21 @@ class RetrieveAndListEmploymentContractSerializer(serializers.ModelSerializer):
             "type",
             "staff",
         ]
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['type_name'] = instance.type.name
+        response['total_salary'] = f"{instance.basic_salary+instance.extra+instance.other_support:,}"
+        response['basic_salary_data'] = f"{instance.basic_salary:,}"
+        response['extra_data'] = f"{instance.extra:,}"
+        response['other_support_data'] = f"{instance.other_support:,}"
+
+        if instance.status==False:
+            response['status_data'] = "Hết Hiệu Lực"
+        else:
+            response['status_data'] = "Còn Hiệu Lực"
+        
+        return response

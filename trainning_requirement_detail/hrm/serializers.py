@@ -1,4 +1,5 @@
 from base.serializers import ApplicationMethodFieldSerializer
+from base.utils import without_keys
 from staffs.models import Staffs
 from trainning_requirement.models import TrainningRequirement
 from trainning_requirement_detail.models import TrainningRequirementDetail
@@ -93,3 +94,18 @@ class RetrieveAndListTrainningRequirementDetailSerializer(serializers.ModelSeria
             "staff",
             "trainning_requirement",
         ]
+    
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response_without_trainning_requirement = without_keys(response,'trainning_requirement')
+        response_without_trainning_requirement['id_trainning_requirement'] = instance.trainning_requirement.id
+        response_without_trainning_requirement['estimated_cost_data'] = f"{instance.trainning_requirement.estimated_cost:,}"
+        
+        return {
+            **response_without_trainning_requirement,
+            **response['trainning_requirement'],
+            
+        }

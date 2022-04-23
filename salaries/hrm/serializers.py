@@ -97,7 +97,6 @@ class SalarySerializer(serializers.ModelSerializer):
 
 
         # get coefficient
-
         up_salary = UpSalary.objects.filter(
             is_deleted=False,
             deleted_at=None,
@@ -234,12 +233,15 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         ).first()
 
 
-        #TODO get coefficient
+        # get coefficient
+        up_salary = UpSalary.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+            staff=validated_data['staff']
+        ).order_by("-created_at").first()
 
 
-        print_value(day_off_year_detail)
         # work project by overtime
-
         staff_project = StaffProject.objects.filter(
             staff=validated_data['staff'],
             project__status=2
@@ -259,7 +261,8 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
 
         
         basic_salary=validated_data['basic_salary'] if validated_data['basic_salary'] else instance.basic_salary,
-        coefficient=validated_data['coefficient'] if validated_data['coefficient'] else instance.coefficient
+        # coefficient=validated_data['coefficient'] if validated_data['coefficient'] else instance.coefficient
+        coefficient=up_salary.coefficient if up_salary.coefficient else SalaryContant.BASIC_COEFFICIENT
         extra=validated_data['extra'] if validated_data['extra'] else instance.extra
         other_support=validated_data['other_support'] if validated_data['other_support'] else instance.other_support
         
@@ -268,7 +271,7 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         note=validated_data['note'] if validated_data['note'] else instance.note
 
         basic_salary=int(basic_salary[0])
-        coefficient=int(coefficient)
+        coefficient=coefficient
         extra=int(extra) 
         other_support=int(other_support)
         other=int(other[0])
@@ -279,9 +282,7 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         # caculate tax
         total_salary = basic_salary*coefficient+extra+other_support+other
         salary_allowance = (basic_salary*coefficient+extra)*(SalaryContant.ALLOWANCE)
-        print_value(salary_allowance)
         month_salary = total_salary*(actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance
-        print_value(month_salary)
         
         if month_salary <= SalaryContant.M5:
             tax = month_salary * (SalaryContant.M0_M5)
@@ -314,3 +315,26 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         salary.save()
 
         return salary
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        total_salary = instance.basic_salary*instance.coefficient+instance.extra+instance.other_support+instance.other
+        salary_allowance = (instance.basic_salary*instance.coefficient+instance.extra)*(SalaryContant.ALLOWANCE)
+        response['extra_data'] = f"{instance.extra:,}"
+        response['basic_salary_data'] = f"{instance.basic_salary:,}"
+        response['tax_data'] = f"{instance.tax:,}"
+        response['other_support_data'] = f"{instance.other_support:,}"
+        response['other_data'] = f"{instance.other:,}"
+
+
+        response['actual_salary'] = f"{total_salary * (instance.actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance+(total_salary*instance.overtime/SalaryContant.STANDARD_TIME-instance.tax):,}"
+        response['total_salary'] = f"{total_salary:,}"
+
+        response['month'] = f"{instance.date:%m}"
+        response['year'] = f"{instance.date:%Y}"
+
+
+        return response

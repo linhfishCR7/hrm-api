@@ -383,6 +383,16 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + instance.user.image
         else:
             response['logo_url'] = ''
+        
+        # if not instance.user.first_name == None:
+        #     response['first_name'] = instance.user.first_name
+        # else:
+        #     response['first_name'] = ''
+        
+        # if not instance.user.last_name == None:
+        #     response['last_name'] = instance.user.last_name
+        # else:
+        #     response['last_name'] = ''
 
         response['phone'] = str(instance.user.phone)
 
