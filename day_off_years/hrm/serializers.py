@@ -43,7 +43,7 @@ class StaffsSerializer(serializers.ModelSerializer):
 
 
 class DayOffYearsSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = DayOffYears
         fields = [
@@ -55,11 +55,23 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             'hand_over',
             'approved_by',
         ]
+
+        read_only_fields = [
+            'id',
+            'date',
+            'reason',
+            'contact',
+            'hand_over',
+        ]
         
     def update(self, instance, validated_data):
         
         day_off_year = DayOffYears.objects.filter(id=instance.id).first()        
         day_off_year.status=validated_data['status']
+        # day_off_year.date=instance['user']
+        # day_off_year.reason=instance['user']
+        # day_off_year.contact=instance['user']
+        # day_off_year.hand_over=instance['user']
         day_off_year.save()
         updated_instance = super().update(instance, validated_data)
         
@@ -80,6 +92,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
     
 class RetrieveAndListDayOffYearsSerializer(serializers.ModelSerializer):
     staff = StaffsSerializer()
+    approved_by=StaffsSerializer()
     class Meta:
         model = DayOffYears
         fields = [
@@ -97,3 +110,19 @@ class RetrieveAndListDayOffYearsSerializer(serializers.ModelSerializer):
             'status',
             'approved_by'
         ]
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        if instance.approved_by:
+            response['approved_by_name'] = instance.approved_by.user.first_name + ' ' + instance.approved_by.user.last_name
+        else:
+            response['approved_by_name'] = 'Chưa Phê Duyệt'
+        
+        if instance.status == False:
+            response['status_text'] = 'Chờ Phê Duyệt'
+        else:
+            response['status_text'] = 'Đã Phê Duyệt'
+        return response

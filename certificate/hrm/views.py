@@ -24,6 +24,7 @@ class ListCreateCertificateAPIView(generics.ListCreateAPIView):
     search_fields = ['name', 'staff__user__last_name', 'staff__user__first_name']
     filter_fields = {
         'name': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
         'staff__user__last_name': ['exact', 'in'],
         'staff__user__first_name': ['exact', 'in'],
     }

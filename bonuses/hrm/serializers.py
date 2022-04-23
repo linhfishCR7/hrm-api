@@ -67,3 +67,12 @@ class RetrieveAndListBonusesSerializer(serializers.ModelSerializer):
             'note',
             'staff',
         ]
+    
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['amount_data'] = f"{instance.amount:,}"
+        
+        return response

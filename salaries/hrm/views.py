@@ -29,8 +29,9 @@ class ListCreateSalaryAPIView(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
     search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
-    # filter_class = SalaryFilter
-    
+    filter_fields = {
+        'staff__id': ['exact', 'in'],
+    }    
     def perform_create(self, serializer):
         serializer.save(
             created_at=timezone.now(),
@@ -39,10 +40,8 @@ class ListCreateSalaryAPIView(generics.ListCreateAPIView):
     
     def get_queryset(self):
         return Salary.objects.filter(
-             Q(is_deleted=False)&
-             Q(deleted_at=None)&
-            Q(date__month=now().month) & 
-            Q(date__year=now().year)
+            is_deleted=False,
+            deleted_at=None,
         ).order_by("-created_at")
     
     @property
@@ -82,7 +81,33 @@ class ListPastalaryAPIView(generics.ListAPIView):
         if self.request.query_params.get("no_pagination", "") == "true":
             return None
         return super().paginator
+
+
+class ListCurrentalaryAPIView(generics.ListAPIView):
     
+    model = Salary
+    permission_classes = [IsHrm]
+    pagination_class = ItemIndexPagination
+    serializer_class = RetrieveAndListSalarySerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
+    # filter_class = SalaryFilter
+    
+
+    def get_queryset(self):
+        return Salary.objects.filter(
+            Q(is_deleted=False)&
+            Q(deleted_at=None)&
+            Q(date__month=now().month,date__year=now().year)
+        ).order_by("-created_at")
+
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
+
 
 class RetrieveUpdateDestroySalaryAPIView(generics.RetrieveUpdateDestroyAPIView):
     

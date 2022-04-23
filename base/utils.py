@@ -99,9 +99,13 @@ def generate_staff(first_name, last_name, staff_number='', department=''):
         )
         return generate_staff(department, first_name, last_name, staff_number)
 
-def generate_number_contract():
+def generate_number_contract(type):
     """ Generate number contract """
     contract = EmploymentContract.objects.all().count()
-    number_contract = f"MTC-{contract+1}"
+    number_contract = f"MTC-{type}-{contract+1}"
     
     return number_contract
+
+def without_keys(dictionany, keys):
+    """ Return a new dictionary without specific keys """
+    return {x: dictionany[x] for x in dictionany if x not in keys}

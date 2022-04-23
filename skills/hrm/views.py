@@ -23,7 +23,9 @@ class ListCreateSkillsAPIView(generics.ListCreateAPIView):
     ordering_fields = '__all__'
     search_fields = ['name']
     filter_fields = {
-        'name': ['exact', 'in']
+        'name': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
+
     }
     
     def perform_create(self, serializer):

@@ -112,3 +112,24 @@ class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
             "type_work",
             "staff_project",
         ]
+    
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        if instance.type_work.name:
+            response['type_work_name'] = instance.type_work.name
+        
+        if instance.staff_project.project.name:
+            response['project_name'] = instance.staff_project.project.name
+        
+        if instance.type == 1:
+            response['type_time'] = "Giờ Hành Chính"
+        elif instance.type == 1.5:
+            response['type_time'] = "Làm Thêm Ngày Thường"
+        elif instance.type == 2.0:
+            response['type_time'] = "Làm Thêm Ngày Cuối Tuần"
+        else:
+            response['type_time'] = "Làm Thêm Ngày Lễ Tết"
+        return response

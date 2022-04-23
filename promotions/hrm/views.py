@@ -29,7 +29,8 @@ class ListCreatePromotionsAPIView(generics.ListCreateAPIView):
     filter_fields = {
         'position__name': ['exact', 'in'],
         'staff__user__first_name': ['exact', 'in'],
-        'staff__user__last_name': ['exact', 'in']
+        'staff__user__last_name': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):

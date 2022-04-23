@@ -24,7 +24,7 @@ class ListCreateUpSalaryAPIView(generics.ListCreateAPIView):
     search_fields = ['coefficient', 'staff__user__last_name', 'staff__user__first_name']
     filter_fields = {
         'coefficient': ['exact', 'in'],
-        'staff': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     

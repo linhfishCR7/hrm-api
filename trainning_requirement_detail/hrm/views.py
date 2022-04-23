@@ -24,7 +24,8 @@ class ListCreateTrainningRequirementDetailAPIView(generics.ListCreateAPIView):
     search_fields = ['staff__user__last_name', 'staff__user__first_name']
     filter_fields = {
         'staff__user__first_name': ['exact', 'in'],
-        'staff__user__last_name': ['exact', 'in']
+        'staff__user__last_name': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def get_queryset(self):

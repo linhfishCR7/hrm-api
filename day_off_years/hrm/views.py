@@ -3,6 +3,7 @@ from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
 from base.utils import print_value
 from day_off_years.models import DayOffYears
+from staffs.models import Staffs
 from .serializers import (
     DayOffYearsSerializer,
     RetrieveAndListDayOffYearsSerializer
@@ -24,7 +25,8 @@ class ListDayOffYearsAPIView(generics.ListAPIView):
     ordering_fields = '__all__'
     search_fields = ['date']
     filter_fields = {
-        'date': ['exact', 'in']
+        'date': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def get_queryset(self):
@@ -53,10 +55,12 @@ class RetrieveUpdateDestroyDayOffYearsAPIView(generics.RetrieveUpdateDestroyAPIV
         )
         
     def perform_update(self, serializer):
+        staff = Staffs.objects.filter(user_id=self.request.user.id).first()
         serializer.save(
-        user=self.request.user.id,
+        # user=self.request.user.id,
         modified_at=timezone.now(),
         modified_by=self.request.user.id,
+        approved_by=staff
     )
     
     def perform_destroy(self, instance):
