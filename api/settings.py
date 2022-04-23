@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     'trainning_requirement',
     'trainning_requirement_detail',
     'dashboard',
+    'on_business'
 ]
 
 MIDDLEWARE = [
