@@ -27,12 +27,15 @@ urlpatterns = [
     path('api/user/day-off-years/', include('day_off_years.user.urls')),
     path('api/user/day-off-year-details/', include('day_off_year_details.user.urls')),
     path('api/user/day-off-types/', include('day_off_types.user.urls')),
+    path('api/user/notification/', include('notification.user.urls')),
 
     #################################################################################
     # Admin
     
     path('admin/', admin.site.urls),
     path('api/admin/user/', include('users.admin.urls')),
+    path('api/admin/notification/', include('notification.admin.urls')),
+
     #################################################################################
 
     # Hrm
@@ -73,6 +76,7 @@ urlpatterns = [
     path('api/hrm/trainning-requirement-detail/', include('trainning_requirement_detail.hrm.urls')),
     path('api/hrm/dashboard/', include('dashboard.hrm.urls')),
     path('api/hrm/on-business/', include('on_business.hrm.urls')),
+    path('api/hrm/notification/', include('notification.hrm.urls')),
 
     #################################################################################
 ]
