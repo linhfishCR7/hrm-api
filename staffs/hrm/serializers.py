@@ -394,6 +394,11 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
         # else:
         #     response['last_name'] = ''
 
+        if instance.is_active == False:
+            response['is_active_data'] = 'Nghỉ Làm'
+        else:
+            response['is_active_data'] = 'Còn Làm'
+
         response['phone'] = str(instance.user.phone)
 
         return response
