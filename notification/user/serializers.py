@@ -1,7 +1,6 @@
 # Django imports
 from django.db.models import Count, Sum
 from base.serializers import ApplicationMethodFieldSerializer
-from base.utils import without_keys
 
 # Rest Framework Imports
 from rest_framework import serializers
@@ -58,7 +57,7 @@ class ListNotificationSerializer(serializers.ModelSerializer):
         """
         response = super().to_representation(instance)
 
-        if instance.metadata['user_id']:
+        if instance.metadata:
             user = User.objects.filter(
                 id=instance.metadata['user_id'], 
                 is_deleted=False
@@ -76,7 +75,9 @@ class ListNotificationSerializer(serializers.ModelSerializer):
             else:
                 response['user_image'] = None
                 response['first_name_data'] = 'NameLess'
-
+        else:
+            response['user_image'] = None
+            response['first_name_data'] = 'NameLess'
         return response
         
         

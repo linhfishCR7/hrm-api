@@ -335,6 +335,9 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
 
         response['month'] = f"{instance.date:%m}"
         response['year'] = f"{instance.date:%Y}"
+        response['staff_id'] = instance.staff.id
+        response['staff_data'] = instance.staff.staff
+        response['user_fullname'] = f"{instance.staff.user.first_name} {instance.staff.user.last_name}"
 
 
         return response
