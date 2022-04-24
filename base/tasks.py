@@ -277,3 +277,48 @@ def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().mon
     """ Add notification to database """
     Notification.objects.bulk_create(notification_data)    
     return True
+
+
+@shared_task(retries=3)
+def push_admin_notification_staff_deleted(metadata, name, email):
+    """ Send notification to all admin after the profile has been deleted """
+
+    """ Find admin user registration ids """
+    admin_user_registration_ids = UserFCMDevice.objects.filter(
+        user__is_staff=True,
+        user__is_superuser=True,
+        is_deleted=False,
+        is_active=True
+    ).values_list("token", flat=True)
+
+    notification_title = NotificationTemplate.ProfileDelete.TITLE(name)
+    notification_body = NotificationTemplate.ProfileDelete.BODY(email)
+    notification_type = NotificationType.HRM_SEND_STAFF_DELETED
+
+    """ Push notification to admins  """
+    fcm_client.send_notification_multiple_user(
+        list_registration_id=admin_user_registration_ids,
+        title=notification_title,
+        body=notification_body
+    )
+
+    """ Find admin users """
+    admins = User.objects.filter(
+        is_staff=True,
+        is_superuser=True,
+        is_deleted=False,
+        is_active=True
+    )
+    notification_data = [
+        Notification(
+            user=admin,
+            title=notification_title,
+            body=notification_body,
+            notification_type=notification_type,
+            metadata={"user_id": str(metadata)}
+        ) for admin in admins
+    ]
+
+    """ Add notification to database """
+    Notification.objects.bulk_create(notification_data)    
+    return True

@@ -1,7 +1,10 @@
 from django.utils import timezone
 from base.permissions import IsHrm
 from base.paginations import ItemIndexPagination
+from base.tasks import push_admin_notification_staff_deleted
+from base.utils import print_value
 from staffs.models import Staffs
+from users.models import User
 from .serializers import (
     StaffsSerializer,
     RetrieveAndListStaffsSerializer
@@ -23,9 +26,12 @@ class ListCreateStaffsAPIView(generics.ListCreateAPIView):
     search_fields = [
         'user__first_name',
         'user__last_name',
+        'user__email',
+        'user__phone',
         'staff',
         'gender',
         'marital_status',
+        'personal_email'
     ]
     filter_fields = {
         # 'staff': ['exact', 'in'],
@@ -86,6 +92,9 @@ class RetrieveUpdateDestroyStaffsAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
         instance.save()
+        user = User.objects.filter(id=instance.user.id).first()
+        print_value(user.id)
+        push_admin_notification_staff_deleted.delay(metadata=user.id, name=f"{user.first_name} {user.last_name}", email=user.email)
 
     def get_serializer_class(self):
         if self.request.method == 'PUT':

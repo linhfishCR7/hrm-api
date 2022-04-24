@@ -164,6 +164,7 @@ class NotificationType:
     USER_CREATED_DAY_OF_YEAR = 4
     HRM_APPROVED_DAY_OF_YEAR = 5
     HRM_SEND_SALARY_TO_ALL_USER = 6
+    HRM_SEND_STAFF_DELETED = 7
 
 
 class NotificationMetadata:
