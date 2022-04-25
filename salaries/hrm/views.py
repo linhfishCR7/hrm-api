@@ -6,6 +6,7 @@ from base.paginations import ItemIndexPagination
 from base.utils import print_value
 from salaries.hrm.filter import SalaryFilter
 from salaries.models import Salary
+from staffs.models import Staffs
 from .serializers import (
     SalarySerializer,
     RetrieveAndListSalarySerializer
@@ -158,5 +159,30 @@ class ActiveSalaryAPIView(APIView):
         return Response(dict(message='OK'))
 
         
+class CheckSalaryAPIView(APIView):
+    
+    permission_classes = (IsHrm,)
+    
+    def get(self, request, *args, **kwargs):
+
+        staff_all = Staffs.objects.filter(
+            is_deleted=False,
+            is_active=True
+        ).values_list('id', flat=True)
+
+        staff_salary = Salary.objects.filter(
+            is_deleted=False,
+            date__month=now().month,date__year=now().year
+        ).values_list('staff_id', flat=True)
+
+        staff_list = []
+        for item in staff_all:
+            if not item in staff_salary:
+                staff_list.append(item)
+        if staff_list:
+            return Response(staff_list)
+        else:
+            return Response(dict(message=f"Tháng {now().month} Năm {now().year} Đã Tạo Phiếu Lương Xong"))
+
 
 

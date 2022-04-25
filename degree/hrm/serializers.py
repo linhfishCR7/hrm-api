@@ -83,3 +83,12 @@ class RetrieveAndListDegreeSerializer(serializers.ModelSerializer):
             "type",
             "staff",
         ]
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['type_data'] = instance.type.id
+
+        return response

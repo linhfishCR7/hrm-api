@@ -7,8 +7,9 @@ from certificate_types.models import CertificateTypes
 from staffs.models import Staffs
 from users.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = User
         fields = [
@@ -25,13 +26,15 @@ class UserSerializer(serializers.ModelSerializer):
         """
         response = super().to_representation(instance)
         if instance.image:
-            response['image'] = ApplicationMethodFieldSerializer.get_list_image(instance.image)
-        
+            response['image'] = ApplicationMethodFieldSerializer.get_list_image(
+                instance.image)
+
         return response
 
 
 class StaffsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
     class Meta:
         model = Staffs
         fields = [
@@ -54,7 +57,9 @@ class CertificateTypeSerializer(serializers.ModelSerializer):
 
 
 class CertificateSerializer(serializers.ModelSerializer):
-    
+    note = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    attach = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
     class Meta:
         model = Certificate
         fields = [
@@ -70,7 +75,7 @@ class CertificateSerializer(serializers.ModelSerializer):
             "type",
             "staff",
         ]
-        
+
 
 class RetrieveAndListCertificateSerializer(serializers.ModelSerializer):
     type = CertificateTypeSerializer(read_only=True)
@@ -91,3 +96,12 @@ class RetrieveAndListCertificateSerializer(serializers.ModelSerializer):
             "type",
             "staff",
         ]
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['type_data'] = instance.type.id
+
+        return response
