@@ -89,6 +89,7 @@ class RetrieveAndListPromotionsSerializer(serializers.ModelSerializer):
         To show the data response to users
         """
         response = super().to_representation(instance)
+        response['position_data'] = instance.position.id
         response['position_name'] = instance.position.name
             
         return response
