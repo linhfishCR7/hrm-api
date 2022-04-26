@@ -34,7 +34,7 @@ class ListCreateStaffsAPIView(generics.ListCreateAPIView):
         'personal_email'
     ]
     filter_fields = {
-        # 'staff': ['exact', 'in'],
+        'id': ['exact', 'in'],
         'nationality__name': ['exact', 'in'],
         'ethnicity__name': ['exact', 'in'],
         'religion__name': ['exact', 'in'],

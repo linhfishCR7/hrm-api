@@ -23,7 +23,6 @@ class ListCreateOnBusinessAPIView(generics.ListCreateAPIView):
     search_fields = ['company']
     filter_fields = {
         'staff__id': ['exact', 'in'],
-
     }
     
     def perform_create(self, serializer):

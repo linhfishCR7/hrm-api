@@ -4,7 +4,8 @@ from .views import (
     RetrieveUpdateDestroySalaryAPIView,
     ActiveSalaryAPIView,
     ListPastalaryAPIView,
-    ListCurrentalaryAPIView
+    ListCurrentalaryAPIView,
+    CheckSalaryAPIView
 )
 
 
@@ -14,4 +15,5 @@ urlpatterns = [
     path('past/', ListPastalaryAPIView.as_view(), name='list-past-salary'),
     path('<uuid:id>/', RetrieveUpdateDestroySalaryAPIView.as_view(), name='retrieve-update-destroy-salary'),
     path('active-salary/', ActiveSalaryAPIView.as_view(), name='active-salary'),
+    path('check-salary/', CheckSalaryAPIView.as_view(), name='check-salary'),
 ]

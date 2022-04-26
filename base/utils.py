@@ -103,10 +103,10 @@ def generate_staff(first_name, last_name, staff_number='', department=''):
         )
         return generate_staff(department, first_name, last_name, staff_number)
 
-def generate_number_contract(type):
+def generate_number_contract(department='', type='', staff=''):
     """ Generate number contract """
     contract = EmploymentContract.objects.all().count()
-    number_contract = f"MTC-{type}-{contract+1}"
+    number_contract = f"{department}-{type}-{staff}-{contract+1}"
     
     return number_contract
 
