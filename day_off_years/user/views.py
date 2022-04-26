@@ -23,7 +23,8 @@ class ListCreateDayOffYearsAPIView(generics.ListCreateAPIView):
     ordering_fields = '__all__'
     search_fields = ['date']
     filter_fields = {
-        'date': ['exact', 'in']
+        'date': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):

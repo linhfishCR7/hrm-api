@@ -57,6 +57,8 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             'hand_over',
             'approved_by',
             'staff',
+            'status'
+
         ]
         
 
@@ -121,3 +123,14 @@ class RetrieveAndListDayOffYearDetailsSerializer(serializers.ModelSerializer):
             'day_off_types',
             'day_off_years',
         ]
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['day_off_type_name'] = instance.day_off_types.name
+        response['day_off_years_id'] = instance.day_off_years.id
+        response['day_off_years_status'] = instance.day_off_years.status
+        response['full_name'] = f"{instance.day_off_years.staff.user.first_name} {instance.day_off_years.staff.user.last_name}"
+        return response
