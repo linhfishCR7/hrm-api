@@ -156,6 +156,25 @@ def day_off_year_email_to_user(self, data):
     email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
 
 
+@shared_task(bind=True)
+def day_off_year_refuse_email_to_user(self, data):
+    email_from = settings.DEFAULT_FROM_EMAIL
+    link = f"{settings.FRONTEND_URL}day-off-year/{data['link']}"
+    message = BaseTemplate.BASE.format(
+            year=timezone.now().year,
+            section=EmailTemplate.DayOffYearRefuseEmailToUser.BODY(name=data['name'], link=link)
+        )
+    subject = str(EmailTemplate.DayOffYearRefuseEmailToUser.SUBJECT)
+    user = User.objects.filter(
+        id=data['user_id'],
+        is_deleted=False,
+        is_active=True
+    ).values_list('email', flat=True)
+     
+    recipient_list = user
+    email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
+
+
 @shared_task(retries=3)
 def push_user_notification_hrm_approved_day_off_year(metadata, user_id):
     """ Send notification to all user after the hrm has been approved day off year"""
@@ -170,6 +189,49 @@ def push_user_notification_hrm_approved_day_off_year(metadata, user_id):
     notification_title = NotificationTemplate.HrmApprovedDayOffYear.TITLE
     notification_body = NotificationTemplate.HrmApprovedDayOffYear.BODY
     notification_type = NotificationType.HRM_APPROVED_DAY_OF_YEAR
+
+    """ Push notification to hrms  """
+    fcm_client.send_notification_multiple_user(
+        list_registration_id=user_registration_ids,
+        title=notification_title,
+        body=notification_body
+    )
+
+    """ Find hrm users """
+    users = User.objects.filter(
+        id=user_id,
+        is_deleted=False,
+        is_active=True
+    )
+    notification_data = [
+        Notification(
+            user=user,
+            title=notification_title,
+            body=notification_body,
+            notification_type=notification_type,
+            metadata={"user_id": str(metadata)}
+        ) for user in users
+    ]
+
+    """ Add notification to database """
+    Notification.objects.bulk_create(notification_data)    
+    return True
+
+
+@shared_task(retries=3)
+def push_user_notification_hrm_refused_day_off_year(metadata, user_id):
+    """ Send notification to all user after the hrm has been refused day off year"""
+
+    """ Find hrm user registration ids """
+    user_registration_ids = UserFCMDevice.objects.filter(
+        user_id=user_id,
+        is_deleted=False,
+        is_active=True
+    ).values_list("token", flat=True)
+
+    notification_title = NotificationTemplate.HrmRefusedDayOffYear.TITLE
+    notification_body = NotificationTemplate.HrmRefusedDayOffYear.BODY
+    notification_type = NotificationType.HRM_REFUSED_DAY_OF_YEAR
 
     """ Push notification to hrms  """
     fcm_client.send_notification_multiple_user(

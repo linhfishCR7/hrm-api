@@ -1,5 +1,5 @@
 from base.serializers import ApplicationMethodFieldSerializer
-from base.tasks import day_off_year_email_to_user, push_user_notification_hrm_approved_day_off_year
+from base.tasks import day_off_year_email_to_user, day_off_year_refuse_email_to_user, push_user_notification_hrm_approved_day_off_year, push_user_notification_hrm_refused_day_off_year
 from base.utils import print_value
 from day_off_years.models import DayOffYears
 from staffs.models import Staffs
@@ -65,28 +65,36 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
         ]
         
     def update(self, instance, validated_data):
-        
-        day_off_year = DayOffYears.objects.filter(id=instance.id).first()        
-        day_off_year.status=validated_data['status']
-        # day_off_year.date=instance['user']
-        # day_off_year.reason=instance['user']
-        # day_off_year.contact=instance['user']
-        # day_off_year.hand_over=instance['user']
-        day_off_year.save()
-        updated_instance = super().update(instance, validated_data)
-        
-        staff = Staffs.objects.filter(id=instance.staff.id).first()
-        
-        user = User.objects.filter(
-            id=staff.user_id,
-            is_deleted=False,
-            deleted_at=None
-        ).first()
-        
-        if validated_data['status']==True:
+        status = validated_data['status']
+        day_off_year = DayOffYears.objects.filter(id=instance.id).first()    
+        if status==True:
+            day_off_year.status=status
+            day_off_year.save()
+            updated_instance = super().update(instance, validated_data)
+            staff = Staffs.objects.filter(id=instance.staff.id).first()
+            user = User.objects.filter(
+                id=staff.user_id,
+                is_deleted=False,
+                deleted_at=None
+            ).first()
+            
             day_off_year_email_to_user.delay(dict(name=f'{user.first_name} {user.last_name}', link=instance.id, user_id=user.id))
             push_user_notification_hrm_approved_day_off_year.delay(metadata=user.id, user_id=user.id)
-        
+        else:
+            day_off_year.status=status
+            day_off_year.approved_by=None
+            day_off_year.save()
+            updated_instance = super().update(instance, validated_data)
+            staff = Staffs.objects.filter(id=instance.staff.id).first()
+            user = User.objects.filter(
+                id=staff.user_id,
+                is_deleted=False,
+                deleted_at=None
+            ).first()
+            
+            day_off_year_refuse_email_to_user.delay(dict(name=f'{user.first_name} {user.last_name}', link=instance.id, user_id=user.id))
+            push_user_notification_hrm_refused_day_off_year.delay(metadata=user.id, user_id=user.id)
+
         return updated_instance
     
     
