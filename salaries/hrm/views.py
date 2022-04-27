@@ -67,7 +67,9 @@ class ListPastalaryAPIView(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
     search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
-    # filter_class = SalaryFilter
+    filter_fields = {
+        'staff__id': ['exact', 'in'],
+    }
     
 
     def get_queryset(self):
@@ -93,7 +95,9 @@ class ListCurrentalaryAPIView(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
     search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
-    # filter_class = SalaryFilter
+    filter_fields = {
+        'staff__id': ['exact', 'in'],
+    }
     
 
     def get_queryset(self):
@@ -147,17 +151,25 @@ class ActiveSalaryAPIView(APIView):
     permission_classes = [IsHrm]
 
     def get(self, request, *args, **kwargs):
-
-        Salary.objects.filter(
+        salary = Salary.objects.filter(
             is_deleted=False,
+            is_active=False,
             date__month=timezone.now().month-1,
             date__year=timezone.now().year
-        ).update(is_active=True)
+        ).count()
+        if salary > 0:
+            salary_email_to_all_user.delay()
+            push_all_user_notification_hrm_approved_send_salary.delay()
+            Salary.objects.filter(
+                is_deleted=False,
+                date__month=timezone.now().month-1,
+                date__year=timezone.now().year
+            ).update(is_active=True)
 
-        salary_email_to_all_user.delay()
-        push_all_user_notification_hrm_approved_send_salary.delay()
-        return Response(dict(message='OK'))
-
+        
+            return Response(dict(message='Active Phiếu Lương Thành Công'))
+        else:
+            return Response(dict(message='Đã Active Phiếu Lương Tháng Này'))
         
 class CheckSalaryAPIView(APIView):
     

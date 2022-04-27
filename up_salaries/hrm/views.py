@@ -70,22 +70,3 @@ class RetrieveUpdateDestroyUpSalaryAPIView(generics.RetrieveUpdateDestroyAPIView
             return UpSalarySerializer
         else: 
             return RetrieveAndListUpSalarySerializer
-
-
-class ListUpSalaryAPIView(generics.ListAPIView):
-
-    model = UpSalary
-    permission_classes = [IsHrm]
-    serializer_class = UpSalarySerializer
-    filter_backends = (DjangoFilterBackend, OrderingFilter)
-    ordering_fields = '__all__'
-    filter_fields = {
-        'staff': ['exact', 'in']
-    }
-    
-    def get_queryset(self):
-        return UpSalary.objects.filter(
-            is_deleted=False,
-            deleted_at=None,
-        ).order_by("-created_at")[0:1]
-    
