@@ -58,3 +58,13 @@ class RetrieveAndListTrainningRequirementSerializer(serializers.ModelSerializer)
             "branch",
 
         ]
+    
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['branch_id'] = instance.branch.id
+        response['branch_name'] = instance.branch.name
+        response['estimated_cost_data'] = f"{instance.estimated_cost:,}"
+        return response

@@ -264,10 +264,21 @@ def push_user_notification_hrm_refused_day_off_year(metadata, user_id):
 @shared_task(bind=True)
 def salary_email_to_all_user(self):
     email_from = settings.DEFAULT_FROM_EMAIL
+    salary_staff = Salary.objects.filter(
+        is_deleted=False,
+        is_active=False,
+        date__month=timezone.now().month-1,
+        date__year=timezone.now().year
+    ).values_list('staff', flat=True)
+    print_value(salary_staff)
+    staff_user = Staffs.objects.filter(
+        is_deleted=False,
+        id__in=salary_staff
+    ).values_list('user', flat=True)
+    print_value(staff_user)
 
     user = User.objects.filter(
-        is_staff=True,
-        is_superuser=False,
+        id__in=staff_user,
         is_deleted=False,
         is_active=True
     ).values()
@@ -301,9 +312,18 @@ def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().mon
     """ Send notification to all user after the hrm has been approved day off year"""
 
     """ Find all user registration ids but admin """
+    salary_staff = Salary.objects.filter(
+        is_deleted=False,
+        is_active=False,
+        date__month=timezone.now().month-1,
+        date__year=timezone.now().year
+    ).values_list('staff', flat=True)
+    staff_user = Staffs.objects.filter(
+        is_deleted=False,
+        id__in=salary_staff
+    ).values_list('user', flat=True)
     user_registration_ids = UserFCMDevice.objects.filter(
-        user__is_staff=True,
-        user__is_superuser=False,
+        id__in=staff_user,
         is_deleted=False,
         is_active=True
     ).values_list("token", flat=True)
@@ -321,10 +341,7 @@ def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().mon
 
     """ All users but admin """
     users = User.objects.filter(
-        is_staff=True,
-        is_superuser=False,
-        is_deleted=False,
-        is_active=True
+        id__in=staff_user,
     )
     notification_data = [
         Notification(

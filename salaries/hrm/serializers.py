@@ -87,13 +87,15 @@ class SalarySerializer(serializers.ModelSerializer):
             staff=validated_data['staff'],
             status=True
         ).first()
-
-        day_off_year_detail = DayOffYearDetails.objects.filter(
-            day_off_years=day_off_year.id,
-            from_date__month=timezone.now().month-1,
-            to_date__month=timezone.now().month-1,
-            # day_off_types=
-        ).first()
+        day_off_year_detail = []
+        if day_off_year: 
+            day_off_year_detail = DayOffYearDetails.objects.filter(
+                day_off_years=day_off_year.id,
+                from_date__month=timezone.now().month-1,
+                to_date__month=timezone.now().month-1,
+                # day_off_types=
+            ).first()
+            
 
 
         # get coefficient
@@ -107,17 +109,17 @@ class SalarySerializer(serializers.ModelSerializer):
         staff_project = StaffProject.objects.filter(
             staff=validated_data['staff'],
             project__status=2
-        ).first()
+        )
 
         if staff_project:
-            overtime = Timekeeping.objects.filter(
-                staff_project=staff_project.id,
-                date__month=timezone.now().month-1,
-                date__year=timezone.now().year
-            ).values()
-            total = 0
-            for overtime_data in overtime:
-                total += overtime_data['amount_time']*overtime_data['type']
+            for item in staff_project:
+                overtime = Timekeeping.objects.filter(
+                    staff_project=item.id,
+                    date__month=timezone.now().month-1
+                ).values()
+                total = 0
+                for overtime_data in overtime:
+                    total += overtime_data['amount_time']*overtime_data['type']
         else:
             total = 0
             
@@ -145,7 +147,6 @@ class SalarySerializer(serializers.ModelSerializer):
         other_support=int(other_support)
         other=int(other)
         # overtime=int(overtime[0])
-
         actual_time = total+SalaryContant.STANDARD_TIME-(day_off_year_detail.amount*8) if day_off_year_detail else total+SalaryContant.STANDARD_TIME
 
         # caculate tax
@@ -223,7 +224,6 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
             staff=validated_data['staff'],
             status=True
         ).first()
-        print_value(day_off_year)
 
         day_off_year_detail = DayOffYearDetails.objects.filter(
             day_off_years=day_off_year.id,
@@ -245,16 +245,16 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         staff_project = StaffProject.objects.filter(
             staff=validated_data['staff'],
             project__status=2
-        ).first()
-
+        )
         if staff_project:
-            overtime = Timekeeping.objects.filter(
-                staff_project=staff_project.id,
-                date__month=timezone.now().month-1
-            ).values()
-            total = 0
-            for overtime_data in overtime:
-                total += overtime_data['amount_time']*overtime_data['type']
+            for item in staff_project.data:
+                overtime = Timekeeping.objects.filter(
+                    staff_project=item['id'],
+                    date__month=timezone.now().month-1
+                ).values()
+                total = 0
+                for overtime_data in overtime:
+                    total += overtime_data['amount_time']*overtime_data['type']
         else:
             total = 0
             
@@ -276,8 +276,10 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         other_support=int(other_support)
         other=int(other[0])
         # overtime=int(overtime[0])
-
-        actual_time = total+SalaryContant.STANDARD_TIME-(day_off_year_detail.amount*8) if day_off_year_detail else total+SalaryContant.STANDARD_TIME
+        if day_off_year_detail: 
+            actual_time = total+SalaryContant.STANDARD_TIME-day_off_year_detail.amount*8
+        else:
+            actual_time =  total+SalaryContant.STANDARD_TIME
 
         # caculate tax
         total_salary = basic_salary*coefficient+extra+other_support+other
