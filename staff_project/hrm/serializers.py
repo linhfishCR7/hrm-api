@@ -84,3 +84,17 @@ class RetrieveAndListStaffProjectSerializer(serializers.ModelSerializer):
             "project",
             "staff",
         ]
+    
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['project_id'] = instance.project.id
+        response['project_name'] = instance.project.name
+        response['project_project'] = instance.project.project
+        response['staff_id'] = instance.staff.id
+        response['staff_staff'] = instance.staff.staff
+        response['staff_name'] = f"{instance.staff.user.last_name} {instance.staff.user.first_name}"
+        
+        return response

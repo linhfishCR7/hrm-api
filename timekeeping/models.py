@@ -7,9 +7,9 @@ from base.models import BaseModel
 class Timekeeping(BaseModel):
     # Timekeeping
     date = models.DateField()
-    amount_in_project = models.FloatField(default=1)
-    amount_time = models.FloatField(default=0)
-    note = models.TextField(default=None)
+    amount_in_project = models.FloatField(default=1, null=True, blank=True)
+    amount_time = models.FloatField(default=0, null=True, blank=True)
+    note = models.TextField(default=None, null=True, blank=True)
     type = models.FloatField(default=TypeTimeKeeping.ADMININISTRATION)
 
     type_work = models.ForeignKey('kinds_of_work.KindsOfWork', on_delete=models.CASCADE, related_name='timekeeping_work')

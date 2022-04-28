@@ -55,7 +55,7 @@ class ProjectsSerializer(serializers.ModelSerializer):
         ]
         
     def create(self, validated_data):
-        
+        del validated_data['status']
         project = Projects.objects.create(
             **validated_data,
             project=f"{validated_data['name']}-{validated_data['signing_date']}",
@@ -93,5 +93,19 @@ class RetrieveAndListProjectsSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         if instance.image:
             response['image'] = ApplicationMethodFieldSerializer.get_list_image(instance.image)
+            response['image_url'] = ApplicationMethodFieldSerializer.get_list_image(instance.image)['image_s3_url']
+            response['image_key'] = ApplicationMethodFieldSerializer.get_list_image(instance.image)['image_key']
+        else:
+            response['image_url'] = ''
+            response['image_key'] = ''
         
+        response['customer_data'] = instance.customer.id
+
+        if instance.status=='1':
+            response['status_data'] = 'Đang Đợi Duyệt'
+        if instance.status=='2':
+            response['status_data'] = 'Đang Thi Công'
+        if instance.status=='3':
+            response['status_data'] = 'Đã Nghiệm Thu'
+
         return response

@@ -82,7 +82,8 @@ class KindsOfWorkSerializer(serializers.ModelSerializer):
 
 
 class TimekeepingSerializer(serializers.ModelSerializer):
-    
+    amount_in_project = serializers.FloatField(required=False)
+    amount_time = serializers.FloatField(required=False)
     class Meta:
         model = Timekeeping
         fields = [
@@ -120,10 +121,14 @@ class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
         response = super().to_representation(instance)
         if instance.type_work.name:
             response['type_work_name'] = instance.type_work.name
-        
+        if instance.type_work.id:
+            response['type_work_id'] = instance.type_work.id
+
         if instance.staff_project.project.name:
             response['project_name'] = instance.staff_project.project.name
-        
+        if instance.staff_project:
+            response['project_id'] = instance.staff_project.id
+            
         if instance.type == 1:
             response['type_time'] = "Giờ Hành Chính"
         elif instance.type == 1.5:
@@ -132,4 +137,6 @@ class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
             response['type_time'] = "Làm Thêm Ngày Cuối Tuần"
         else:
             response['type_time'] = "Làm Thêm Ngày Lễ Tết"
+        response['month'] = f"{instance.date:%m}"
+        response['year'] = f"{instance.date:%Y}"
         return response

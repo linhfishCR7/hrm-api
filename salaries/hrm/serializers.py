@@ -109,17 +109,17 @@ class SalarySerializer(serializers.ModelSerializer):
         staff_project = StaffProject.objects.filter(
             staff=validated_data['staff'],
             project__status=2
-        ).first()
+        )
 
         if staff_project:
-            overtime = Timekeeping.objects.filter(
-                staff_project=staff_project.id,
-                date__month=timezone.now().month-1,
-                date__year=timezone.now().year
-            ).values()
-            total = 0
-            for overtime_data in overtime:
-                total += overtime_data['amount_time']*overtime_data['type']
+            for item in staff_project:
+                overtime = Timekeeping.objects.filter(
+                    staff_project=item.id,
+                    date__month=timezone.now().month-1
+                ).values()
+                total = 0
+                for overtime_data in overtime:
+                    total += overtime_data['amount_time']*overtime_data['type']
         else:
             total = 0
             
@@ -245,16 +245,16 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         staff_project = StaffProject.objects.filter(
             staff=validated_data['staff'],
             project__status=2
-        ).first()
-
+        )
         if staff_project:
-            overtime = Timekeeping.objects.filter(
-                staff_project=staff_project.id,
-                date__month=timezone.now().month-1
-            ).values()
-            total = 0
-            for overtime_data in overtime:
-                total += overtime_data['amount_time']*overtime_data['type']
+            for item in staff_project.data:
+                overtime = Timekeeping.objects.filter(
+                    staff_project=item['id'],
+                    date__month=timezone.now().month-1
+                ).values()
+                total = 0
+                for overtime_data in overtime:
+                    total += overtime_data['amount_time']*overtime_data['type']
         else:
             total = 0
             
