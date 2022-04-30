@@ -40,6 +40,8 @@ class ListCreateStaffsAPIView(generics.ListCreateAPIView):
         'religion__name': ['exact', 'in'],
         'literacy__name': ['exact', 'in'],
         'department__name': ['exact', 'in'],
+        'department__id': ['exact', 'in'],
+        'is_active': ['exact', 'in'],
     }
 
     def perform_create(self, serializer):
@@ -93,7 +95,6 @@ class RetrieveUpdateDestroyStaffsAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance.deleted_by = self.request.user.id
         instance.save()
         user = User.objects.filter(id=instance.user.id).first()
-        print_value(user.id)
         push_admin_notification_staff_deleted.delay(metadata=user.id, name=f"{user.first_name} {user.last_name}", email=user.email)
 
     def get_serializer_class(self):

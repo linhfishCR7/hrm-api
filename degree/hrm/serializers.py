@@ -52,7 +52,7 @@ class DegreeTypeSerializer(serializers.ModelSerializer):
 
 
 class DegreeSerializer(serializers.ModelSerializer):
-    
+    attach = serializers.CharField(required=False, allow_blank=True)
     class Meta:
         model = Degree
         fields = [
