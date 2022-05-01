@@ -33,7 +33,7 @@ class AppConstants:
 
     class Upload:
         MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
-        FILE_TYPES = ['.png', '.jpg', '.jpeg']
+        FILE_TYPES = ['.png', '.jpg', '.jpeg', '.xlsx']
         FILE_OPTIONS = {
             'document': 'documents',
             'video': 'videos',
