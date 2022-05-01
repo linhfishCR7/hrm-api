@@ -195,7 +195,7 @@ class StaffsSerializer(serializers.ModelSerializer):
 
     addresses = AddressesSerializer(many=True, required=False,)
     # staff = serializers.CharField(max_length=255, required=False, allow_blank=True, allow_null=True)
-    email = serializers.CharField()
+    email = serializers.CharField(required=False)
     first_name = serializers.CharField(max_length=255,required=False)
     last_name = serializers.CharField(max_length=255, required=False)
 
@@ -372,9 +372,6 @@ class StaffsSerializer(serializers.ModelSerializer):
             "password":password_data,
         })
 
-    def to_representation(self, instance):
-        return instance
-
     def update(self, instance, validated_data):
         """ Add new address """
         addresses_body = validated_data['addresses']
@@ -498,7 +495,7 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
         if instance.is_active == False:
             response['is_active_data'] = 'Nghỉ Làm'
         else:
-            response['is_active_data'] = 'Còn Làm'
+            response['is_active_data'] = 'Đang Làm'
 
         response['phone'] = str(instance.user.phone)
 
