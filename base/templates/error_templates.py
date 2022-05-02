@@ -230,3 +230,9 @@ class ErrorTemplate:
                 code="upload_1",
                 message="Invalid file extensions: " + ", ".join(allow_extension)
             )
+    
+    class TimeKeepingError:
+        TIME_KEEPING_ALREADY_CREATED = dict(
+            code='TIME_KEEPING_1',
+            message='Người dùng đã được chấm công'
+        )

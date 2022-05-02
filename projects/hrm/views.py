@@ -24,6 +24,7 @@ class ListCreateProjectsAPIView(generics.ListCreateAPIView):
     search_fields = ['name', 'project', 'signing_date']
     filter_fields = {
         'name': ['exact', 'in'],
+        'status': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):

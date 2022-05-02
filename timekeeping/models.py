@@ -12,5 +12,5 @@ class Timekeeping(BaseModel):
     note = models.TextField(default=None, null=True, blank=True)
     type = models.FloatField(default=TypeTimeKeeping.ADMININISTRATION)
 
-    type_work = models.ForeignKey('kinds_of_work.KindsOfWork', on_delete=models.CASCADE, related_name='timekeeping_work')
+    type_work = models.ForeignKey('kinds_of_work.KindsOfWork', on_delete=models.CASCADE, related_name='timekeeping_work', default=None, null=True, blank=True)
     staff_project = models.ForeignKey('staff_project.StaffProject', on_delete=models.CASCADE, related_name='timekeeping_staff_project', default=None)
