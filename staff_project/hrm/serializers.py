@@ -71,7 +71,7 @@ class StaffProjectSerializer(serializers.ModelSerializer):
             "project",
             "staff",
         ]
-        
+
 
 class RetrieveAndListStaffProjectSerializer(serializers.ModelSerializer):
     project = ProjectSerializer(read_only=True)
@@ -96,5 +96,8 @@ class RetrieveAndListStaffProjectSerializer(serializers.ModelSerializer):
         response['staff_id'] = instance.staff.id
         response['staff_staff'] = instance.staff.staff
         response['staff_name'] = f"{instance.staff.user.last_name} {instance.staff.user.first_name}"
-        
+        # project = Projects.objects.filter(
+        #     is_deleted=False
+        # )
+    
         return response

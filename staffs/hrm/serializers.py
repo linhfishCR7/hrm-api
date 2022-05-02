@@ -17,6 +17,14 @@ from base.serializers import ApplicationMethodFieldSerializer
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import ugettext_lazy as _
 
+from base.services.cognito import CognitoService
+import uuid
+from base.templates.error_templates import ErrorTemplate
+from rest_framework.exceptions import ValidationError
+from base.constants.common import Data, GenderStatus, MaritalStatus
+from base.utils import generate_random_password
+import pandas as pd
+from pathlib import Path
 
 class AddressesSerializer(serializers.ModelSerializer):
     address = serializers.CharField(
@@ -187,6 +195,9 @@ class StaffsSerializer(serializers.ModelSerializer):
 
     addresses = AddressesSerializer(many=True, required=False,)
     # staff = serializers.CharField(max_length=255, required=False, allow_blank=True, allow_null=True)
+    email = serializers.CharField(required=False)
+    first_name = serializers.CharField(max_length=255,required=False)
+    last_name = serializers.CharField(max_length=255, required=False)
 
     class Meta:
         model = Staffs
@@ -217,63 +228,149 @@ class StaffsSerializer(serializers.ModelSerializer):
             'religion',
             'literacy',
             'position',
-            'user',
+            'email',
+            'first_name',
+            'last_name',
             'is_active',
             'addresses',
         ]
 
     def create(self, validated_data):
-        """ Add Company """
-        staff = Staffs.objects.create(
-            gender=validated_data['gender'],
-            marital_status=validated_data['marital_status'],
-            number_of_children=validated_data['number_of_children'],
-            identity_card=validated_data['identity_card'],
-            issuance_date=validated_data['issuance_date'],
-            place_of_issuance=validated_data['place_of_issuance'],
-            start_work_date=validated_data['start_work_date'] if validated_data['start_work_date'] else None,
-            probationary_end_date=validated_data['probationary_end_date'] if validated_data['probationary_end_date'] else None,
-            labor_contract_signing_date=validated_data[
-                'labor_contract_signing_date'] if validated_data['labor_contract_signing_date'] else None,
-            personal_email=validated_data['personal_email'],
-            facebook=validated_data['facebook'],
-            social_insurance_number=validated_data['social_insurance_number'],
-            tax_code=validated_data['tax_code'],
-            bank_account=validated_data['bank_account'] if validated_data['bank_account'] else None,
-            elect_notifications=validated_data['elect_notifications'],
-            elect_decision=validated_data['elect_decision'],
-            url=validated_data['url'],
-            note=validated_data['note'],
-            department=validated_data['department'],
-            nationality=validated_data['nationality'],
-            ethnicity=validated_data['ethnicity'],
-            religion=validated_data['religion'],
-            literacy=validated_data['literacy'],
-            position=validated_data['position'],
-            user=validated_data['user'],
-            is_active=False,
-            staff=generate_staff(
-                first_name=validated_data['user'].first_name,
-                last_name=validated_data['user'].last_name
-            ),
+        first_name = validated_data['first_name']
+        last_name = validated_data['last_name']
+        email = validated_data['email']
+        password_data = generate_random_password()
+        del validated_data['first_name']
+        del validated_data['last_name']
+        del validated_data['email']
+        existed_user = User.objects.filter(
+            email=email.lower(),
+            is_deleted=False
+        )
+        if existed_user.exists():
+            raise ValidationError(ErrorTemplate().UserError().EMAIL_IS_USED)
+
+        username = str(uuid.uuid4())
+
+        response = CognitoService().User().register(
+            email=email,
+            password=password_data,
+            username=username,
+            custom_attributes={
+                "first_name": first_name,
+                "last_name": last_name
+            }
 
         )
+        print_value(username)
+        user = User.objects.filter(email=email).first()
+        """ Add staff """
+        staff = Staffs.objects.create(
+            gender=GenderStatus.UNKNOWN,
+            marital_status=MaritalStatus.SINGLE,
+            number_of_children=None,
+            identity_card='',
+            issuance_date=None,
+            place_of_issuance='',
+            start_work_date=None,
+            probationary_end_date=None,
+            labor_contract_signing_date=None,
+            personal_email='',
+            facebook='',
+            social_insurance_number='',
+            tax_code='',
+            bank_account=None,
+            elect_notifications='',
+            elect_decision='',
+            url='',
+            note='',
+            department=validated_data['department'],
+            nationality=None,
+            ethnicity=None,
+            religion=None,
+            literacy=None,
+            position=None,
+            user=user,
+            is_active=False,
+            staff=generate_staff(
+                first_name=first_name,
+                last_name=last_name
+            ),
+        )
+        # staff = Staffs.objects.create(
+        #     gender=validated_data['gender'],
+        #     marital_status=validated_data['marital_status'],
+        #     number_of_children=validated_data['number_of_children'],
+        #     identity_card=validated_data['identity_card'],
+        #     issuance_date=validated_data['issuance_date'],
+        #     place_of_issuance=validated_data['place_of_issuance'],
+        #     start_work_date=validated_data['start_work_date'] if validated_data['start_work_date'] else None,
+        #     probationary_end_date=validated_data['probationary_end_date'] if validated_data['probationary_end_date'] else None,
+        #     labor_contract_signing_date=validated_data[
+        #         'labor_contract_signing_date'] if validated_data['labor_contract_signing_date'] else None,
+        #     personal_email=validated_data['personal_email'],
+        #     facebook=validated_data['facebook'],
+        #     social_insurance_number=validated_data['social_insurance_number'],
+        #     tax_code=validated_data['tax_code'],
+        #     bank_account=validated_data['bank_account'] if validated_data['bank_account'] else None,
+        #     elect_notifications=validated_data['elect_notifications'],
+        #     elect_decision=validated_data['elect_decision'],
+        #     url=validated_data['url'],
+        #     note=validated_data['note'],
+        #     department=validated_data['department'],
+        #     nationality=validated_data['nationality'],
+        #     ethnicity=validated_data['ethnicity'],
+        #     religion=validated_data['religion'],
+        #     literacy=validated_data['literacy'],
+        #     position=validated_data['position'],
+        #     user=user,
+        #     is_active=False,
+        #     staff=generate_staff(
+        #         first_name=first_name,
+        #         last_name=last_name
+        #     ),
+        # )
 
         """ add addresses """
-        if validated_data['addresses']:
-            addresses_body = validated_data['addresses']
-            address_data = []
-            for address in addresses_body:
-                address_data.append(
-                    Address(
-                        **address
-                    )
+        
+        # if validated_data['addresses']:
+        #     addresses_body = validated_data['addresses']
+        #     address_data = []
+        #     for address in addresses_body:
+        #         address_data.append(
+        #             Address(
+        #                 **address
+        #             )
+        #         )
+        addresses_body = Data.address
+        address_data = []
+        for address in addresses_body:
+            address_data.append(
+                Address(
+                    **address
                 )
-            addresses_data = Address.objects.bulk_create(address_data)
+            )
+        addresses_data = Address.objects.bulk_create(address_data)
 
-            staff.addresses.add(*addresses_data)
+        staff.addresses.add(*addresses_data)
 
-        return staff
+        data_data = {
+            'first_name': [first_name],
+            'last_name': [last_name],
+            'email': [email],
+            'password': [password_data],
+        }
+
+        df = pd.DataFrame(data_data, columns = ['first_name', 'last_name', 'email', 'password'])
+        downloads_path = str(Path.home() / "Downloads")
+        file = df.to_excel(f'{downloads_path}/{first_name}-{last_name}-{email}.xlsx', index = False, header=True)
+
+        return dict({
+            "first_name":first_name,
+            "last_name": last_name,
+            "email":email,
+            "password":password_data,
+        })
 
     def update(self, instance, validated_data):
         """ Add new address """
@@ -380,15 +477,16 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             response['nationality_data'] = ''
 
         if not instance.user.image == None:
-            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + instance.user.image
+            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + \
+                instance.user.image
         else:
             response['logo_url'] = ''
-        
+
         # if not instance.user.first_name == None:
         #     response['first_name'] = instance.user.first_name
         # else:
         #     response['first_name'] = ''
-        
+
         # if not instance.user.last_name == None:
         #     response['last_name'] = instance.user.last_name
         # else:
@@ -397,7 +495,7 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
         if instance.is_active == False:
             response['is_active_data'] = 'Nghỉ Làm'
         else:
-            response['is_active_data'] = 'Còn Làm'
+            response['is_active_data'] = 'Đang Làm'
 
         response['phone'] = str(instance.user.phone)
 

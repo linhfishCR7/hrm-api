@@ -1,4 +1,5 @@
 import random
+import string
 from datetime import datetime
 import pytz
 from dateutil import tz
@@ -110,6 +111,38 @@ def generate_number_contract(department='', type='', staff=''):
     
     return number_contract
 
-def without_keys(dictionany, keys):
-    """ Return a new dictionary without specific keys """
-    return {x: dictionany[x] for x in dictionany if x not in keys}
+## characters to generate password from
+alphabets = list(string.ascii_letters)
+digits = list(string.digits)
+special_characters = list("!@#$%^&*()")
+characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
+
+def generate_random_password():
+
+	## initializing the password
+	password = []
+
+	## picking random alphabets
+	for i in range(4):
+		password.append(random.choice(alphabets))
+
+	## picking random digits
+	for i in range(4):
+		password.append(random.choice(digits))
+
+	## picking random alphabets
+	for i in range(4):
+		password.append(random.choice(special_characters))
+
+	## shuffling the resultant password
+	random.shuffle(password)
+
+	## converting the list to string
+	## printing the list
+	return("".join(password))
+
+    
+    
+ 
+
+

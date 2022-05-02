@@ -57,6 +57,8 @@ class SalarySerializer(serializers.ModelSerializer):
     extra = serializers.IntegerField(required=False)
     basic_salary = serializers.IntegerField(required=False)
     coefficient = serializers.FloatField(required=False)
+    other_support = serializers.FloatField(required=False)
+    other = serializers.FloatField(required=False)
     class Meta:
         model = Salary
         fields = [
@@ -96,8 +98,6 @@ class SalarySerializer(serializers.ModelSerializer):
                 # day_off_types=
             ).first()
             
-
-
         # get coefficient
         up_salary = UpSalary.objects.filter(
             is_deleted=False,
@@ -137,7 +137,7 @@ class SalarySerializer(serializers.ModelSerializer):
         else:
             extra=validated_data['extra']
 
-        other_support=validated_data['other_support'] if validated_data['other_support'] else employment_contract.other_support
+        other_support=validated_data['other_support'] if validated_data['other_support']!=0.0 else employment_contract.other_support
         
         other=validated_data['other'] if validated_data['other'] else 0.0
 

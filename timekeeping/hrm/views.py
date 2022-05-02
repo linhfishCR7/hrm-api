@@ -21,7 +21,12 @@ class ListCreateTimekeepingAPIView(generics.ListCreateAPIView):
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
-    search_fields = ['date', 'staff_project__staff__user__first_name', 'staff_project__staff__user__last_name']
+    search_fields = [
+        'staff_project__staff__user__first_name', 
+        'staff_project__staff__user__last_name', 
+        'staff_project__staff__staff',
+        'staff_project__project__name'
+        ]
     filter_fields = {
         'date': ['exact', 'in'],
         'staff_project__staff__user__first_name': ['exact', 'in'],
