@@ -46,6 +46,7 @@ class StaffsSerializer(serializers.ModelSerializer):
 
 class DayOffYearsSerializer(serializers.ModelSerializer):
     staff = StaffsSerializer()
+    approved_by = StaffsSerializer()
     class Meta:
         model = DayOffYears
         fields = [
