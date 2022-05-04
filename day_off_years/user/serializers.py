@@ -72,7 +72,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         
         day_off_year = DayOffYears.objects.filter(id=instance.id).first()
-        day_off_year.status=False,
+        day_off_year.status=False
         day_off_year.approved_by=instance.approved_by
         day_off_year.save()
         updated_instance = super().update(instance, validated_data)
@@ -82,6 +82,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
     
 class RetrieveAndListDayOffYearsSerializer(serializers.ModelSerializer):
     staff = StaffsSerializer()
+    approved_by = StaffsSerializer()
     class Meta:
         model = DayOffYears
         fields = [

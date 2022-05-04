@@ -54,6 +54,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             'status',
             'hand_over',
             'approved_by',
+            'modified_by',
         ]
 
         read_only_fields = [
@@ -79,7 +80,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             ).first()
             
             day_off_year_email_to_user.delay(dict(name=f'{user.first_name} {user.last_name}', link=instance.id, user_id=user.id))
-            push_user_notification_hrm_approved_day_off_year.delay(metadata=user.id, user_id=user.id)
+            push_user_notification_hrm_approved_day_off_year.delay(metadata=instance.modified_by, user_id=user.id)
         else:
             day_off_year.status=status
             day_off_year.approved_by=None
@@ -93,7 +94,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             ).first()
             
             day_off_year_refuse_email_to_user.delay(dict(name=f'{user.first_name} {user.last_name}', link=instance.id, user_id=user.id))
-            push_user_notification_hrm_refused_day_off_year.delay(metadata=user.id, user_id=user.id)
+            push_user_notification_hrm_refused_day_off_year.delay(metadata=instance.modified_by, user_id=user.id)
 
         return updated_instance
     
