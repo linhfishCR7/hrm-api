@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/user/day-off-year-details/', include('day_off_year_details.user.urls')),
     path('api/user/day-off-types/', include('day_off_types.user.urls')),
     path('api/user/notification/', include('notification.user.urls')),
+    path('api/user/salary/', include('salaries.user.urls')),
 
     #################################################################################
     # Admin
