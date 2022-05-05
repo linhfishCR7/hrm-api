@@ -1,14 +1,15 @@
 {% load order_filters %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Phiếu Lương PDF</title>
+    <title>CV PDF</title>
     <style>
         @page {
-            size: A4; 
+            size: A4;
             margin: 0mm;
         }
         section {
@@ -94,9 +95,9 @@
             padding: 8px;
         }
 
-        tr:nth-child(even) {
+        {% comment %} tr:nth-child(even) {
             background-color: #dddddd;
-        }
+        } {% endcomment %}
 
         .bpurchase-top {
             bpurchase-top: 2px solid;
@@ -121,6 +122,7 @@
         {#        bottom: -20px;#}
         {#    }#}
         {#}#}
+        
     </style>
   </head>
 
@@ -130,109 +132,118 @@
       <div class="w-100">
         <div class="invoice">
           <h1 style="font-size: 30px; text-align: center" class="p">
-            PHIẾU TRẢ LƯƠNG THÁNG {{month}}/{{year}}
+            THÔNG TIN NHÂN SỰ
           </h1>
           <h1 style="font-size: 20px; text-align: center" class="p">
-            PAY SLIP FOR MONTH {{month}}/{{year}}
-          </h1>
-          <h1
-            style="
-              font-size: 20px;
-              text-align: center;
-              text-transform: uppercase;
-            "
-            class="p"
-          >
-            {{user_fullname}}
+            EMPLOYEE INFORMATION
           </h1>
         </div>
       </div>
-      <!-- -- -->
 
       <div class="p-t">
         <!-- table -->
         <div class="center p" style="float: center">
           <table>
             <tr>
-              <td>Họ Tên/ Full Name: {{user_fullname}}</td>
-              <td>Mã NV/ Employee Code: {{staff_data}}</td>
-            </tr>
-            <tr>
-              <td>Chức Vụ/ Position: {{position_name_data}}</td>
-            </tr>
-            <tr>
-              <td>Bộ Phận/ Department: {{department_name_data}}</td>
-            </tr>
-            <tr>
-              <td>Giờ Công Chuẩn/ Standard Manhour: {{standard_time_data}}</td>
-            </tr>
-            <tr>
-              <td>Giờ Công Thực Tế/ Actual Manhour: {{actual_time_data}}</td>
+              <td>
+                <img src={{logo_url}} altt="" />
+              </td>
+              <td>
+                <tr>
+                  <td><h2>{{user_fullname}}</h2></td>
+                </tr>
+                <tr>
+                  <td>{{position}}</td>
+                </tr>
+                <tr>
+                  <td>Ngày sinh/ Date of Birth: {{day_of_birth}}</td>
+                </tr>
+                <tr>
+                  <td>Giới tính/ Sex: {{gender}}</td>
+                </tr>
+                <tr>
+                  <td>Di động/ Mobile: {{phone}}</td>
+                </tr>
+                <tr>
+                  <td>Email: {{email}}</td>
+                </tr>
+              </td>
             </tr>
           </table>
         </div>
         <div class="center p" style="float: center">
-          <h6>* Chi Tiết Lương/ Detail: </h6>
-          <p>Hệ Số/ Coeficient: {{coefficient_data}}</p>
-          <p>Đơn Vị Tiền Tệ/ Currency unit: VNĐ</p>
-
+          <h5 style="text-color: blue">THÔNG TIN CHI TIẾT/ INFORMATION</h5>
           <table>
             <tr>
-              <td>1. Lương Cơ Bản / Basic Salary:</td>
-              <td>{{basic_salary_data}}</td>
+              <td>Mã nhân viên/ Employee Code: {{staff}}</td>
             </tr>
             <tr>
-              <td>2. Phụ Cấp Trách Nhiệm / Responsibility Allowance:</td>
-              <td>{{extra_data}}</td>
+              <td>Nơi sinh/ Place of Birth: {{place_of_birth}}</td>
             </tr>
             <tr>
-              <td>3. Hỗ Trợ Khác / Other Allowance:</td>
-              <td>{{other_support_data}}</td>
+              <td>Nguyên quán/ Domicile: {{domicile}}</td>
             </tr>
             <tr>
-              <td>4. Tổng Lương / Basic (1) + (2) + ( 3):</td>
-              <td>{{total_salary_pre}}</td>
+              <td>Tình trạng hôn nhân/ Marrital Status: {{marital_status}}</td>
             </tr>
             <tr>
-              <td>5. Tăng Ca / Overtime:</td>
-              <td>{{overtime_data}}/h</td>
+              <td>Số con/ Number of Children: {{number_of_children}}</td>
             </tr>
             <tr>
-              <td>6. Bảo Hiểm Bắt Buộc / Obligatory Insurrance:</td>
-              <td>{{allowance_data}}</td>
+              <td>Số CMND/ ID Number: {{identity_card}}</td>
             </tr>
             <tr>
-              <td>7. Thuế Thu Nhập Cá Nhân / Income Tax of Employee:</td>
-              <td>{{tax_data}}</td>
+              <td>Ngày cấp/ Date of Issue: {{issuance_date}}</td>
             </tr>
             <tr>
-              <td>8. Tiền Lương Tháng / Month Salary:</td>
-              <td>{{total_salary}}</td>
+              <td>Nơi cấp/ Place of Issuse: {{place_of_issuance}}</td>
             </tr>
             <tr>
-              <td>9. Khác / Other:</td>
-              <td>{{other_data}}</td>
+              <td>Địa chỉ thường trú/ Permanent Address: {{permanent_address}}</td>
             </tr>
             <tr>
-              <td>10. Tiền Lương Thực Lãnh / Actual Salary:</td>
-              <td>{{actual_salary}} VNĐ</td>
+              <td>Địa chỉ tạm trú/ Temporary Address: {{temporary_residence_address}}</td>
+            </tr>
+            <tr>
+              <td>Ngày vào làm việc/ Date of Participation to Company: {{start_work_date}}</td>
+            </tr>
+            <tr>
+              <td>Ngày kết thúc thử việc/ Date of Ending to Trying Work: {{probationary_end_date}}</td>
+            </tr>
+            <tr>
+              <td>Điện thoại/ Telephone: {{mobile_phone}}</td>
+            </tr>
+            <tr>
+              <td>Email cá nhân/ Personal Email: {{personal_email}}</td>
+            </tr>
+            <tr>
+              <td>Facebook: {{facebook}}</td>
+            </tr>
+            <tr>
+              <td>Số BHXH/ Number of Social Insuarance: {{social_insurance_number}}</td>
+            </tr>
+            <tr>
+              <td>Mã số thuế TNCN/ Tax Code of Employee: {{tax_code}}</td>
+            </tr>
+            <tr>
+              <td>Số tài khoản/ Bank Account Number: {{bank_account}}</td>
+            </tr>
+            <tr>
+              <td>Quốc tịch/ Nationality: {{nationality}}</td>
+            </tr>
+            <tr>
+              <td>Dân tộc/ Nation:  {{ethnicity}}</td>
+            </tr>
+            <tr>
+              <td>Tôn giáo/ Religion: {{religion}}</td>
+            </tr>
+            <tr>
+              <td>Trình độ học vấn/ Acamadic Level: {{literacy}}</td>
             </tr>
           </table>
         </div>
       </div>
-      <div class="p-t">
-        <div class="right p" style="float: right; right: 0">
-          <p>Ký Nhận Phiếu</p>
-          <p>  Signature</p>
-          <br/>
-          <br/>
-          <p>{{user_fullname}}</p>
-        </div>
-
-      </div>
-
-      <div class="footer bpurchase-top text-center small m-t">
-      </div>
+      <div class="footer bpurchase-top text-center small m-t"></div>
     </section>
   </body>
 </html>

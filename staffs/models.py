@@ -68,3 +68,5 @@ class Staffs(BaseModel):
         default=None,
         blank=True
     )
+    is_print = models.BooleanField(default=False, null=True, blank=True)
+    link_staff = models.CharField(max_length=255, null=True, blank=True)
