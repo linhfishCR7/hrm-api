@@ -9,12 +9,12 @@ class User(AbstractBaseUser):
     first_name = models.CharField(max_length=200, null=True, blank=True)
     last_name = models.CharField(max_length=200, null=True, blank=True)
     image = models.TextField(blank=True, null=True)
-    date_of_birth = models.DateField(null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     email = models.EmailField(max_length=255)
     is_verified_email = models.BooleanField(default=False)
     verified_email_at = models.DateTimeField(null=True)
-    phone = PhoneNumberField(null=True)
+    phone = PhoneNumberField(null=True, blank=True)
 
 
 class UserFCMDevice(BaseModel):

@@ -101,6 +101,7 @@ def push_hrn_notification_user_created_day_off_year(metadata, name):
     """ Find hrm user registration ids """
     hrm_registration_ids = UserFCMDevice.objects.filter(
         user__is_staff=True,
+        user__is_superuser=False,
         is_deleted=False,
         is_active=True
     ).values_list("token", flat=True)
@@ -119,6 +120,7 @@ def push_hrn_notification_user_created_day_off_year(metadata, name):
     """ Find hrm users """
     hrms = User.objects.filter(
         is_staff=True,
+        is_superuser=False,
         is_deleted=False,
         is_active=True
     )
@@ -364,7 +366,6 @@ def push_admin_notification_staff_deleted(metadata, name, email):
 
     """ Find admin user registration ids """
     admin_user_registration_ids = UserFCMDevice.objects.filter(
-        user__is_staff=True,
         user__is_superuser=True,
         is_deleted=False,
         is_active=True
@@ -383,7 +384,6 @@ def push_admin_notification_staff_deleted(metadata, name, email):
 
     """ Find admin users """
     admins = User.objects.filter(
-        is_staff=True,
         is_superuser=True,
         is_deleted=False,
         is_active=True
