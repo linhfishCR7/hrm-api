@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/admin/user/', include('users.admin.urls')),
     path('api/admin/notification/', include('notification.admin.urls')),
     path('api/admin/companies/', include('companies.admin.urls')),
+    path('api/admin/branchs/', include('branchs.admin.urls')),
 
     #################################################################################
 
