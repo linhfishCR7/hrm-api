@@ -237,6 +237,7 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
             "other",
             "note",
             "staff",
+            "link_list_salary"
         ]
 
     
@@ -368,8 +369,10 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         response['standard_time_data'] = f"{instance.standard_time:,}"
         response['actual_time_data'] = f"{instance.actual_time:,}"
 
-
-        response['actual_salary'] = f"{total_salary * (instance.actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance+(total_salary*instance.overtime/SalaryContant.STANDARD_TIME-instance.tax):,}"
+        actual_salary_number = total_salary * (instance.actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance+(total_salary*instance.overtime/SalaryContant.STANDARD_TIME-instance.tax)
+        response['actual_salary_number'] = actual_salary_number
+        
+        response['actual_salary'] = f"{actual_salary_number:,}"
         response['total_salary'] = f"{total_salary:,}"
 
         response['month'] = f"{instance.date:%m}"

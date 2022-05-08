@@ -1,0 +1,187 @@
+{% load order_filters %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Tổng Hợp Tiền Lương PDF</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0mm;
+        }
+        section {
+            width: 100%;
+            margin: 0 auto;
+            font: 90%/1.45em "Helvetica Neue", HelveticaNeue, Verdana, Arial, Helvetica, sans-serif;
+        }
+
+        h1,
+        h3,
+        h4,
+        h2,
+        p {
+            margin: 0;
+        }
+
+        {#@media (max-width: 600px) {#}
+        {#    section,#}
+        {#    .w-70 {#}
+        {#        width: 100%;#}
+        {#    }#}
+        {#}#}
+
+        p {
+         padding: 0.5px;
+        }
+
+
+        .d-flex {
+             display: flex;
+        }
+
+        img {
+            width: 100%
+        }
+
+        .invoice {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .p {
+            padding-top: 0.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .p-t {
+            padding-top: 0.5rem;
+        }
+
+        .m-t { margin-top: 1rem;}
+
+        .text-center {
+             text-align: center;
+        }
+
+
+        /* table */
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+      thead {
+        display: table-header-group;
+      }
+      tfoot {
+        display: table-footer-group;
+      }
+        table {
+            font-family: arial, sans-serif;
+            bpurchase-collapse: collapse;
+            width: 100%;
+            page-break-inside: auto;
+            border-collapse: collapse;
+        }
+        table, td, th {
+          border: 1px solid
+
+        }
+
+        td,
+        th {
+            bpurchase: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        .bpurchase-top {
+            bpurchase-top: 2px solid;
+        }
+
+        .small {
+             font-size: 12px;
+        }
+
+        .w-100 {
+        	width:100%;
+        }
+
+        table td {
+            word-wrap: break-word;         /* All browsers since IE 5.5+ */
+            overflow-wrap: break-word;     /* Renamed property in CSS3 draft spec */
+        }
+
+        {#@media print {#}
+        {#      div.footer {#}
+        {#        position: fixed;#}
+        {#        bottom: -20px;#}
+        {#    }#}
+        {#}#}
+    </style>
+  </head>
+
+  <body>
+    <section style="position: absolute">
+      <!-- top -->
+      <div class="w-100">
+        <div class="invoice">
+          <h1 style="font-size: 30px; text-align: center" class="p">
+            TỔNG HỢP TIỀN LƯƠNG
+          </h1>
+          <h1 style="font-size: 20px; text-align: center" class="p">
+            SUMMARY OF SALARY
+          </h1>
+          <h1 style="font-size: 15px; text-align: center" class="p">
+            Tháng/Month: {{month}}
+          </h1>
+        </div>
+      </div>
+      <!-- -- -->
+
+      <div class="p-t">
+        <!-- table -->
+        <div class="center p" style="float: center">
+          <table>
+            <tr>
+              <th>Tên Bộ Phận/Department</th>
+              <th>Mã Nhân Viên/Employee Code</th>
+              <th>Họ Và Tên/Full Name</th>
+              <th>Chức Vụ/Position</th>
+              <th>Giờ Công Chuẩn/Standard Manhour</th>
+              <th>Giờ Công Thực Tế/Actual Manhour</th>
+              <th>Tổng Lương/Total Salary</th>
+              <th>Lương Trong Tháng/Monthly Salary</th>
+            </tr>
+            {% for item in data %}
+            <tr>
+              <td>{{item.department_name_data}}</td>
+              <td>{{item.staff_data}}</td>
+              <td>{{item.user_fullname}}</td>
+              <td>{{item.position_name_data}}</td>
+              <td>{{item.standard_time}}</td>
+              <td>{{item.actual_time}}</td>
+              <td>{{item.total_salary_pre}}</td>
+              <td>{{item.total_salary}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td colspan="8">Tổng Cộng/Total: {{total_salary_month}} VNĐ</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer bpurchase-top text-center small m-t"></div>
+    </section>
+  </body>
+</html>

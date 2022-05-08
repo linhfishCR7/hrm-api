@@ -56,7 +56,7 @@ class ListCreateStaffsAPIView(generics.ListCreateAPIView):
             is_deleted=False,
             deleted_at=None,
         ).order_by("-created_at")
-
+        
     @property
     def paginator(self):
         if self.request.query_params.get("no_pagination", "") == "true":

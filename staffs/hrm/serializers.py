@@ -268,7 +268,6 @@ class StaffsSerializer(serializers.ModelSerializer):
             }
 
         )
-        print_value(username)
         user = User.objects.filter(email=email).first()
         """ Add staff """
         staff = Staffs.objects.create(
@@ -366,7 +365,7 @@ class StaffsSerializer(serializers.ModelSerializer):
             'email': [email],
             'password': [password_data],
         }
-
+        # TODO Send password to email
         df = pd.DataFrame(data_data, columns = ['first_name', 'last_name', 'email', 'password'])
         downloads_path = str(Path.home() / "Downloads")
         file = df.to_excel(f'{downloads_path}/{first_name}-{last_name}-{email}.xlsx', index = False, header=True)

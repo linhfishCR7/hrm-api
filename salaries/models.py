@@ -20,3 +20,5 @@ class Salary(BaseModel):
     
     is_print = models.BooleanField(default=False, null=True, blank=True)
     link_salary = models.CharField(max_length=255, null=True, blank=True)
+    link_list_salary = models.CharField(max_length=255, null=True, blank=True)
+    link_list_department_salary = models.CharField(max_length=255, null=True, blank=True)
