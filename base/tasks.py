@@ -401,3 +401,24 @@ def push_admin_notification_staff_deleted(metadata, name, email):
     """ Add notification to database """
     Notification.objects.bulk_create(notification_data)    
     return True
+
+
+@shared_task(bind=True)
+def salary_email_to_new_user(self, email, full_name, password):
+    email_from = settings.DEFAULT_FROM_EMAIL
+    message = BaseTemplate.BASE.format(
+                year=timezone.now().year,
+                section=EmailTemplate.EmailToNewUser.BODY(
+                    name=full_name, 
+                    email=email,
+                    password=password,
+                    link=f"{settings.FRONTEND_URL}#/login/"
+                )
+            )
+    subject = EmailTemplate.EmailToNewUser.SUBJECT(name=full_name)
+    
+    
+    recipient_list = [email]
+    email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
+
+        

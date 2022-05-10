@@ -5,10 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Tổng Hợp Tiền Lương PDF</title>
+    <title>Danh Sách Nhân Sự PDF</title>
     <style>
         @page {
-            size: A4 landscape;
+            size: A2 landscape;
             margin: 2mm;
         }
         section {
@@ -136,14 +136,13 @@
       <div class="w-100">
         <div class="invoice">
           <h1 style="font-size: 30px; text-align: center" class="p">
-            TỔNG HỢP TIỀN LƯƠNG
+            DANH SÁCH NHÂN SỰ/REGISTER OF EMPLOYEE
           </h1>
+          
           <h1 style="font-size: 20px; text-align: center" class="p">
-            SUMMARY OF SALARY
+            Chi Nhánh/Branch: {{branch}}
           </h1>
-          <h1 style="font-size: 15px; text-align: center" class="p">
-            Tháng/Month: {{month}}
-          </h1>
+
         </div>
       </div>
       <!-- -- -->
@@ -155,28 +154,51 @@
             <tr>
               <th>Tên Bộ Phận/Department</th>
               <th>Mã Nhân Viên/Employee Code</th>
-              <th>Họ Và Tên/Full Name</th>
               <th>Chức Vụ/Position</th>
-              <th>Giờ Công Chuẩn/Standard Manhour</th>
-              <th>Giờ Công Thực Tế/Actual Manhour</th>
-              <th>Tổng Lương/Total Salary</th>
-              <th>Lương Trong Tháng/Monthly Salary</th>
+              <th>Họ Và Tên/Full Name</th>
+              <th>Ngày Sinh/Birthday</th>
+              <th>Nơi Sinh/Place of Birth</th>
+              <th>Nguyên Quán/Domicile</th>
+              <th>Giới Tính/Sex</th>
+              <th>TT Hôn Nhân/Marrial Status</th>
+              <th>Số Con/Num.of Children</th>
+              <th>Số CMND/ID Number</th>
+              <th>Ngày Cấp/Date Issued</th>
+              <th>Nơi Cấp/Place Issued</th>
+              <th>Địa Chỉ Thường Trú/Permanent Address</th>
+              <th>Địa Chỉ Tạm Trú/Temporary Address</th>
+              <th>Chức Vụ/Position</th>
+              <th>Ngày Vào Làm Việc/Date of Working</th>
+              <th>Di Động/Mobile Phone</th>
+              <th>Email/Email</th>
+              <th>Email Cá Nhân/Personal Email</th>
+              <th>FaceBook/FaceBook</th>
             </tr>
             {% for item in data %}
             <tr>
-              <td>{{item.department_name_data}}</td>
-              <td>{{item.staff_data}}</td>
-              <td>{{item.user_fullname}}</td>
-              <td>{{item.position_name_data}}</td>
-              <td>{{item.standard_time}}</td>
-              <td>{{item.actual_time}}</td>
-              <td>{{item.total_salary_pre}}</td>
-              <td>{{item.total_salary}}</td>
+              <td>{{item.department_data}}</td>
+              <td>{{item.staff}}</td>
+              <td>{{item.position_name}}</td>
+              <td>{{item.last_name}} {{item.first_name}}</td>
+              <td>{{item.day_of_birth}}</td>
+              <td>{{item.place_of_birth}}</td>
+              <td>{{item.domicile}}</td>
+              <td>{{item.gender}}</td>
+              <td>{{item.marital_status}}</td>
+              <td>{{item.number_of_children}}</td>
+              <td>{{item.identity_card}}</td>
+              <td>{{item.issuance_date}}</td>
+              <td>{{item.place_of_issuance}}</td>
+              <td>{{item.permanent_address}}</td>
+              <td>{{item.temporary_residence_address}}</td>
+              <td>{{item.position_data}}</td>
+              <td>{{item.start_work_date}}</td>
+              <td>{{item.phone}}</td>
+              <td>{{item.email}}</td>
+              <td>{{item.personal_email}}</td>
+              <td>{{item.facebook}}</td>
             </tr>
             {% endfor %}
-            <tr>
-              <td colspan="8">Tổng Cộng/Total: {{total_salary_month}} VNĐ</td>
-            </tr>
           </table>
         </div>
       </div>

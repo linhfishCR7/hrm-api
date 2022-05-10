@@ -25,7 +25,7 @@ from base.constants.common import Data, GenderStatus, MaritalStatus
 from base.utils import generate_random_password
 import pandas as pd
 from pathlib import Path
-
+from base.tasks import salary_email_to_new_user
 from django.template.loader import get_template
 from base.services.s3_services import MediaUpLoad
 import os
@@ -302,51 +302,7 @@ class StaffsSerializer(serializers.ModelSerializer):
                 last_name=last_name
             ),
         )
-        # staff = Staffs.objects.create(
-        #     gender=validated_data['gender'],
-        #     marital_status=validated_data['marital_status'],
-        #     number_of_children=validated_data['number_of_children'],
-        #     identity_card=validated_data['identity_card'],
-        #     issuance_date=validated_data['issuance_date'],
-        #     place_of_issuance=validated_data['place_of_issuance'],
-        #     start_work_date=validated_data['start_work_date'] if validated_data['start_work_date'] else None,
-        #     probationary_end_date=validated_data['probationary_end_date'] if validated_data['probationary_end_date'] else None,
-        #     labor_contract_signing_date=validated_data[
-        #         'labor_contract_signing_date'] if validated_data['labor_contract_signing_date'] else None,
-        #     personal_email=validated_data['personal_email'],
-        #     facebook=validated_data['facebook'],
-        #     social_insurance_number=validated_data['social_insurance_number'],
-        #     tax_code=validated_data['tax_code'],
-        #     bank_account=validated_data['bank_account'] if validated_data['bank_account'] else None,
-        #     elect_notifications=validated_data['elect_notifications'],
-        #     elect_decision=validated_data['elect_decision'],
-        #     url=validated_data['url'],
-        #     note=validated_data['note'],
-        #     department=validated_data['department'],
-        #     nationality=validated_data['nationality'],
-        #     ethnicity=validated_data['ethnicity'],
-        #     religion=validated_data['religion'],
-        #     literacy=validated_data['literacy'],
-        #     position=validated_data['position'],
-        #     user=user,
-        #     is_active=False,
-        #     staff=generate_staff(
-        #         first_name=first_name,
-        #         last_name=last_name
-        #     ),
-        # )
-
-        """ add addresses """
         
-        # if validated_data['addresses']:
-        #     addresses_body = validated_data['addresses']
-        #     address_data = []
-        #     for address in addresses_body:
-        #         address_data.append(
-        #             Address(
-        #                 **address
-        #             )
-        #         )
         addresses_body = Data.address
         address_data = []
         for address in addresses_body:
@@ -365,10 +321,10 @@ class StaffsSerializer(serializers.ModelSerializer):
             'email': [email],
             'password': [password_data],
         }
-        # TODO Send password to email
-        df = pd.DataFrame(data_data, columns = ['first_name', 'last_name', 'email', 'password'])
-        downloads_path = str(Path.home() / "Downloads")
-        file = df.to_excel(f'{downloads_path}/{first_name}-{last_name}-{email}.xlsx', index = False, header=True)
+        salary_email_to_new_user.delay(full_name=f"{last_name} {first_name}", email=email, password=password_data)
+        # df = pd.DataFrame(data_data, columns = ['first_name', 'last_name', 'email', 'password'])
+        # downloads_path = str(Path.home() / "Downloads")
+        # file = df.to_excel(f'{downloads_path}/{first_name}-{last_name}-{email}.xlsx', index = False, header=True)
 
         return dict({
             "first_name":first_name,
@@ -516,7 +472,7 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             if item['type']=='temporary_residence_address':
                 response['temporary_residence_address'] = item['address']
             
-        if instance.is_print==False:
+        if instance.is_print==True:
             data = {
                 "staff": instance.staff,
                 "place_of_birth": response['place_of_birth'],
@@ -562,5 +518,117 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             )
         else:
             response['key'] = instance.link_staff
+
+        return response
+    
+
+class ListStaffsReportSerializer(serializers.ModelSerializer):
+    department = DepartmentsSerializer()
+    nationality = NationalitiesSerializer()
+    ethnicity = EthnicitiesSerializer()
+    religion = ReligionsSerializer()
+    literacy = LiteracySerializer()
+    user = UserSerializer()
+    addresses = AddressesSerializer(many=True)
+    position = PositionsSerializer()
+
+    class Meta:
+        model = Staffs
+        fields = [
+            'id',
+            'staff',
+            'gender',
+            'marital_status',
+            'number_of_children',
+            'identity_card',
+            'issuance_date',
+            'place_of_issuance',
+            'start_work_date',
+            'probationary_end_date',
+            'labor_contract_signing_date',
+            'personal_email',
+            'facebook',
+            'social_insurance_number',
+            'tax_code',
+            'bank_account',
+            'elect_notifications',
+            'elect_decision',
+            'url',
+            'note',
+            'department',
+            'nationality',
+            'ethnicity',
+            'religion',
+            'literacy',
+            'position',
+            'user',
+            'is_active',
+            'addresses',
+            'is_print'
+
+        ]
+        read_only_fields = ['id']
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['first_name'] = instance.user.first_name
+        response['last_name'] = instance.user.last_name
+        response['email'] = instance.user.email
+        if not instance.department == None:
+            response['department_data'] = instance.department.name
+        else:
+            response['department_data'] = ''
+
+        if not instance.position == None:
+            response['position_data'] = instance.position.name
+        else:
+            response['position_data'] = ''
+
+        if not instance.literacy == None:
+            response['literacy_data'] = instance.literacy.name
+        else:
+            response['literacy_data'] = ''
+
+        if not instance.religion == None:
+            response['religion_data'] = instance.religion.name
+        else:
+            response['religion_data'] = ''
+
+        if not instance.ethnicity == None:
+            response['ethnicity_data'] = instance.ethnicity.name
+        else:
+            response['ethnicity_data'] = ''
+
+        if not instance.nationality == None:
+            response['nationality_data'] = instance.nationality.name
+        else:
+            response['nationality_data'] = ''
+
+        if not instance.user.image == None:
+            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + \
+                instance.user.image
+        else:
+            response['logo_url'] = ''
+
+       
+        if instance.is_active == False:
+            response['is_active_data'] = 'Nghỉ Làm'
+        else:
+            response['is_active_data'] = 'Đang Làm'
+
+        response['phone'] = str(instance.user.phone)
+        
+        address = Staffs.objects.filter(id=instance.id).first().addresses.all().values()
+        for item in address:
+            if item['type']=='place_of_birth_address':
+                response['place_of_birth'] = item['address']
+                response['domicile'] = item['address']
+            if item['type']=='permanent_address':
+                response['permanent_address'] = item['address']
+            if item['type']=='temporary_residence_address':
+                response['temporary_residence_address'] = item['address']
 
         return response

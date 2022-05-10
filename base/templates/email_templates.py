@@ -90,7 +90,7 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <img width="600px" height="300px" style="margin-top: 0px; padding-top: 0px"
-                                        src="https://d1a2wccegmvxly.cloudfront.net/eyJidWNrZXQiOiAia2FybGV0LWRldi1tZWRpYSIsICJrZXkiOiAiZDcyNWVlNGQtMjQxa2FybGV0LXdlbGNvbWUucG5nIiwgImVkaXRzIjoge319" />
+                                        src="https://hrm-s3.s3.amazonaws.com/83849446-8b3logo-team.png" />
                                     </td>
                                 </tr>
                                 </table>
@@ -142,7 +142,7 @@ class EmailTemplate:
                                 <tr>
                                     <td colspan="2">
                                     
-                                    <p style="margin: 0; font-size: 16px; color: #fff">
+                                    <p style="margin: 20px; font-size: 16px; color: #fff">
                                         Visit havanlinh.tk to see HRM's full features.
                                     </p>
                                     </td>
@@ -159,7 +159,96 @@ class EmailTemplate:
                         </table>
                     """
 
+    class EmailToNewUser:
+        def SUBJECT(name):
+            return f"Welcome to {name}"
+        def BODY(name, password, link, email):
+            return f"""
+                        <table cellpadding="0" cellspacing="0" width="680px" style="
+                            background-color: rgb(46, 46, 46);
+                            padding: 44px 48px 64px 32px;
+                            border-radius: 10px;
+                            margin-right: auto; 
+                            margin-left: auto;
+                            ">
+                            <tr style="margin-top: 0px; padding-top: 0px">
+                            <td style="margin-top: 0px; padding-top: 0px">
+                                <table id="logo" cellpadding="0" cellspacing="0" class="center"
+                                style="max-width: 600px; margin-top: 0px; padding-top: 0px">
+                                <tr>
+                                    <td>
+                                    <img width="600px" height="300px" style="margin-top: 0px; padding-top: 0px"
+                                        src="https://hrm-s3.s3.amazonaws.com/83849446-8b3logo-team.png" />
+                                    </td>
+                                </tr>
+                                </table>
 
+                                <table id="content" cellpadding="0" cellspacing="0" align="center" style="
+                                    border-radius: 5px;
+                                    background-color: rgb(46, 46, 46);
+                                    width: 600px;
+                                ">
+                                
+                                <tr id="hello">
+                                    <td colspan="3">
+                                    <h1 style="
+                                        color: rgb(255, 255, 255);
+                                        margin-top: 42px;
+                                        font-weight: 400;
+                                        font-size: 32px;
+                                        ">
+                                        Welcome to HRM! 
+                                    </h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    <h3 style="
+                                        color: #fff;
+                                        margin-top: 0;
+                                        margin-bottom: 32px;
+                                        font-weight: bold;
+                                        font-size: 18px;
+                                        letter-spacing: -0.36px;
+                                        ">
+                                        Hello {name}, Welcome to the HRM community, we're excited to
+                                        have you with us!
+                                    </h3>
+                                    <p style="color: #fff; margin-bottom: 32px; font-size: 16px;">
+                                        Now that you're all set up, let's get you networking! 
+                                        This is your account information <br />
+                                        Email: {email} <br />
+                                        Password: {password} <br />
+                                    </p>
+                                    
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
+                                        padding: 12px 41px; text-decoration: none; " href={link} target="_blank">Go to login</a>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td colspan="2">
+                                    
+                                    <p style="margin: 20px; font-size: 16px; color: #fff">
+                                        Visit havanlinh.tk to see HRM's full features.
+                                    </p>
+                                    </td>
+                                </tr>
+                                
+                                <tr id="thanks">
+                                    <td colspan="2">
+                                    <p style="font-size: 16px;color: #fff; margin-top: 32px;">HRM Team.</p>
+                                    </td>
+                                </tr>
+                                </table>
+                            </td>
+                            </tr>
+                        </table>
+                    """
     class DayOffYearEmail:
         SUBJECT = "The user has been created day off year"
         def BODY(name, link):
@@ -178,7 +267,7 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <img width="600px" height="300px" style="margin-top: 0px; padding-top: 0px"
-                                        src="https://d1a2wccegmvxly.cloudfront.net/eyJidWNrZXQiOiAia2FybGV0LWRldi1tZWRpYSIsICJrZXkiOiAiZDcyNWVlNGQtMjQxa2FybGV0LXdlbGNvbWUucG5nIiwgImVkaXRzIjoge319" />
+                                        src="https://hrm-s3.s3.amazonaws.com/83849446-8b3logo-team.png" />
                                     </td>
                                 </tr>
                                 </table>
@@ -226,7 +315,7 @@ class EmailTemplate:
                                 <tr>
                                     <td colspan="2">
                                    
-                                    <p style="margin: 0; font-size: 16px; color: #fff">
+                                    <p style="margin: 20px; font-size: 16px; color: #fff">
                                         Visit havanlinh.tk to see HRM's full features.
                                     </p>
                                     </td>
@@ -262,7 +351,7 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <img width="600px" height="300px" style="margin-top: 0px; padding-top: 0px"
-                                        src="https://d1a2wccegmvxly.cloudfront.net/eyJidWNrZXQiOiAia2FybGV0LWRldi1tZWRpYSIsICJrZXkiOiAiZDcyNWVlNGQtMjQxa2FybGV0LXdlbGNvbWUucG5nIiwgImVkaXRzIjoge319" />
+                                        src="https://hrm-s3.s3.amazonaws.com/83849446-8b3logo-team.png" />
                                     </td>
                                 </tr>
                                 </table>
@@ -310,7 +399,7 @@ class EmailTemplate:
                                 <tr>
                                     <td colspan="2">
                                     
-                                    <p style="margin: 0; font-size: 16px; color: #fff">
+                                    <p style="margin: 20px; font-size: 16px; color: #fff">
                                         Visit havanlinh.tk to see HRM's full features.
                                     </p>
                                     </td>
@@ -346,7 +435,7 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <img width="600px" height="300px" style="margin-top: 0px; padding-top: 0px"
-                                        src="https://d1a2wccegmvxly.cloudfront.net/eyJidWNrZXQiOiAia2FybGV0LWRldi1tZWRpYSIsICJrZXkiOiAiZDcyNWVlNGQtMjQxa2FybGV0LXdlbGNvbWUucG5nIiwgImVkaXRzIjoge319" />
+                                        src="https://hrm-s3.s3.amazonaws.com/83849446-8b3logo-team.png" />
                                     </td>
                                 </tr>
                                 </table>
@@ -395,7 +484,7 @@ class EmailTemplate:
                                 <tr>
                                     <td colspan="2">
                                     
-                                    <p style="margin: 0; font-size: 16px; color: #fff">
+                                    <p style="margin: 20px; font-size: 16px; color: #fff">
                                         Visit havanlinh.tk to see HRM's full features.
                                     </p>
                                     </td>
@@ -433,7 +522,7 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <img width="600px" height="300px" style="margin-top: 0px; padding-top: 0px"
-                                        src="https://d1a2wccegmvxly.cloudfront.net/eyJidWNrZXQiOiAia2FybGV0LWRldi1tZWRpYSIsICJrZXkiOiAiZDcyNWVlNGQtMjQxa2FybGV0LXdlbGNvbWUucG5nIiwgImVkaXRzIjoge319" />
+                                        src="https://hrm-s3.s3.amazonaws.com/83849446-8b3logo-team.png" />
                                     </td>
                                 </tr>
                                 </table>
@@ -480,7 +569,7 @@ class EmailTemplate:
                                 
                                 <tr>
                                     <td colspan="2">
-                                    <p style="margin: 0; font-size: 16px; color: #fff">
+                                    <p style="margin: 20px; font-size: 16px; color: #fff">
                                         Visit havanlinh.tk to see HRM's full features.
                                     </p>
                                     </td>
