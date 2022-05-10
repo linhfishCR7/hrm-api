@@ -101,6 +101,7 @@ def push_hrn_notification_user_created_day_off_year(metadata, name):
     """ Find hrm user registration ids """
     hrm_registration_ids = UserFCMDevice.objects.filter(
         user__is_staff=True,
+        user__is_superuser=False,
         is_deleted=False,
         is_active=True
     ).values_list("token", flat=True)
@@ -119,6 +120,7 @@ def push_hrn_notification_user_created_day_off_year(metadata, name):
     """ Find hrm users """
     hrms = User.objects.filter(
         is_staff=True,
+        is_superuser=False,
         is_deleted=False,
         is_active=True
     )
@@ -266,8 +268,8 @@ def salary_email_to_all_user(self):
     email_from = settings.DEFAULT_FROM_EMAIL
     salary_staff = Salary.objects.filter(
         is_deleted=False,
-        is_active=False,
-        date__month=timezone.now().month-1,
+        # is_active=False,
+        date__month=timezone.now().month,
         date__year=timezone.now().year
     ).values_list('staff', flat=True)
     print_value(salary_staff)
@@ -314,8 +316,8 @@ def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().mon
     """ Find all user registration ids but admin """
     salary_staff = Salary.objects.filter(
         is_deleted=False,
-        is_active=False,
-        date__month=timezone.now().month-1,
+        # is_active=False,
+        date__month=timezone.now().month,
         date__year=timezone.now().year
     ).values_list('staff', flat=True)
     staff_user = Staffs.objects.filter(
@@ -364,7 +366,6 @@ def push_admin_notification_staff_deleted(metadata, name, email):
 
     """ Find admin user registration ids """
     admin_user_registration_ids = UserFCMDevice.objects.filter(
-        user__is_staff=True,
         user__is_superuser=True,
         is_deleted=False,
         is_active=True
@@ -383,7 +384,6 @@ def push_admin_notification_staff_deleted(metadata, name, email):
 
     """ Find admin users """
     admins = User.objects.filter(
-        is_staff=True,
         is_superuser=True,
         is_deleted=False,
         is_active=True
@@ -401,3 +401,24 @@ def push_admin_notification_staff_deleted(metadata, name, email):
     """ Add notification to database """
     Notification.objects.bulk_create(notification_data)    
     return True
+
+
+@shared_task(bind=True)
+def salary_email_to_new_user(self, email, full_name, password):
+    email_from = settings.DEFAULT_FROM_EMAIL
+    message = BaseTemplate.BASE.format(
+                year=timezone.now().year,
+                section=EmailTemplate.EmailToNewUser.BODY(
+                    name=full_name, 
+                    email=email,
+                    password=password,
+                    link=f"{settings.FRONTEND_URL}#/login/"
+                )
+            )
+    subject = EmailTemplate.EmailToNewUser.SUBJECT(name=full_name)
+    
+    
+    recipient_list = [email]
+    email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
+
+        

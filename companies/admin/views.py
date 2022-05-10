@@ -1,5 +1,5 @@
 from django.utils import timezone
-from base.permissions import IsHrm
+from base.permissions import IsAdmin
 from base.paginations import ItemIndexPagination
 from companies.models import Companies
 from .serializers import (
@@ -16,7 +16,7 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
     
     model = Companies
     serializer_class = CompaniesSerializer
-    permission_classes = [IsHrm]
+    permission_classes = [IsAdmin]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
@@ -47,7 +47,7 @@ class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIVie
     
     model = Companies
     serializer_class = CompaniesSerializer
-    permission_classes = [IsHrm]
+    permission_classes = [IsAdmin]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):

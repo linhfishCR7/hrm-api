@@ -5,10 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Phiếu Lương PDF</title>
+    <title>Tổng Hợp Tiền Lương PDF</title>
     <style>
         @page {
-            size: A4; 
+            size: A4 landscape;
             margin: 2mm;
         }
         section {
@@ -85,6 +85,11 @@
             bpurchase-collapse: collapse;
             width: 100%;
             page-break-inside: auto;
+            border-collapse: collapse;
+        }
+        table, td, th {
+          border: 1px solid
+
         }
 
         td,
@@ -92,6 +97,7 @@
             bpurchase: 1px solid #dddddd;
             text-align: left;
             padding: 8px;
+
         }
 
         tr:nth-child(even) {
@@ -130,20 +136,16 @@
       <div class="w-100">
         <div class="invoice">
           <h1 style="font-size: 30px; text-align: center" class="p">
-            PHIẾU TRẢ LƯƠNG THÁNG {{month}}/{{year}}
+            TỔNG HỢP TIỀN LƯƠNG
           </h1>
           <h1 style="font-size: 20px; text-align: center" class="p">
-            PAY SLIP FOR MONTH {{month}}/{{year}}
+            SUMMARY OF SALARY
           </h1>
-          <h1
-            style="
-              font-size: 20px;
-              text-align: center;
-              text-transform: uppercase;
-            "
-            class="p"
-          >
-            {{user_fullname}}
+          <h1 style="font-size: 20px; text-align: center" class="p">
+            Bộ Phận/Department: {{department}}
+          </h1>
+          <h1 style="font-size: 15px; text-align: center" class="p">
+            Tháng/Month: {{month}}
           </h1>
         </div>
       </div>
@@ -154,85 +156,33 @@
         <div class="center p" style="float: center">
           <table>
             <tr>
-              <td>Họ Tên/ Full Name: {{user_fullname}}</td>
-              <td>Mã NV/ Employee Code: {{staff_data}}</td>
+              <th>Mã Nhân Viên/Employee Code</th>
+              <th>Họ Và Tên/Full Name</th>
+              <th>Chức Vụ/Position</th>
+              <th>Giờ Công Chuẩn/Standard Manhour</th>
+              <th>Giờ Công Thực Tế/Actual Manhour</th>
+              <th>Tổng Lương/Total Salary</th>
+              <th>Lương Trong Tháng/Monthly Salary</th>
             </tr>
+            {% for item in data %}
             <tr>
-              <td>Chức Vụ/ Position: {{position_name_data}}</td>
+              <td>{{item.staff_data}}</td>
+              <td>{{item.user_fullname}}</td>
+              <td>{{item.position_name_data}}</td>
+              <td>{{item.standard_time}}</td>
+              <td>{{item.actual_time}}</td>
+              <td>{{item.total_salary_pre}}</td>
+              <td>{{item.total_salary}}</td>
             </tr>
+            {% endfor %}
             <tr>
-              <td>Bộ Phận/ Department: {{department_name_data}}</td>
-            </tr>
-            <tr>
-              <td>Giờ Công Chuẩn/ Standard Manhour: {{standard_time_data}}</td>
-            </tr>
-            <tr>
-              <td>Giờ Công Thực Tế/ Actual Manhour: {{actual_time_data}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="center p" style="float: center">
-          <h4>* Chi Tiết Lương/ Detail: </h4>
-          <p>Hệ Số/ Coeficient: {{coefficient_data}}</p>
-          <p>Đơn Vị Tiền Tệ/ Currency unit: VNĐ</p>
-
-          <table>
-            <tr>
-              <td>1. Lương Cơ Bản / Basic Salary:</td>
-              <td>{{basic_salary_data}}</td>
-            </tr>
-            <tr>
-              <td>2. Phụ Cấp Trách Nhiệm / Responsibility Allowance:</td>
-              <td>{{extra_data}}</td>
-            </tr>
-            <tr>
-              <td>3. Hỗ Trợ Khác / Other Allowance:</td>
-              <td>{{other_support_data}}</td>
-            </tr>
-            <tr>
-              <td>4. Tổng Lương / Basic (1) + (2) + ( 3):</td>
-              <td>{{total_salary_pre}}</td>
-            </tr>
-            <tr>
-              <td>5. Tăng Ca / Overtime:</td>
-              <td>{{overtime_data}}/h</td>
-            </tr>
-            <tr>
-              <td>6. Bảo Hiểm Bắt Buộc / Obligatory Insurrance:</td>
-              <td>{{allowance_data}}</td>
-            </tr>
-            <tr>
-              <td>7. Thuế Thu Nhập Cá Nhân / Income Tax of Employee:</td>
-              <td>{{tax_data}}</td>
-            </tr>
-            <tr>
-              <td>8. Tiền Lương Tháng / Month Salary:</td>
-              <td>{{total_salary}}</td>
-            </tr>
-            <tr>
-              <td>9. Khác / Other:</td>
-              <td>{{other_data}}</td>
-            </tr>
-            <tr>
-              <td>10. Tiền Lương Thực Lãnh / Actual Salary:</td>
-              <td>{{actual_salary}} VNĐ</td>
+              <td colspan="8">Tổng Cộng/Total: {{total_salary_month}} VNĐ</td>
             </tr>
           </table>
         </div>
       </div>
-      <div class="p-t">
-        <div class="right p" style="float: right; right: 0">
-          <p>Ký Nhận Phiếu</p>
-          <p>  Signature</p>
-          <br/>
-          <br/>
-          <p>{{user_fullname}}</p>
-        </div>
 
-      </div>
-
-      <div class="footer bpurchase-top text-center small m-t">
-      </div>
+      <div class="footer bpurchase-top text-center small m-t"></div>
     </section>
   </body>
 </html>

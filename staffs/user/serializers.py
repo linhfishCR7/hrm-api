@@ -348,7 +348,7 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
                 "religion": response['religion_data'],
                 "literacy": response['literacy_data'],
                 "position": response['position_data'],
-                "user_fullname": response['last_name'] + response['first_name'],
+                "user_fullname": f"{response['last_name']} {response['first_name']}",
                 "email": instance.user.email,
                 "gender": instance.gender,
                 "phone": response['phone'],

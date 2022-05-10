@@ -21,10 +21,12 @@ class GeneratePdf(generics.RetrieveAPIView):
     serializer_class = RetrieveAndListSalarySerializer
 
     def get_queryset(self):
+        staff = Staffs.objects.filter(user_id=self.request.user.id).first()
         return Salary.objects.filter(
             is_deleted=False,
             deleted_at=None,
-            is_active=True
+            is_active=True,
+            staff=staff
         )
 
 
@@ -42,9 +44,11 @@ class ListSalaryAPIView(generics.ListAPIView):
     }    
 
     def get_queryset(self):
+
         return Salary.objects.filter(
             is_deleted=False,
             deleted_at=None,
+            is_active=True,
         ).order_by("-created_at")
     
     @property

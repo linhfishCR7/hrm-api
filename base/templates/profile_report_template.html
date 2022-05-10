@@ -1,5 +1,4 @@
-{% load order_filters %}
-{% load static %}
+{% load order_filters %} {% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,7 +9,7 @@
     <style>
         @page {
             size: A4;
-            margin: 0mm;
+            margin: 2mm;
         }
         section {
             width: 100%;
@@ -122,7 +121,6 @@
         {#        bottom: -20px;#}
         {#    }#}
         {#}#}
-        
     </style>
   </head>
 
@@ -146,7 +144,7 @@
           <table>
             <tr>
               <td>
-                <img src={{logo_url}} altt="" />
+                <img src="{{logo_url}}" altt="" />
               </td>
               <td>
                 <tr>
@@ -199,16 +197,27 @@
               <td>Nơi cấp/ Place of Issuse: {{place_of_issuance}}</td>
             </tr>
             <tr>
-              <td>Địa chỉ thường trú/ Permanent Address: {{permanent_address}}</td>
+              <td>
+                Địa chỉ thường trú/ Permanent Address: {{permanent_address}}
+              </td>
             </tr>
             <tr>
-              <td>Địa chỉ tạm trú/ Temporary Address: {{temporary_residence_address}}</td>
+              <td>
+                Địa chỉ tạm trú/ Temporary Address:
+                {{temporary_residence_address}}
+              </td>
             </tr>
             <tr>
-              <td>Ngày vào làm việc/ Date of Participation to Company: {{start_work_date}}</td>
+              <td>
+                Ngày vào làm việc/ Date of Participation to Company:
+                {{start_work_date}}
+              </td>
             </tr>
             <tr>
-              <td>Ngày kết thúc thử việc/ Date of Ending to Trying Work: {{probationary_end_date}}</td>
+              <td>
+                Ngày kết thúc thử việc/ Date of Ending to Trying Work:
+                {{probationary_end_date}}
+              </td>
             </tr>
             <tr>
               <td>Điện thoại/ Telephone: {{mobile_phone}}</td>
@@ -220,8 +229,9 @@
               <td>Facebook: {{facebook}}</td>
             </tr>
             <tr>
-              <td>Số BHXH/ Number of Social Insuarance: {{social_insurance_number}}</td>
+              <td>Trình độ học vấn/ Acamadic Level: {{literacy}}</td>
             </tr>
+
             <tr>
               <td>Mã số thuế TNCN/ Tax Code of Employee: {{tax_code}}</td>
             </tr>
@@ -232,13 +242,16 @@
               <td>Quốc tịch/ Nationality: {{nationality}}</td>
             </tr>
             <tr>
-              <td>Dân tộc/ Nation:  {{ethnicity}}</td>
+              <td>Dân tộc/ Nation: {{ethnicity}}</td>
             </tr>
             <tr>
               <td>Tôn giáo/ Religion: {{religion}}</td>
             </tr>
             <tr>
-              <td>Trình độ học vấn/ Acamadic Level: {{literacy}}</td>
+              <td>
+                Số BHXH/ Number of Social Insuarance:
+                {{social_insurance_number}}
+              </td>
             </tr>
           </table>
         </div>

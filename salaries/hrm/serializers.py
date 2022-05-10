@@ -119,8 +119,8 @@ class SalarySerializer(serializers.ModelSerializer):
         if day_off_year: 
             day_off_year_detail = DayOffYearDetails.objects.filter(
                 day_off_years=day_off_year.id,
-                from_date__month=timezone.now().month-1,
-                to_date__month=timezone.now().month-1,
+                from_date__month=timezone.now().month,
+                to_date__month=timezone.now().month,
                 # day_off_types=
             ).first()
             
@@ -141,7 +141,7 @@ class SalarySerializer(serializers.ModelSerializer):
             for item in staff_project:
                 overtime = Timekeeping.objects.filter(
                     staff_project=item.id,
-                    date__month=timezone.now().month-1
+                    date__month=timezone.now().month
                 ).values()
                 total = 0
                 for overtime_data in overtime:
@@ -181,19 +181,19 @@ class SalarySerializer(serializers.ModelSerializer):
         month_salary = total_salary*(actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance
         
         if month_salary <= SalaryContant.M5:
-            tax = month_salary * (SalaryContant.M0_M5)
+            tax = 0.0
         elif month_salary > SalaryContant.M5 and month_salary <= SalaryContant.M10:
-            tax = month_salary * (SalaryContant.UP_M5_M10)
+            tax = 0.0
         elif month_salary > SalaryContant.M10 and month_salary <= SalaryContant.M18:
-            tax = month_salary * (SalaryContant.UP_M10_M18)
+            tax = (month_salary - SalaryContant.M10) * (SalaryContant.UP_M10_M18)
         elif month_salary > SalaryContant.M18 and month_salary <= SalaryContant.M32:
-            tax = month_salary * (SalaryContant.UP_M18_M32)
+            tax = (month_salary - SalaryContant.M18) * (SalaryContant.UP_M18_M32)
         elif month_salary > SalaryContant.M32 and month_salary <= SalaryContant.M52:
-            tax = month_salary * (SalaryContant.UP_M32_M52)
+            tax = (month_salary-SalaryContant.M32) * (SalaryContant.UP_M32_M52)
         elif month_salary > SalaryContant.M52 and month_salary <= SalaryContant.M80:
-            tax = month_salary * (SalaryContant.UP_M52_M80)
+            tax = (month_salary-SalaryContant.M52) * (SalaryContant.UP_M52_M80)
         else:
-            tax = month_salary * (SalaryContant.UP_M80)
+            tax = (month_salary-SalaryContant.UP_M52_M80) * (SalaryContant.UP_M80)
 
         # create basic salary from input data
         salary = Salary.objects.create(
@@ -237,6 +237,7 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
             "other",
             "note",
             "staff",
+            "link_list_salary"
         ]
 
     
@@ -254,8 +255,8 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
 
         day_off_year_detail = DayOffYearDetails.objects.filter(
             day_off_years=day_off_year.id,
-            from_date__month=timezone.now().month-1,
-            to_date__month=timezone.now().month-1,
+            from_date__month=timezone.now().month,
+            to_date__month=timezone.now().month,
             # day_off_types=
         ).first()
 
@@ -277,7 +278,7 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
             for item in staff_project.data:
                 overtime = Timekeeping.objects.filter(
                     staff_project=item['id'],
-                    date__month=timezone.now().month-1
+                    date__month=timezone.now().month
                 ).values()
                 total = 0
                 for overtime_data in overtime:
@@ -314,19 +315,19 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         month_salary = total_salary*(actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance
         
         if month_salary <= SalaryContant.M5:
-            tax = month_salary * (SalaryContant.M0_M5)
+            tax = 0.0
         elif month_salary > SalaryContant.M5 and month_salary <= SalaryContant.M10:
-            tax = month_salary * (SalaryContant.UP_M5_M10)
+            tax = 0.0
         elif month_salary > SalaryContant.M10 and month_salary <= SalaryContant.M18:
-            tax = month_salary * (SalaryContant.UP_M10_M18)
+            tax = (month_salary - SalaryContant.M10) * (SalaryContant.UP_M10_M18)
         elif month_salary > SalaryContant.M18 and month_salary <= SalaryContant.M32:
-            tax = month_salary * (SalaryContant.UP_M18_M32)
+            tax = (month_salary - SalaryContant.M18) * (SalaryContant.UP_M18_M32)
         elif month_salary > SalaryContant.M32 and month_salary <= SalaryContant.M52:
-            tax = month_salary * (SalaryContant.UP_M32_M52)
+            tax = (month_salary-SalaryContant.M32) * (SalaryContant.UP_M32_M52)
         elif month_salary > SalaryContant.M52 and month_salary <= SalaryContant.M80:
-            tax = month_salary * (SalaryContant.UP_M52_M80)
+            tax = (month_salary-SalaryContant.M52) * (SalaryContant.UP_M52_M80)
         else:
-            tax = month_salary * (SalaryContant.UP_M80)
+            tax = (month_salary-SalaryContant.UP_M52_M80) * (SalaryContant.UP_M80)
 
 
         salary = Salary.objects.filter(id=instance.id).first()
@@ -368,8 +369,10 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         response['standard_time_data'] = f"{instance.standard_time:,}"
         response['actual_time_data'] = f"{instance.actual_time:,}"
 
-
-        response['actual_salary'] = f"{total_salary * (instance.actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance+(total_salary*instance.overtime/SalaryContant.STANDARD_TIME-instance.tax):,}"
+        actual_salary_number = total_salary * (instance.actual_time/(SalaryContant.STANDARD_TIME))-salary_allowance+(total_salary*instance.overtime/SalaryContant.STANDARD_TIME-instance.tax)
+        response['actual_salary_number'] = actual_salary_number
+        
+        response['actual_salary'] = f"{actual_salary_number:,}"
         response['total_salary'] = f"{total_salary:,}"
 
         response['month'] = f"{instance.date:%m}"

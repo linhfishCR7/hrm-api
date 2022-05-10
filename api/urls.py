@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/user/notification/', include('notification.user.urls')),
     path('api/user/salary/', include('salaries.user.urls')),
     path('api/user/staffs/', include('staffs.user.urls')),
+    path('api/user/dashboard/', include('dashboard.user.urls')),
 
     #################################################################################
     # Admin
@@ -37,6 +38,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/admin/user/', include('users.admin.urls')),
     path('api/admin/notification/', include('notification.admin.urls')),
+    path('api/admin/companies/', include('companies.admin.urls')),
+    path('api/admin/branchs/', include('branchs.admin.urls')),
+    path('api/admin/dashboard/', include('dashboard.admin.urls')),
 
     #################################################################################
 

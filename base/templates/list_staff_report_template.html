@@ -5,10 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Phiếu Lương PDF</title>
+    <title>Danh Sách Nhân Sự PDF</title>
     <style>
         @page {
-            size: A4; 
+            size: A2 landscape;
             margin: 2mm;
         }
         section {
@@ -85,6 +85,11 @@
             bpurchase-collapse: collapse;
             width: 100%;
             page-break-inside: auto;
+            border-collapse: collapse;
+        }
+        table, td, th {
+          border: 1px solid
+
         }
 
         td,
@@ -92,6 +97,7 @@
             bpurchase: 1px solid #dddddd;
             text-align: left;
             padding: 8px;
+
         }
 
         tr:nth-child(even) {
@@ -130,21 +136,13 @@
       <div class="w-100">
         <div class="invoice">
           <h1 style="font-size: 30px; text-align: center" class="p">
-            PHIẾU TRẢ LƯƠNG THÁNG {{month}}/{{year}}
+            DANH SÁCH NHÂN SỰ/REGISTER OF EMPLOYEE
           </h1>
+          
           <h1 style="font-size: 20px; text-align: center" class="p">
-            PAY SLIP FOR MONTH {{month}}/{{year}}
+            Chi Nhánh/Branch: {{branch}}
           </h1>
-          <h1
-            style="
-              font-size: 20px;
-              text-align: center;
-              text-transform: uppercase;
-            "
-            class="p"
-          >
-            {{user_fullname}}
-          </h1>
+
         </div>
       </div>
       <!-- -- -->
@@ -154,85 +152,58 @@
         <div class="center p" style="float: center">
           <table>
             <tr>
-              <td>Họ Tên/ Full Name: {{user_fullname}}</td>
-              <td>Mã NV/ Employee Code: {{staff_data}}</td>
+              <th>Tên Bộ Phận/Department</th>
+              <th>Mã Nhân Viên/Employee Code</th>
+              <th>Chức Vụ/Position</th>
+              <th>Họ Và Tên/Full Name</th>
+              <th>Ngày Sinh/Birthday</th>
+              <th>Nơi Sinh/Place of Birth</th>
+              <th>Nguyên Quán/Domicile</th>
+              <th>Giới Tính/Sex</th>
+              <th>TT Hôn Nhân/Marrial Status</th>
+              <th>Số Con/Num.of Children</th>
+              <th>Số CMND/ID Number</th>
+              <th>Ngày Cấp/Date Issued</th>
+              <th>Nơi Cấp/Place Issued</th>
+              <th>Địa Chỉ Thường Trú/Permanent Address</th>
+              <th>Địa Chỉ Tạm Trú/Temporary Address</th>
+              <th>Chức Vụ/Position</th>
+              <th>Ngày Vào Làm Việc/Date of Working</th>
+              <th>Di Động/Mobile Phone</th>
+              <th>Email/Email</th>
+              <th>Email Cá Nhân/Personal Email</th>
+              <th>FaceBook/FaceBook</th>
             </tr>
+            {% for item in data %}
             <tr>
-              <td>Chức Vụ/ Position: {{position_name_data}}</td>
+              <td>{{item.department_data}}</td>
+              <td>{{item.staff}}</td>
+              <td>{{item.position_name}}</td>
+              <td>{{item.last_name}} {{item.first_name}}</td>
+              <td>{{item.day_of_birth}}</td>
+              <td>{{item.place_of_birth}}</td>
+              <td>{{item.domicile}}</td>
+              <td>{{item.gender}}</td>
+              <td>{{item.marital_status}}</td>
+              <td>{{item.number_of_children}}</td>
+              <td>{{item.identity_card}}</td>
+              <td>{{item.issuance_date}}</td>
+              <td>{{item.place_of_issuance}}</td>
+              <td>{{item.permanent_address}}</td>
+              <td>{{item.temporary_residence_address}}</td>
+              <td>{{item.position_data}}</td>
+              <td>{{item.start_work_date}}</td>
+              <td>{{item.phone}}</td>
+              <td>{{item.email}}</td>
+              <td>{{item.personal_email}}</td>
+              <td>{{item.facebook}}</td>
             </tr>
-            <tr>
-              <td>Bộ Phận/ Department: {{department_name_data}}</td>
-            </tr>
-            <tr>
-              <td>Giờ Công Chuẩn/ Standard Manhour: {{standard_time_data}}</td>
-            </tr>
-            <tr>
-              <td>Giờ Công Thực Tế/ Actual Manhour: {{actual_time_data}}</td>
-            </tr>
-          </table>
-        </div>
-        <div class="center p" style="float: center">
-          <h4>* Chi Tiết Lương/ Detail: </h4>
-          <p>Hệ Số/ Coeficient: {{coefficient_data}}</p>
-          <p>Đơn Vị Tiền Tệ/ Currency unit: VNĐ</p>
-
-          <table>
-            <tr>
-              <td>1. Lương Cơ Bản / Basic Salary:</td>
-              <td>{{basic_salary_data}}</td>
-            </tr>
-            <tr>
-              <td>2. Phụ Cấp Trách Nhiệm / Responsibility Allowance:</td>
-              <td>{{extra_data}}</td>
-            </tr>
-            <tr>
-              <td>3. Hỗ Trợ Khác / Other Allowance:</td>
-              <td>{{other_support_data}}</td>
-            </tr>
-            <tr>
-              <td>4. Tổng Lương / Basic (1) + (2) + ( 3):</td>
-              <td>{{total_salary_pre}}</td>
-            </tr>
-            <tr>
-              <td>5. Tăng Ca / Overtime:</td>
-              <td>{{overtime_data}}/h</td>
-            </tr>
-            <tr>
-              <td>6. Bảo Hiểm Bắt Buộc / Obligatory Insurrance:</td>
-              <td>{{allowance_data}}</td>
-            </tr>
-            <tr>
-              <td>7. Thuế Thu Nhập Cá Nhân / Income Tax of Employee:</td>
-              <td>{{tax_data}}</td>
-            </tr>
-            <tr>
-              <td>8. Tiền Lương Tháng / Month Salary:</td>
-              <td>{{total_salary}}</td>
-            </tr>
-            <tr>
-              <td>9. Khác / Other:</td>
-              <td>{{other_data}}</td>
-            </tr>
-            <tr>
-              <td>10. Tiền Lương Thực Lãnh / Actual Salary:</td>
-              <td>{{actual_salary}} VNĐ</td>
-            </tr>
+            {% endfor %}
           </table>
         </div>
       </div>
-      <div class="p-t">
-        <div class="right p" style="float: right; right: 0">
-          <p>Ký Nhận Phiếu</p>
-          <p>  Signature</p>
-          <br/>
-          <br/>
-          <p>{{user_fullname}}</p>
-        </div>
 
-      </div>
-
-      <div class="footer bpurchase-top text-center small m-t">
-      </div>
+      <div class="footer bpurchase-top text-center small m-t"></div>
     </section>
   </body>
 </html>
