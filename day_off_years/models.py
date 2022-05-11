@@ -18,3 +18,5 @@ class DayOffYears(BaseModel):
         blank=True
     )
     staff = models.ForeignKey('staffs.Staffs', on_delete=models.CASCADE, related_name='day_off_year_staff')
+    is_print = models.BooleanField(default=False, null=True, blank=True)
+    link_day_off_year = models.CharField(max_length=255, null=True, blank=True)

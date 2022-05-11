@@ -350,6 +350,8 @@ class StaffsSerializer(serializers.ModelSerializer):
         """ Delete old company address """
         Staffs.objects.filter(id=instance.id).first().addresses.all().delete()
 
+        
+        
         """ Add new address """
         new_address_data = []
         for new_address in addresses_body:
@@ -361,6 +363,8 @@ class StaffsSerializer(serializers.ModelSerializer):
         Staffs.objects.filter(
             id=instance.id).first().addresses.add(*new_address)
         updated_instance = super().update(instance, validated_data)
+        """update is print"""
+        Staffs.objects.filter(id=instance.id).update(is_print=False)
         return updated_instance
 
 
@@ -753,7 +757,7 @@ class ListStaffsReportSerializer(serializers.ModelSerializer):
             if item['type']=='temporary_residence_address':
                 response['temporary_residence_address'] = item['address']
             
-        if instance.is_print==True:
+        if instance.is_print==False:
             data = {
                 "staff": instance.staff,
                 "place_of_birth": response['place_of_birth'],
@@ -792,6 +796,8 @@ class ListStaffsReportSerializer(serializers.ModelSerializer):
             HTML(string=context).write_pdf(f)
             f.close()
             key = MediaUpLoad().upload_pdf_to_s3(os.path.join(settings.BASE_DIR, filename), filename)
+            if os.path.exists(filename):
+                os.remove(filename)
             response['key'] = MediaUpLoad().get_file_url(key)
             Staffs.objects.filter(id=instance.id).update(
                 link_staff=response['key'],
