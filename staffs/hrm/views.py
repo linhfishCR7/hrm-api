@@ -8,7 +8,8 @@ from users.models import User
 from .serializers import (
     StaffsSerializer,
     RetrieveAndListStaffsSerializer,
-    ListStaffsReportSerializer
+    ListStaffsReportSerializer,
+    ListAllStaffsReportSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -113,11 +114,11 @@ class RetrieveUpdateDestroyStaffsAPIView(generics.RetrieveUpdateDestroyAPIView):
             return RetrieveAndListStaffsSerializer
 
 
-class ListStaffsReportAPIView(generics.ListAPIView):
+class ListAllStaffsReportAPIView(generics.ListAPIView):
 
     model = Staffs
     permission_classes = [IsHrm]
-    serializer_class = ListStaffsReportSerializer
+    serializer_class = ListAllStaffsReportSerializer
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
@@ -158,7 +159,6 @@ class ListStaffsReportAPIView(generics.ListAPIView):
                 Q(is_active=True) &
                 Q(department__branch__id=self.request.GET.get('branch', None))
             ).first()
-            print_value(staff_check.is_print)
             if staff_check.is_print==False:
                 data = {
                     "data": serializer.data,
@@ -255,3 +255,57 @@ class ListStaffsReportAPIView(generics.ListAPIView):
             return None
         return super().paginator
 
+
+class ListStaffsReportAPIView(generics.ListCreateAPIView):
+
+    model = Staffs
+    permission_classes = [IsHrm]
+    serializer_class = ListStaffsReportSerializer
+    pagination_class = ItemIndexPagination
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = [
+        'user__first_name',
+        'user__last_name',
+        'user__email',
+        'user__phone',
+        'staff',
+        'gender',
+        'marital_status',
+        'personal_email'
+    ]
+    filter_fields = {
+        'id': ['exact', 'in'],
+        'nationality__name': ['exact', 'in'],
+        'ethnicity__name': ['exact', 'in'],
+        'religion__name': ['exact', 'in'],
+        'literacy__name': ['exact', 'in'],
+        'department__name': ['exact', 'in'],
+        'department__id': ['exact', 'in'],
+        'is_active': ['exact', 'in'],
+    }
+
+    def get_queryset(self):
+        return Staffs.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")
+        
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
+
+
+class RetrieveStaffsReportAPIView(generics.RetrieveAPIView):
+
+    model = Staffs
+    permission_classes = [IsHrm]
+    lookup_url_kwarg = "id"
+    serializer_class = ListStaffsReportSerializer
+    def get_queryset(self):
+        return Staffs.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        )

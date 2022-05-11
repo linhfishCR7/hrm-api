@@ -10,7 +10,8 @@ from staffs.models import Staffs
 from departments.models import Departments
 from .serializers import (
     SalarySerializer,
-    RetrieveAndListSalarySerializer
+    RetrieveAndListSalarySerializer,
+    RetrieveAndListReportSalarySerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -514,4 +515,42 @@ class CheckSalaryAPIView(APIView):
             return Response(dict(message=f"Tháng {now().month} Năm {now().year} Đã Tạo Phiếu Lương Xong"))
 
 
+class ListSalaryReportAPIView(generics.ListAPIView):
+    
+    model = Salary
+    permission_classes = [IsHrm]
+    serializer_class = RetrieveAndListReportSalarySerializer
+    pagination_class = ItemIndexPagination
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
+    filter_fields = {
+        'staff__id': ['exact', 'in'],
+        'staff__department__id': ['exact', 'in'],
+    }
+    
+    def get_queryset(self):
+        return Salary.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")
+    
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
 
+
+class RetrieveSalaryReportAPIView(generics.RetrieveAPIView):
+    
+    model = Salary
+    permission_classes = [IsHrm]
+    lookup_url_kwarg = "id"
+    serializer_class = RetrieveAndListReportSalarySerializer
+
+    def get_queryset(self):
+        return Salary.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        )

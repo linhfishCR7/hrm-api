@@ -7,12 +7,16 @@ from .views import (
     ListCurrentalaryAPIView,
     CheckSalaryAPIView,
     ListAllSalaryReportAPIView,
-    ListDepartmentSalaryReportAPIView
+    ListDepartmentSalaryReportAPIView,
+    ListSalaryReportAPIView,
+    RetrieveSalaryReportAPIView
 )
 
 
 urlpatterns = [
     path('', ListCreateSalaryAPIView.as_view(), name='list-create-salary'),
+    path('list-salary-report/', ListSalaryReportAPIView.as_view(), name='list-salary-report'),
+    path('salary-report/<uuid:id>/', RetrieveSalaryReportAPIView.as_view(), name='retrieve-salary-report'),
     path('list-all-salary-report/', ListAllSalaryReportAPIView.as_view(), name='list-all-salary-report'),
     path('list-department-salary-report/', ListDepartmentSalaryReportAPIView.as_view(), name='list-department-salary-report'),
     path('current/', ListCurrentalaryAPIView.as_view(), name='list-current-salary'),
