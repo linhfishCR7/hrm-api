@@ -59,9 +59,13 @@ CORS_ORIGIN_WHITELIST = (
     'https://127.0.0.1:3000',
     'https://havanlinh.tech/',
     'https://havanlinh.tech',
+    'https://hrm.havanlinh.tech',
+    'https://user.havanlinh.tech',
 )
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'https://hrm.havanlinh.tech',
+    'https://user.havanlinh.tech',
     'https://havanlinh.tech',
 ]
 # Application definition

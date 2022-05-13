@@ -171,7 +171,8 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
             HTML(string=context).write_pdf(f)
             f.close()
             key = MediaUpLoad().upload_pdf_to_s3(os.path.join(settings.BASE_DIR, filename), filename)
-            
+            if os.path.exists(filename):
+                os.remove(filename)
             response['key'] = MediaUpLoad().get_file_url(key)
             Salary.objects.filter(id=instance.id).update(
                 link_salary=response['key'],
