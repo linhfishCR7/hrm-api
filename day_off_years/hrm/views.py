@@ -89,6 +89,7 @@ class ListDayOffYearsReportAPIView(generics.ListAPIView):
     filter_fields = {
         'date': ['exact', 'in'],
         'staff__id': ['exact', 'in'],
+        'id': ['exact', 'in'],
     }
     
     def get_queryset(self):

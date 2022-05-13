@@ -189,7 +189,8 @@ class RetrieveAndListDayOffYearsReportSerializer(serializers.ModelSerializer):
             'status',
             'hand_over',
             'approved_by',
-            'staff'
+            'staff',
+            'link_day_off_year'
         ]
         read_only_fields = [
             'id',
