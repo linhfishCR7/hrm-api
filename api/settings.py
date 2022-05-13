@@ -59,9 +59,13 @@ CORS_ORIGIN_WHITELIST = (
     'https://127.0.0.1:3000',
     'https://havanlinh.tech/',
     'https://havanlinh.tech',
+    'https://hrm.havanlinh.tech',
+    'https://user.havanlinh.tech',
 )
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'https://hrm.havanlinh.tech',
+    'https://user.havanlinh.tech',
     'https://havanlinh.tech',
 ]
 # Application definition
@@ -138,7 +142,7 @@ ROOT_URLCONF = 'api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'base/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -147,7 +151,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries' : {
+                'order_filters': 'django.templatetags.static', 
+            }
         },
+        
     },
 ]
 

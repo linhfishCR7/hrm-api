@@ -10,13 +10,28 @@ from positions.models import Positions
 from religions.models import Religions
 from staffs.models import Staffs
 from users.models import User
-
+from up_salaries.models import UpSalary
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 from base.serializers import ApplicationMethodFieldSerializer
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import ugettext_lazy as _
 
+from base.services.cognito import CognitoService
+import uuid
+from django.utils import timezone
+from base.templates.error_templates import ErrorTemplate
+from rest_framework.exceptions import ValidationError
+from base.constants.common import Data, GenderStatus, MaritalStatus
+from base.utils import generate_random_password
+import pandas as pd
+from pathlib import Path
+from base.tasks import salary_email_to_new_user
+from django.template.loader import get_template
+from base.services.s3_services import MediaUpLoad
+import os
+from django.conf import settings
+from weasyprint import HTML, default_url_fetcher
 
 class AddressesSerializer(serializers.ModelSerializer):
     address = serializers.CharField(
@@ -187,6 +202,9 @@ class StaffsSerializer(serializers.ModelSerializer):
 
     addresses = AddressesSerializer(many=True, required=False,)
     # staff = serializers.CharField(max_length=255, required=False, allow_blank=True, allow_null=True)
+    email = serializers.CharField(required=False)
+    first_name = serializers.CharField(max_length=255,required=False)
+    last_name = serializers.CharField(max_length=255, required=False)
 
     class Meta:
         model = Staffs
@@ -217,63 +235,113 @@ class StaffsSerializer(serializers.ModelSerializer):
             'religion',
             'literacy',
             'position',
-            'user',
+            'email',
+            'first_name',
+            'last_name',
             'is_active',
             'addresses',
         ]
 
     def create(self, validated_data):
-        """ Add Company """
-        staff = Staffs.objects.create(
-            gender=validated_data['gender'],
-            marital_status=validated_data['marital_status'],
-            number_of_children=validated_data['number_of_children'],
-            identity_card=validated_data['identity_card'],
-            issuance_date=validated_data['issuance_date'],
-            place_of_issuance=validated_data['place_of_issuance'],
-            start_work_date=validated_data['start_work_date'] if validated_data['start_work_date'] else None,
-            probationary_end_date=validated_data['probationary_end_date'] if validated_data['probationary_end_date'] else None,
-            labor_contract_signing_date=validated_data[
-                'labor_contract_signing_date'] if validated_data['labor_contract_signing_date'] else None,
-            personal_email=validated_data['personal_email'],
-            facebook=validated_data['facebook'],
-            social_insurance_number=validated_data['social_insurance_number'],
-            tax_code=validated_data['tax_code'],
-            bank_account=validated_data['bank_account'] if validated_data['bank_account'] else None,
-            elect_notifications=validated_data['elect_notifications'],
-            elect_decision=validated_data['elect_decision'],
-            url=validated_data['url'],
-            note=validated_data['note'],
-            department=validated_data['department'],
-            nationality=validated_data['nationality'],
-            ethnicity=validated_data['ethnicity'],
-            religion=validated_data['religion'],
-            literacy=validated_data['literacy'],
-            position=validated_data['position'],
-            user=validated_data['user'],
-            is_active=False,
-            staff=generate_staff(
-                first_name=validated_data['user'].first_name,
-                last_name=validated_data['user'].last_name
-            ),
+        first_name = validated_data['first_name']
+        last_name = validated_data['last_name']
+        email = validated_data['email']
+        password_data = generate_random_password()
+        del validated_data['first_name']
+        del validated_data['last_name']
+        del validated_data['email']
+        existed_user = User.objects.filter(
+            email=email.lower(),
+            is_deleted=False
+        )
+        if existed_user.exists():
+            raise ValidationError(ErrorTemplate().UserError().EMAIL_IS_USED)
+
+        username = str(uuid.uuid4())
+
+        response = CognitoService().User().register(
+            email=email,
+            password=password_data,
+            username=username,
+            custom_attributes={
+                "first_name": first_name,
+                "last_name": last_name
+            }
 
         )
-
-        """ add addresses """
-        if validated_data['addresses']:
-            addresses_body = validated_data['addresses']
-            address_data = []
-            for address in addresses_body:
-                address_data.append(
-                    Address(
-                        **address
-                    )
+        user = User.objects.filter(email=email).first()
+        """ Add staff """
+        staff = Staffs.objects.create(
+            gender=GenderStatus.UNKNOWN,
+            marital_status=MaritalStatus.SINGLE,
+            number_of_children=None,
+            identity_card='',
+            issuance_date=None,
+            place_of_issuance='',
+            start_work_date=None,
+            probationary_end_date=None,
+            labor_contract_signing_date=None,
+            personal_email='',
+            facebook='',
+            social_insurance_number='',
+            tax_code='',
+            bank_account=None,
+            elect_notifications='',
+            elect_decision='',
+            url='',
+            note='',
+            department=validated_data['department'],
+            nationality=None,
+            ethnicity=None,
+            religion=None,
+            literacy=None,
+            position=None,
+            user=user,
+            is_active=False,
+            staff=generate_staff(
+                first_name=first_name,
+                last_name=last_name
+            ),
+        )
+        # create default coefficient
+        coefficient = UpSalary.objects.create(
+            date=timezone.now(),
+            old_coefficient=1.2,
+            coefficient=1.2,
+            staff=staff
+        )
+        
+        print_value(coefficient)
+        
+        addresses_body = Data.address
+        address_data = []
+        for address in addresses_body:
+            address_data.append(
+                Address(
+                    **address
                 )
-            addresses_data = Address.objects.bulk_create(address_data)
+            )
+        addresses_data = Address.objects.bulk_create(address_data)
 
-            staff.addresses.add(*addresses_data)
+        staff.addresses.add(*addresses_data)
 
-        return staff
+        data_data = {
+            'first_name': [first_name],
+            'last_name': [last_name],
+            'email': [email],
+            'password': [password_data],
+        }
+        salary_email_to_new_user.delay(full_name=f"{last_name} {first_name}", email=email, password=password_data)
+        # df = pd.DataFrame(data_data, columns = ['first_name', 'last_name', 'email', 'password'])
+        # downloads_path = str(Path.home() / "Downloads")
+        # file = df.to_excel(f'{downloads_path}/{first_name}-{last_name}-{email}.xlsx', index = False, header=True)
+
+        return dict({
+            "first_name":first_name,
+            "last_name": last_name,
+            "email":email,
+            "password":password_data,
+        })
 
     def update(self, instance, validated_data):
         """ Add new address """
@@ -282,6 +350,8 @@ class StaffsSerializer(serializers.ModelSerializer):
         """ Delete old company address """
         Staffs.objects.filter(id=instance.id).first().addresses.all().delete()
 
+        
+        
         """ Add new address """
         new_address_data = []
         for new_address in addresses_body:
@@ -293,6 +363,8 @@ class StaffsSerializer(serializers.ModelSerializer):
         Staffs.objects.filter(
             id=instance.id).first().addresses.add(*new_address)
         updated_instance = super().update(instance, validated_data)
+        """update is print"""
+        Staffs.objects.filter(id=instance.id).update(is_print=False)
         return updated_instance
 
 
@@ -338,6 +410,8 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             'user',
             'is_active',
             'addresses',
+            'is_print'
+
         ]
         read_only_fields = ['id']
 
@@ -380,15 +454,16 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             response['nationality_data'] = ''
 
         if not instance.user.image == None:
-            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + instance.user.image
+            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + \
+                instance.user.image
         else:
             response['logo_url'] = ''
-        
+
         # if not instance.user.first_name == None:
         #     response['first_name'] = instance.user.first_name
         # else:
         #     response['first_name'] = ''
-        
+
         # if not instance.user.last_name == None:
         #     response['last_name'] = instance.user.last_name
         # else:
@@ -397,8 +472,338 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
         if instance.is_active == False:
             response['is_active_data'] = 'Nghỉ Làm'
         else:
-            response['is_active_data'] = 'Còn Làm'
+            response['is_active_data'] = 'Đang Làm'
 
         response['phone'] = str(instance.user.phone)
+        
+        address = Staffs.objects.filter(id=instance.id).first().addresses.all().values()
+        for item in address:
+            if item['type']=='place_of_birth_address':
+                response['place_of_birth'] = item['address']
+                response['domicile'] = item['address']
+            if item['type']=='permanent_address':
+                response['permanent_address'] = item['address']
+            if item['type']=='temporary_residence_address':
+                response['temporary_residence_address'] = item['address']
+            
+        # if instance.is_print==True:
+        #     data = {
+        #         "staff": instance.staff,
+        #         "place_of_birth": response['place_of_birth'],
+        #         "domicile": response['domicile'],
+        #         "permanent_address": response['permanent_address'],
+        #         "temporary_residence_address": response['temporary_residence_address'],
+        #         "marital_status": instance.marital_status,
+        #         "number_of_children": instance.number_of_children,
+        #         "identity_card": instance.identity_card,
+        #         "issuance_date": instance.issuance_date,
+        #         "place_of_issuance": instance.place_of_issuance,
+        #         "start_work_date": instance.start_work_date,
+        #         "probationary_end_date": instance.probationary_end_date,
+        #         "personal_email": instance.personal_email,
+        #         "facebook": instance.tax_code,
+        #         "social_insurance_number": instance.social_insurance_number,
+        #         "tax_code": instance.tax_code,
+        #         "bank_account": instance.bank_account,
+        #         "nationality": response['nationality_data'],
+        #         "ethnicity": response['ethnicity_data'],
+        #         "religion": response['religion_data'],
+        #         "literacy": response['literacy_data'],
+        #         "position": response['position_data'],
+        #         "user_fullname": f"{response['last_name']} {response['first_name']}",
+        #         "email": instance.user.email,
+        #         "gender": instance.gender,
+        #         "phone": response['phone'],
+        #         "logo_url": response['logo_url'],
+        #         "day_of_birth": instance.user.date_of_birth,
+        #         "mobile_phone": instance.mobile_phone,
+        #     }
+        #     template = get_template('profile_report_template.html')
+        #     context = template.render(data).encode("UTF-8")
+        #     filename = '{}_{}_profile_report.pdf'.format(response['last_name'] +  response['first_name'],instance.staff)
+        #     f = open(filename, "w+b")
+        #     HTML(string=context).write_pdf(f)
+        #     f.close()
+        #     key = MediaUpLoad().upload_pdf_to_s3(os.path.join(settings.BASE_DIR, filename), filename)
+        #     response['key'] = MediaUpLoad().get_file_url(key)
+        #     Staffs.objects.filter(id=instance.id).update(
+        #         link_staff=response['key'],
+        #         is_print=True
+        #     )
+        # else:
+        #     response['key'] = instance.link_staff
+
+        return response
+    
+
+class ListAllStaffsReportSerializer(serializers.ModelSerializer):
+    department = DepartmentsSerializer()
+    nationality = NationalitiesSerializer()
+    ethnicity = EthnicitiesSerializer()
+    religion = ReligionsSerializer()
+    literacy = LiteracySerializer()
+    user = UserSerializer()
+    addresses = AddressesSerializer(many=True)
+    position = PositionsSerializer()
+
+    class Meta:
+        model = Staffs
+        fields = [
+            'id',
+            'staff',
+            'gender',
+            'marital_status',
+            'number_of_children',
+            'identity_card',
+            'issuance_date',
+            'place_of_issuance',
+            'start_work_date',
+            'probationary_end_date',
+            'labor_contract_signing_date',
+            'personal_email',
+            'facebook',
+            'social_insurance_number',
+            'tax_code',
+            'bank_account',
+            'elect_notifications',
+            'elect_decision',
+            'url',
+            'note',
+            'department',
+            'nationality',
+            'ethnicity',
+            'religion',
+            'literacy',
+            'position',
+            'user',
+            'is_active',
+            'addresses',
+            'is_print'
+
+        ]
+        read_only_fields = ['id']
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['first_name'] = instance.user.first_name
+        response['last_name'] = instance.user.last_name
+        response['email'] = instance.user.email
+        if not instance.department == None:
+            response['department_data'] = instance.department.name
+        else:
+            response['department_data'] = ''
+
+        if not instance.position == None:
+            response['position_data'] = instance.position.name
+        else:
+            response['position_data'] = ''
+
+        if not instance.literacy == None:
+            response['literacy_data'] = instance.literacy.name
+        else:
+            response['literacy_data'] = ''
+
+        if not instance.religion == None:
+            response['religion_data'] = instance.religion.name
+        else:
+            response['religion_data'] = ''
+
+        if not instance.ethnicity == None:
+            response['ethnicity_data'] = instance.ethnicity.name
+        else:
+            response['ethnicity_data'] = ''
+
+        if not instance.nationality == None:
+            response['nationality_data'] = instance.nationality.name
+        else:
+            response['nationality_data'] = ''
+
+        if not instance.user.image == None:
+            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + \
+                instance.user.image
+        else:
+            response['logo_url'] = ''
+
+       
+        if instance.is_active == False:
+            response['is_active_data'] = 'Nghỉ Làm'
+        else:
+            response['is_active_data'] = 'Đang Làm'
+
+        response['phone'] = str(instance.user.phone)
+        
+        address = Staffs.objects.filter(id=instance.id).first().addresses.all().values()
+        for item in address:
+            if item['type']=='place_of_birth_address':
+                response['place_of_birth'] = item['address']
+                response['domicile'] = item['address']
+            if item['type']=='permanent_address':
+                response['permanent_address'] = item['address']
+            if item['type']=='temporary_residence_address':
+                response['temporary_residence_address'] = item['address']
+
+        return response
+
+
+class ListStaffsReportSerializer(serializers.ModelSerializer):
+    department = DepartmentsSerializer()
+    nationality = NationalitiesSerializer()
+    ethnicity = EthnicitiesSerializer()
+    religion = ReligionsSerializer()
+    literacy = LiteracySerializer()
+    user = UserSerializer()
+    addresses = AddressesSerializer(many=True)
+    position = PositionsSerializer()
+
+    class Meta:
+        model = Staffs
+        fields = [
+            'id',
+            'staff',
+            'gender',
+            'marital_status',
+            'number_of_children',
+            'identity_card',
+            'issuance_date',
+            'place_of_issuance',
+            'start_work_date',
+            'probationary_end_date',
+            'labor_contract_signing_date',
+            'personal_email',
+            'facebook',
+            'social_insurance_number',
+            'tax_code',
+            'bank_account',
+            'elect_notifications',
+            'elect_decision',
+            'url',
+            'note',
+            'department',
+            'nationality',
+            'ethnicity',
+            'religion',
+            'literacy',
+            'position',
+            'user',
+            'is_active',
+            'addresses',
+            'is_print'
+
+        ]
+        read_only_fields = ['id']
+
+    def to_representation(self, instance):
+        """
+        To show the data response to users
+        """
+        response = super().to_representation(instance)
+        response['first_name'] = instance.user.first_name
+        response['last_name'] = instance.user.last_name
+        response['email'] = instance.user.email
+        if not instance.department == None:
+            response['department_data'] = instance.department.name
+        else:
+            response['department_data'] = ''
+
+        if not instance.position == None:
+            response['position_data'] = instance.position.name
+        else:
+            response['position_data'] = ''
+
+        if not instance.literacy == None:
+            response['literacy_data'] = instance.literacy.name
+        else:
+            response['literacy_data'] = ''
+
+        if not instance.religion == None:
+            response['religion_data'] = instance.religion.name
+        else:
+            response['religion_data'] = ''
+
+        if not instance.ethnicity == None:
+            response['ethnicity_data'] = instance.ethnicity.name
+        else:
+            response['ethnicity_data'] = ''
+
+        if not instance.nationality == None:
+            response['nationality_data'] = instance.nationality.name
+        else:
+            response['nationality_data'] = ''
+
+        if not instance.user.image == None:
+            response['logo_url'] = 'https://hrm-s3.s3.amazonaws.com/' + \
+                instance.user.image
+        else:
+            response['logo_url'] = ''
+
+
+        if instance.is_active == False:
+            response['is_active_data'] = 'Nghỉ Làm'
+        else:
+            response['is_active_data'] = 'Đang Làm'
+
+        response['phone'] = str(instance.user.phone)
+        
+        address = Staffs.objects.filter(id=instance.id).first().addresses.all().values()
+        for item in address:
+            if item['type']=='place_of_birth_address':
+                response['place_of_birth'] = item['address']
+                response['domicile'] = item['address']
+            if item['type']=='permanent_address':
+                response['permanent_address'] = item['address']
+            if item['type']=='temporary_residence_address':
+                response['temporary_residence_address'] = item['address']
+            
+        if instance.is_print==False:
+            data = {
+                "staff": instance.staff,
+                "place_of_birth": response['place_of_birth'],
+                "domicile": response['domicile'],
+                "permanent_address": response['permanent_address'],
+                "temporary_residence_address": response['temporary_residence_address'],
+                "marital_status": instance.marital_status,
+                "number_of_children": instance.number_of_children,
+                "identity_card": instance.identity_card,
+                "issuance_date": instance.issuance_date,
+                "place_of_issuance": instance.place_of_issuance,
+                "start_work_date": instance.start_work_date,
+                "probationary_end_date": instance.probationary_end_date,
+                "personal_email": instance.personal_email,
+                "facebook": instance.tax_code,
+                "social_insurance_number": instance.social_insurance_number,
+                "tax_code": instance.tax_code,
+                "bank_account": instance.bank_account,
+                "nationality": response['nationality_data'],
+                "ethnicity": response['ethnicity_data'],
+                "religion": response['religion_data'],
+                "literacy": response['literacy_data'],
+                "position": response['position_data'],
+                "user_fullname": f"{response['last_name']} {response['first_name']}",
+                "email": instance.user.email,
+                "gender": instance.gender,
+                "phone": response['phone'],
+                "logo_url": response['logo_url'],
+                "day_of_birth": instance.user.date_of_birth,
+                "mobile_phone": instance.mobile_phone,
+            }
+            template = get_template('profile_report_template.html')
+            context = template.render(data).encode("UTF-8")
+            filename = '{}_{}_profile_report.pdf'.format(response['last_name'] +  response['first_name'],instance.staff)
+            f = open(filename, "w+b")
+            HTML(string=context).write_pdf(f)
+            f.close()
+            key = MediaUpLoad().upload_pdf_to_s3(os.path.join(settings.BASE_DIR, filename), filename)
+            if os.path.exists(filename):
+                os.remove(filename)
+            response['key'] = MediaUpLoad().get_file_url(key)
+            Staffs.objects.filter(id=instance.id).update(
+                link_staff=response['key'],
+                is_print=True
+            )
+        else:
+            response['key'] = instance.link_staff
 
         return response

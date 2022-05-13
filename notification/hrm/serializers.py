@@ -56,7 +56,7 @@ class ListNotificationSerializer(serializers.ModelSerializer):
         To show the data response to users
         """
         response = super().to_representation(instance)
-
+        response['created_at_data'] = f"{instance.created_at:%H:%M, %d-%m-%Y}"
         if instance.metadata:
             user = User.objects.filter(
                 id=instance.metadata['user_id'], 

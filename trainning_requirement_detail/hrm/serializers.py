@@ -100,12 +100,7 @@ class RetrieveAndListTrainningRequirementDetailSerializer(serializers.ModelSeria
         To show the data response to users
         """
         response = super().to_representation(instance)
-        response_without_trainning_requirement = without_keys(response,'trainning_requirement')
-        response_without_trainning_requirement['id_trainning_requirement'] = instance.trainning_requirement.id
-        response_without_trainning_requirement['estimated_cost_data'] = f"{instance.trainning_requirement.estimated_cost:,}"
+        response['id_trainning_requirement'] = instance.trainning_requirement.id
+        response['estimated_cost_data'] = f"{instance.trainning_requirement.estimated_cost:,}"
         
-        return {
-            **response_without_trainning_requirement,
-            **response['trainning_requirement'],
-            
-        }
+        return response

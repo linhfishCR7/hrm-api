@@ -28,8 +28,10 @@ class ListCreateStaffProjectAPIView(generics.ListCreateAPIView):
     ]
     filter_fields = {
         'project__name': ['exact', 'in'],
+        'project__id': ['exact', 'in'],
         'staff__user__last_name': ['exact', 'in'],
         'staff__user__first_name': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def get_queryset(self):

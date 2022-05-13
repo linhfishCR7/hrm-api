@@ -20,6 +20,11 @@ class NotificationTemplate:
         TITLE = "The hrm has been approved day off year"
         BODY = "The hrm has been approved day off year"
 
+
+    class HrmRefusedDayOffYear:
+        """ Send notification to user that the hrm has been refused day off year"""
+        TITLE = "The hrm has been refused day off year"
+        BODY = "The hrm has been refused day off year"
     
     class HrmSendSalaryToAllUser:
         """ Send salary notification to all user but admin """

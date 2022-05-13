@@ -3,9 +3,11 @@ from base.permissions import IsUser
 from base.paginations import ItemIndexPagination
 from base.utils import print_value
 from day_off_years.models import DayOffYears
+from day_off_year_details.models import DayOffYearDetails
 from .serializers import (
     DayOffYearsSerializer,
-    RetrieveAndListDayOffYearsSerializer
+    RetrieveAndListDayOffYearsSerializer,
+    ListDayOffYearsSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -23,7 +25,8 @@ class ListCreateDayOffYearsAPIView(generics.ListCreateAPIView):
     ordering_fields = '__all__'
     search_fields = ['date']
     filter_fields = {
-        'date': ['exact', 'in']
+        'date': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
     }
     
     def perform_create(self, serializer):
@@ -63,14 +66,55 @@ class RetrieveUpdateDestroyDayOffYearsAPIView(generics.RetrieveUpdateDestroyAPIV
             deleted_at=None,
         )
     
+    def perform_update(self, serializer):
+        serializer.save(
+            modified_at=timezone.now(),
+            modified_by=self.request.user.id,
+        )
+    
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
+        
+        DayOffYearDetails.objects.filter(day_off_years=instance.id).update(
+            is_deleted=True,
+            deleted_at = timezone.now()
+        )
         instance.save()
+        
 
     def get_serializer_class(self):
         if self.request.method == 'PUT':
             return DayOffYearsSerializer
         else: 
             return RetrieveAndListDayOffYearsSerializer
+
+
+class ListDayOffYearsAPIView(generics.ListAPIView):
+    
+    model = DayOffYears
+    permission_classes = [IsUser]
+    serializer_class = ListDayOffYearsSerializer
+    pagination_class = ItemIndexPagination
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['date']
+    filter_fields = {
+        'date': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
+        'id': ['exact', 'in'],
+    }
+    
+    def get_queryset(self):
+        return DayOffYears.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")
+    
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
+

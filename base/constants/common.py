@@ -33,7 +33,7 @@ class AppConstants:
 
     class Upload:
         MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
-        FILE_TYPES = ['.png', '.jpg', '.jpeg']
+        FILE_TYPES = ['.png', '.jpg', '.jpeg', '.xlsx']
         FILE_OPTIONS = {
             'document': 'documents',
             'video': 'videos',
@@ -165,6 +165,7 @@ class NotificationType:
     HRM_APPROVED_DAY_OF_YEAR = 5
     HRM_SEND_SALARY_TO_ALL_USER = 6
     HRM_SEND_STAFF_DELETED = 7
+    HRM_REFUSED_DAY_OF_YEAR = 8
 
 
 class NotificationMetadata:

@@ -57,7 +57,6 @@ class RetrieveUpdateDestroySkillsAPIView(generics.RetrieveUpdateDestroyAPIView):
     model = Skills
     permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
-    
     def get_queryset(self):
         return Skills.objects.filter(
             is_deleted=False,

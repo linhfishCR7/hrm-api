@@ -16,7 +16,7 @@ class ListCreateCompaniesAPIView(generics.ListCreateAPIView):
     
     model = Companies
     serializer_class = CompaniesSerializer
-    permission_classes = []
+    permission_classes = [IsHrm]
     pagination_class = ItemIndexPagination
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
@@ -47,7 +47,7 @@ class RetrieveUpdateDestroyCompaniesAPIView(generics.RetrieveUpdateDestroyAPIVie
     
     model = Companies
     serializer_class = CompaniesSerializer
-    permission_classes = []
+    permission_classes = [IsHrm]
     lookup_url_kwarg = "id"
     
     def get_queryset(self):

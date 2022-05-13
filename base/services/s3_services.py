@@ -158,3 +158,22 @@ class MediaUpLoad:
                     ["starts-with", "$Content-Type", content_type]],
         )
         return links
+
+    def upload_pdf_to_s3(self, file_path, key):
+        key = str(uuid.uuid4())[:12] + '_' + key
+        try:
+            self.s3.Bucket(settings.S3_BUCKET_NAME).upload_file(
+                Key=key,
+                Filename=file_path,
+                ExtraArgs={
+                    'ACL': 'public-read',
+                    'ContentType': 'application/pdf'
+                },
+            )
+            return key
+        except Exception as e:
+            raise e
+    
+    def get_file_url(self, key):
+        url = self.s3_url.format(settings.S3_REGION, settings.S3_BUCKET_NAME, key)
+        return url

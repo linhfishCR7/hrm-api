@@ -133,7 +133,6 @@ class RetrieveAndListCustomersSerializer(serializers.ModelSerializer):
         )]
     )
     addresses = AddressesSerializer(many=True)
-    company = CompaniesSerializer()
     website = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     file = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     

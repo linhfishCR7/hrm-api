@@ -18,7 +18,6 @@ class Projects(BaseModel):
     image = models.CharField(max_length=255, default=None)
     note = models.TextField(default=None, null=True, blank=True)
     file = models.CharField(max_length=255, default=None)
-    
    
     customer = models.ForeignKey('customers.Customers', on_delete=models.CASCADE, related_name='project_customer', null=True, 
         default=None, blank=True)

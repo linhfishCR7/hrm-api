@@ -28,6 +28,10 @@ urlpatterns = [
     path('api/user/day-off-year-details/', include('day_off_year_details.user.urls')),
     path('api/user/day-off-types/', include('day_off_types.user.urls')),
     path('api/user/notification/', include('notification.user.urls')),
+    path('api/user/salary/', include('salaries.user.urls')),
+    path('api/user/employment-contract/', include('employment_contracts.user.urls')),
+    path('api/user/staffs/', include('staffs.user.urls')),
+    path('api/user/dashboard/', include('dashboard.user.urls')),
 
     #################################################################################
     # Admin
@@ -35,6 +39,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/admin/user/', include('users.admin.urls')),
     path('api/admin/notification/', include('notification.admin.urls')),
+    path('api/admin/companies/', include('companies.admin.urls')),
+    path('api/admin/branchs/', include('branchs.admin.urls')),
+    path('api/admin/dashboard/', include('dashboard.admin.urls')),
 
     #################################################################################
 

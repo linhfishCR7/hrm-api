@@ -17,3 +17,8 @@ class Salary(BaseModel):
     other = models.IntegerField(null=True, blank=True)
     note = models.CharField(max_length=255, default=None, null=True, blank=True)
     staff = models.ForeignKey('staffs.Staffs', on_delete=models.CASCADE, related_name='salary_staff')
+    
+    is_print = models.BooleanField(default=False, null=True, blank=True)
+    link_salary = models.CharField(max_length=255, null=True, blank=True)
+    link_list_salary = models.CharField(max_length=255, null=True, blank=True)
+    link_list_department_salary = models.CharField(max_length=255, null=True, blank=True)

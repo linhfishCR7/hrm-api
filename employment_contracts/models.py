@@ -29,3 +29,5 @@ class EmploymentContract(BaseModel):
     position = models.CharField(max_length=255, default="Giám đốc")
     type = models.ForeignKey('employment_contract_types.EmploymentContractTypes', on_delete=models.CASCADE, related_name='employment_contract_employment_contract_types')
     staff = models.ForeignKey('staffs.Staffs', on_delete=models.CASCADE, related_name='employment_contract_staff')
+    is_print = models.BooleanField(default=False, null=True, blank=True)
+    link_contract = models.CharField(max_length=255, null=True, blank=True)

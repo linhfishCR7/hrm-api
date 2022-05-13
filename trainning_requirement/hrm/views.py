@@ -23,7 +23,8 @@ class ListCreateTrainningRequirementAPIView(generics.ListCreateAPIView):
     ordering_fields = '__all__'
     search_fields = ['course_name']
     filter_fields = {
-        'course_name': ['exact', 'in']
+        'course_name': ['exact', 'in'],
+        'branch__id': ['exact', 'in'],
     }
     
     def get_queryset(self):

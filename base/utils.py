@@ -1,4 +1,5 @@
 import random
+import string
 from datetime import datetime
 import pytz
 from dateutil import tz
@@ -110,6 +111,129 @@ def generate_number_contract(department='', type='', staff=''):
     
     return number_contract
 
-def without_keys(dictionany, keys):
-    """ Return a new dictionary without specific keys """
-    return {x: dictionany[x] for x in dictionany if x not in keys}
+## characters to generate password from
+alphabets = list(string.ascii_letters)
+digits = list(string.digits)
+special_characters = list("!@#$%^&*()")
+characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
+
+def generate_random_password():
+
+	## initializing the password
+	password = []
+
+	## picking random alphabets
+	for i in range(4):
+		password.append(random.choice(alphabets))
+
+	## picking random digits
+	for i in range(4):
+		password.append(random.choice(digits))
+
+	## picking random alphabets
+	for i in range(4):
+		password.append(random.choice(special_characters))
+
+	## shuffling the resultant password
+	random.shuffle(password)
+
+	## converting the list to string
+	## printing the list
+	return("".join(password))
+
+    
+# from io import BytesIO
+# from django.http import HttpResponse
+# from django.template.loader import get_template
+
+# from xhtml2pdf import pisa
+
+# def render_to_pdf(template_src, context_dict={}):
+#     template = get_template(template_src)
+#     html  = template.render(context_dict)
+#     result = BytesIO()
+#     pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+#     if not pdf.err:
+#         return HttpResponse(result.getvalue(), content_type='application/pdf')
+#     return None
+# import csv
+
+# @staticmethod
+# def export_to_csv(export_result, filename, fair, from_date, to_date):
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename={}.csv'.format(filename)
+#     writer = csv.writer(response, csv.excel)
+#     response.write(u'\ufeff'.encode('utf8'))
+#     # with open('market_report.csv', 'w', newline='') as file:
+#     #     writer = csv.writer(file, csv.excel)
+#     writer.writerow([
+#         smart_str(u"From"),
+#         smart_str(u"{}".format(from_date)),
+#         smart_str(u"To"),
+#         smart_str(u"{}".format(to_date))
+#     ])
+#     writer.writerow([
+#         smart_str(u"Market"),
+#         smart_str(fair.name)
+#     ])
+
+#     # Offline session
+#     offline_sales = export_result['offline_sales']
+#     # Header
+#     writer.writerow([
+#         smart_str(u"Total Stalls"),
+#         smart_str(u"Total Rent Invoiced"),
+#         smart_str(u"Total Hosts"),
+#         smart_str(u"EFTPOS"),
+#         smart_str(u"Commission"),
+#         smart_str(u"Surcharge"),
+#         smart_str(u"Conditional Surcharge"),
+#         smart_str(u"Total"),
+#         # smart_str(u"EFTPOS and Card"),
+#         smart_str(u"Cash"),
+#         smart_str(u"Voucher Spent"),
+#         smart_str(u"Voucher Created"),
+#         smart_str(u"Total Voucher"),
+#         smart_str(u"Total Payment"),
+#     ])
+#     # Value
+#     writer.writerow([
+#         smart_str(offline_sales['total_stalls']),
+#         smart_str(offline_sales['total_rent_invoiced']),
+#         smart_str(''),
+#         smart_str(offline_sales['eftpos_total']),
+#         smart_str(offline_sales['eftpos_commission']),
+#         smart_str(offline_sales['eftpos_surcharge'].quantize(decimal.Decimal('0.01'))),
+#         smart_str(offline_sales['eftpos_conditional_surcharge'].quantize(decimal.Decimal('0.01'))),
+#         smart_str(offline_sales['eftpos_total'].quantize(decimal.Decimal('0.01'))),
+#         # smart_str(offline_sales['eftpos_and_card'].quantize(decimal.Decimal('0.01'))),
+#         smart_str(offline_sales['cash'].quantize(decimal.Decimal('0.01'))),
+#         smart_str(offline_sales['voucher_created'].quantize(decimal.Decimal('0.01'))),
+#         smart_str(offline_sales['voucher_unspent']),
+#         smart_str(offline_sales['voucher'].quantize(decimal.Decimal('0.01'))),
+#         smart_str(offline_sales['total_sales'].quantize(decimal.Decimal('0.01'))),
+#     ])
+#     # Count
+#     writer.writerow([
+#         smart_str(u""),
+#         smart_str(u""),
+#         smart_str(u""),
+#         smart_str(u""),
+#         smart_str(u""),
+#         # smart_str(offline_sales['total_stalls']),
+#         smart_str(u""),
+#         # smart_str(offline_sales['total_hosts']),
+#         # smart_str(offline_sales['eftpos_count']),
+#         smart_str(u""),
+#         smart_str(u""),
+#         # smart_str(offline_sales['eftpos_conditional_surcharge_count']),
+#         smart_str(offline_sales['eftpos_total']),
+#         smart_str(offline_sales['cash_count']),
+#         smart_str(offline_sales['voucher_count']),
+#         # smart_str(offline_sales['payment_count']),
+#     ])
+#     return response
+
+ 
+
+

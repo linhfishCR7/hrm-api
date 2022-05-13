@@ -9,6 +9,11 @@ from staffs.models import Staffs
 from users.models import User
 from kinds_of_work.models import KindsOfWork
 from projects.models import Projects
+from datetime import datetime
+from base.templates.error_templates import ErrorTemplate
+from rest_framework.exceptions import ValidationError
+
+from base.utils import print_value
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -82,7 +87,8 @@ class KindsOfWorkSerializer(serializers.ModelSerializer):
 
 
 class TimekeepingSerializer(serializers.ModelSerializer):
-    
+    amount_in_project = serializers.FloatField(required=False)
+    amount_time = serializers.FloatField(required=False)
     class Meta:
         model = Timekeeping
         fields = [
@@ -96,7 +102,25 @@ class TimekeepingSerializer(serializers.ModelSerializer):
             "staff_project",
         ]
         
+    # def create(self, validated_data):
+    #     staff_project = StaffProject.objects.filter(
+    #         project__status=2,
+    #         is_deleted=False
+    #     ).values_list('id', flat=True)
+    #     print_value(staff_project)
+        
+    #     for item in staff_project:
+    #         data = Timekeeping.objects.filter(
+    #             date=datetime.today().strftime('%Y-%m-%d'),
+    #             staff_project__in=staff_project
+    #         )
 
+    #         if data:
+    #             raise ValidationError(ErrorTemplate.TimeKeepingError.TIME_KEEPING_ALREADY_CREATED)
+        
+    #     return super().create(validated_data)
+
+            
 class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
     type_work = KindsOfWorkSerializer(read_only=True)
     staff_project = StaffProjectSerializer(read_only=True)
@@ -118,12 +142,19 @@ class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
         To show the data response to users
         """
         response = super().to_representation(instance)
-        if instance.type_work.name:
+        if instance.type_work:
             response['type_work_name'] = instance.type_work.name
-        
+            response['type_work_id'] = instance.type_work.id
+            
         if instance.staff_project.project.name:
             response['project_name'] = instance.staff_project.project.name
+        if instance.staff_project:
+            response['project_id'] = instance.staff_project.id
         
+        if instance.staff_project.staff.user:
+            response['staff_name'] = instance.staff_project.staff.user.first_name + ' ' + instance.staff_project.staff.user.last_name
+            response['staff_staff'] = instance.staff_project.staff.staff
+            
         if instance.type == 1:
             response['type_time'] = "Giờ Hành Chính"
         elif instance.type == 1.5:
@@ -132,4 +163,6 @@ class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
             response['type_time'] = "Làm Thêm Ngày Cuối Tuần"
         else:
             response['type_time'] = "Làm Thêm Ngày Lễ Tết"
+        response['month'] = f"{instance.date:%m}"
+        response['year'] = f"{instance.date:%Y}"
         return response

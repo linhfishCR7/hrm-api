@@ -88,6 +88,12 @@ class ProfileUserSerializer(serializers.ModelSerializer):
         if instance.image:
             response['image'] = ApplicationMethodFieldSerializer.get_list_image(
                 instance.image)
+        
+        staff = Staffs.objects.filter(user_id=instance.id).first()
+        
+        if staff:
+            response['staff_id'] = staff.id
+            response['staff_staff'] = staff.staff
 
         return response
 

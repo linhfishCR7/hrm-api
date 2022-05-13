@@ -101,6 +101,7 @@ def push_hrn_notification_user_created_day_off_year(metadata, name):
     """ Find hrm user registration ids """
     hrm_registration_ids = UserFCMDevice.objects.filter(
         user__is_staff=True,
+        user__is_superuser=False,
         is_deleted=False,
         is_active=True
     ).values_list("token", flat=True)
@@ -119,6 +120,7 @@ def push_hrn_notification_user_created_day_off_year(metadata, name):
     """ Find hrm users """
     hrms = User.objects.filter(
         is_staff=True,
+        is_superuser=False,
         is_deleted=False,
         is_active=True
     )
@@ -146,6 +148,25 @@ def day_off_year_email_to_user(self, data):
             section=EmailTemplate.DayOffYearEmailToUser.BODY(name=data['name'], link=link)
         )
     subject = str(EmailTemplate.DayOffYearEmailToUser.SUBJECT)
+    user = User.objects.filter(
+        id=data['user_id'],
+        is_deleted=False,
+        is_active=True
+    ).values_list('email', flat=True)
+     
+    recipient_list = user
+    email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
+
+
+@shared_task(bind=True)
+def day_off_year_refuse_email_to_user(self, data):
+    email_from = settings.DEFAULT_FROM_EMAIL
+    link = f"{settings.FRONTEND_URL}day-off-year/{data['link']}"
+    message = BaseTemplate.BASE.format(
+            year=timezone.now().year,
+            section=EmailTemplate.DayOffYearRefuseEmailToUser.BODY(name=data['name'], link=link)
+        )
+    subject = str(EmailTemplate.DayOffYearRefuseEmailToUser.SUBJECT)
     user = User.objects.filter(
         id=data['user_id'],
         is_deleted=False,
@@ -199,13 +220,67 @@ def push_user_notification_hrm_approved_day_off_year(metadata, user_id):
     return True
 
 
+@shared_task(retries=3)
+def push_user_notification_hrm_refused_day_off_year(metadata, user_id):
+    """ Send notification to all user after the hrm has been refused day off year"""
+
+    """ Find hrm user registration ids """
+    user_registration_ids = UserFCMDevice.objects.filter(
+        user_id=user_id,
+        is_deleted=False,
+        is_active=True
+    ).values_list("token", flat=True)
+
+    notification_title = NotificationTemplate.HrmRefusedDayOffYear.TITLE
+    notification_body = NotificationTemplate.HrmRefusedDayOffYear.BODY
+    notification_type = NotificationType.HRM_REFUSED_DAY_OF_YEAR
+
+    """ Push notification to hrms  """
+    fcm_client.send_notification_multiple_user(
+        list_registration_id=user_registration_ids,
+        title=notification_title,
+        body=notification_body
+    )
+
+    """ Find hrm users """
+    users = User.objects.filter(
+        id=user_id,
+        is_deleted=False,
+        is_active=True
+    )
+    notification_data = [
+        Notification(
+            user=user,
+            title=notification_title,
+            body=notification_body,
+            notification_type=notification_type,
+            metadata={"user_id": str(metadata)}
+        ) for user in users
+    ]
+
+    """ Add notification to database """
+    Notification.objects.bulk_create(notification_data)    
+    return True
+
+
 @shared_task(bind=True)
 def salary_email_to_all_user(self):
     email_from = settings.DEFAULT_FROM_EMAIL
+    salary_staff = Salary.objects.filter(
+        is_deleted=False,
+        # is_active=False,
+        date__month=timezone.now().month,
+        date__year=timezone.now().year
+    ).values_list('staff', flat=True)
+    print_value(salary_staff)
+    staff_user = Staffs.objects.filter(
+        is_deleted=False,
+        id__in=salary_staff
+    ).values_list('user', flat=True)
+    print_value(staff_user)
 
     user = User.objects.filter(
-        is_staff=True,
-        is_superuser=False,
+        id__in=staff_user,
         is_deleted=False,
         is_active=True
     ).values()
@@ -239,9 +314,18 @@ def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().mon
     """ Send notification to all user after the hrm has been approved day off year"""
 
     """ Find all user registration ids but admin """
+    salary_staff = Salary.objects.filter(
+        is_deleted=False,
+        # is_active=False,
+        date__month=timezone.now().month,
+        date__year=timezone.now().year
+    ).values_list('staff', flat=True)
+    staff_user = Staffs.objects.filter(
+        is_deleted=False,
+        id__in=salary_staff
+    ).values_list('user', flat=True)
     user_registration_ids = UserFCMDevice.objects.filter(
-        user__is_staff=True,
-        user__is_superuser=False,
+        id__in=staff_user,
         is_deleted=False,
         is_active=True
     ).values_list("token", flat=True)
@@ -259,10 +343,7 @@ def push_all_user_notification_hrm_approved_send_salary(month=timezone.now().mon
 
     """ All users but admin """
     users = User.objects.filter(
-        is_staff=True,
-        is_superuser=False,
-        is_deleted=False,
-        is_active=True
+        id__in=staff_user,
     )
     notification_data = [
         Notification(
@@ -285,7 +366,6 @@ def push_admin_notification_staff_deleted(metadata, name, email):
 
     """ Find admin user registration ids """
     admin_user_registration_ids = UserFCMDevice.objects.filter(
-        user__is_staff=True,
         user__is_superuser=True,
         is_deleted=False,
         is_active=True
@@ -304,7 +384,6 @@ def push_admin_notification_staff_deleted(metadata, name, email):
 
     """ Find admin users """
     admins = User.objects.filter(
-        is_staff=True,
         is_superuser=True,
         is_deleted=False,
         is_active=True
@@ -322,3 +401,24 @@ def push_admin_notification_staff_deleted(metadata, name, email):
     """ Add notification to database """
     Notification.objects.bulk_create(notification_data)    
     return True
+
+
+@shared_task(bind=True)
+def salary_email_to_new_user(self, email, full_name, password):
+    email_from = settings.DEFAULT_FROM_EMAIL
+    message = BaseTemplate.BASE.format(
+                year=timezone.now().year,
+                section=EmailTemplate.EmailToNewUser.BODY(
+                    name=full_name, 
+                    email=email,
+                    password=password,
+                    link=f"{settings.FRONTEND_URL}#/login/"
+                )
+            )
+    subject = EmailTemplate.EmailToNewUser.SUBJECT(name=full_name)
+    
+    
+    recipient_list = [email]
+    email_service(email_from=email_from, message=message, subject=subject, recipient_list=recipient_list)
+
+        
