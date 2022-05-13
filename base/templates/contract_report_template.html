@@ -1,0 +1,325 @@
+{% load order_filters %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Hợp Đồng Lao Động PDF</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 2mm;
+    }
+
+    section {
+      width: 100%;
+      margin: 0 auto;
+      font: 90%/1.45em "Helvetica Neue", HelveticaNeue, Verdana, Arial, Helvetica, sans-serif;
+    }
+
+    h1,
+    h3,
+    h4,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    p {
+      padding: 0.5px;
+    }
+
+
+    .d-flex {
+      display: flex;
+    }
+
+    img {
+      width: 100%
+    }
+
+    .invoice {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .p {
+      padding-top: 0.5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .p-t {
+      padding-top: 0.5rem;
+    }
+
+    .m-t {
+      margin-top: 1rem;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+
+    /* table */
+    tr {
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+
+    thead {
+      display: table-header-group;
+    }
+
+    tfoot {
+      display: table-footer-group;
+    }
+
+    table,
+    td,
+    th {
+      border: 1px solid;
+    }
+
+    table {
+      font-family: arial, sans-serif;
+      bpurchase-collapse: collapse;
+      width: 100%;
+      page-break-inside: auto;
+      border-collapse: collapse;
+    }
+
+    td,
+    th {
+      bpurchase: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    .bpurchase-top {
+      bpurchase-top: 2px solid;
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    .w-100 {
+      width: 100%;
+    }
+
+    table td {
+      word-wrap: break-word;
+      /* All browsers since IE 5.5+ */
+      overflow-wrap: break-word;
+      /* Renamed property in CSS3 draft spec */
+    }
+    @bottom-right{
+      content: "Page " counter(page) "of " counter(pages);
+    }
+  </style>
+</head>
+
+<body>
+  <section style="position: absolute">
+    <!-- top -->
+    <div class="p-t">
+      <div class="right p" style="float: left; left: 0">
+        <h1 style="font-size: 15px;">
+          {{company}}
+        </h1>
+      </div>
+      <div class="right p" style="float: right; right: 0">
+        <h1 style="font-size: 15px; text-align: center">
+          CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM/<br />
+          <i>THE SOCIALIST REPUBLIC OF VIETNAM</i><br />
+          Độc Lập - Tự Do - Hạnh Phúc/<br />
+          <i>Independence - Freedom - Happiness</i>
+        </h1>
+      </div>
+
+    </div>
+    <div class="w-100" style="margin-top: 100px">
+      <div class="invoice">
+        <h1 style="font-size: 30px; text-align: center" class="p">
+          {{name}}
+        </h1>
+        <h1 style="font-size: 15px; text-align: center" class="p">
+          Số Hợp Đồng/ Contract Number: {{number_contract}}
+        </h1>
+      </div>
+    </div>
+
+    <div class="p-t">
+      <!-- table -->
+      <div class="center p" style="float: center">
+        <p>Chúng tôi một bên là/ We are, from one side: {{employer}}</p>
+        <p>Chức vụ/ Position: {{position_employer}}</p>
+        <br />
+        <p>Đại diện cho/ On behalf of: {{company}}</p>
+        <p>Địa chỉ/ Address: {{address_company}}</p>
+        <p>Điện thoại/ Telephone: {{phone}}</p>
+        <p>Fax: {{fax}}</p>
+        <br />
+        <p>Và một bên là/ And from other side: {{full_name}}</p>
+        <p>Ngày sinh/ Date of birth: {{birthday}}</p>
+        <p>Trình độ học vấn/ Degree: {{leracy}}</p>
+        <p>Địa chỉ thường trú/ Address: {{address_staff}}</p>
+        <p>Số CMND/ ID card no: {{card}}</p>
+        <p>Cấp Ngày/ Issued date: {{date_card}}</p>
+        <p>Tại/ Issued at: {{place_card}}</p>
+        <p>Sổ lao động (nếu có)/ Labor book no (if any): N/A</p>
+        <p>Điện thoại/ Telephone: {{mobile_phone}}
+        </p>
+        <p>Đồng ý ký hợp đồng lao động này (Hợp đồng) với những điều khoản và điều kiện như sau/ Agreed to sign this
+          labor contract (the “Contract”) with the following terms and conditions:
+        </p>
+      </br />
+        <h1 style="font-size: 15px">
+          Điều 1: Điều khoản và công việc trong Hợp đồng/ Article 1: Term and job in labor contract
+        </h1>
+        <p>1.1 Loại hợp đồng/ Kind contract: Không xác định thời hạn; Từ ngày/ From: {{from_date|date:"d-m-Y"}} Đến ngày/ To: {{to_date|date:"d-m-Y"}}
+        </p>
+        <p>Người sử dụng lao động có quyền chấm dứt Hợp đồng trước thời hạn nêu trên nếu người lao động không đáp ứng
+          yêu cầu công việc/ The Employer holds the right to terminate the Contract if the Empolyee does not satisfy the
+          requirement of work.
+
+        </p>
+        <p>1.2 Địa điểm làm việc/ Working place: {{place_working}}
+
+        </p>
+        <p>1.3 Chức vụ/ Position: {{position}}; Phòng Ban/ Department: {{department}}
+
+        </p>
+        <p>1.4 Mô tả công việc/ Job description: {{content}}
+
+        </p>
+      </br />
+        <h1 style="font-size: 15px">
+          Điều 2: Thời gian làm việc/ Article 2: Working hour
+        </h1>
+        <p>Thời gian làm việc/ Working time: {{time_working}}
+        </p>
+      </br />
+        <h1 style="font-size: 15px">
+          Điều 3: Quyền lợi và nghĩa vụ của người lao động/ Article 3: Obligations, right and benefit of the Employee
+        </h1>
+        <p> 3.1 Quyền lợi của người lao động/ Right and benefits of the Employee
+        </p>
+        <p style="page-break-after: auto;" >Đồng phục/ Uniform: {{uniform}}
+        </p>
+        <p>Phương tiện đi lại/ Mean of transportation: {{vehicles}}
+        </p>
+        <p>Lương Cơ Bản/ Basic Salary: {{basic_salary_data}} (VNĐ)
+        </p>
+        <p>Phụ cấp trách nhiệm/ Executive allowance: {{other_support_data}} (VNĐ)
+        </p>
+        <p>Hỗ trợ khác/ Others: {{extra_data}} (VNĐ)
+        </p>
+        <p>Tổng Lương/ Total: {{total_salary}} (VNĐ)
+        </p>
+        <p>Hình thức trả lương/ Method of payment: {{transfer}}
+
+        </p>
+        <p>Tăng lương/ Salary increment: {{up_salary}}
+        </p>
+        <p>Thưởng/ Bonus: {{bonus}}
+
+        </p>
+        <p>Đào tạo/ Training: {{training}}
+
+        </p>
+        <p>Chế độ nghỉ ngơi/ Time of rest: {{resort_mode}}
+
+        </p>
+        <p>Bảo hiểm xã hội và y tế/ Social & health insurance: Theo quy định của Nhà nước 3.2 Nghĩa vụ của người lao
+          động/ Obligations of the Employee
+
+        </p>
+        <p>+ Hoàn thành công việc mình đảm trách nêu trong Hợp đồng, chấp hành lệnh điều hành sản xuất kinh doanh, bảo
+          vệ tài sản của Công ty và sẽ chịu trách nhiệm bồi thường những tài sản bị hư hỏng do vô ý, bất cẩn hay cẩu thả
+          hoặc bị mất cắp khi chuyển giao/ Fulfill the Job undertaken in this contract, to comply with production and
+          business orders, protect the properties of the Company and shall compensate for damage or loss properties
+          incurred by the Company due to carelessness, negligence or stolen.
+
+        </p>
+        <p>+ Nghiêm túc tuân thủ và tôn trọng thời hạn và các cam kết trong hợp đồng. Bồi thường cho Công ty các chi phí
+          đào tạo và/hoặc các cam kết trách nhiệm bằng tiền nêu trong Hợp đồng này hoặc trong quy định của Công ty trong
+          trường hợp chấm dứt hợp đồng lao động trước thời hạn mà không được sự đồng ý của lãnh đạo Công ty/ Strictly
+          follow and respect the term of and commiment in the Labor contract. Compensate to the Company all training
+          espenses and/or monetary commitment mentioned in the Labor contract and/or in labor regulations of the Company
+          in the case the Employee intentionally terminate the Labor contracr without approval of the director of the
+          Company.
+
+        </p>
+        <p>+ Nghiêm túc tuân thủ và tôn trọng các yêu cầu của lãnh đạo, các nội quy và quy định của Công ty/ Strictly
+          follow the instruction of management level, rules and regulations in the Company
+
+        </p>
+      </br />
+        <h1 style="font-size: 15px">
+          Điều 4: Quyền và nghĩa vụ của Người sử dụng lao động/ Article 4: Obligations and rights of the Employer
+        </h1>
+        <p>4.1. Nghĩa vụ của Người sử dụng lao động/ Obligations of the Employer
+
+        </p>
+        <p>+ Đảm bảo việc làm và thực hiện đầy đủ các điều đã cam kết trong hợp đồng/ Ensure the work and completely
+          fulfill all the commitment in the Contract.
+
+        </p>
+        <p>+ Thanh toán đầy đủ, đúng thời hạn các chế độ và quyền lợi cho người lao động theo Hợp đồng/ Duly and in time
+          settle all the rights and obligations to the Employee in accordance with the Contract.
+
+        </p>
+        <p>4.2. Quyền hạn của người sử dụng lao động/ Rights of the Employer
+
+        </p>
+        <p>+ Có quyền đình chỉ hoặc áp dụng hình thức kỷ luật theo Luật lao động và Nội quy lao động hoặc chấm dứt Hợp
+          đồng đối với Người lao động vi phạm nội quy, quy định của Công ty hoặc không đáp ứng các yêu cầu về sức khỏe
+          cũng như chuyên môn/ Has the right to suspend or apply disciplinary measures according to labor law and
+          regulations or terminate the contract of the Empolyees who has violated the regulations, rule of the Company
+          or the health and ability could not meet the requirement of work.
+        </p>
+        <p>+ Người sử dụng lao động có quyền điều chuyển Người lao động sang nơi làm việc khác mà Người sử dụng lao động
+          điều hành hoặc làm chủ theo quy định của pháp luật/ Employer reserves the right to transfer the Employee to
+          other property which is owned or managed by the Employer in accordance to the law and regulations.
+        </p>
+      </br />
+        <h1 style="font-size: 15px">
+          Điều 5: Điều khoản chung/ Article 5: General provisions </h1>
+        <p>5.1. Hợp đồng này được làm và ký ngày: {{sign_day}} tại {{place_working}}/ This contract is made and signed on: {{sign_day}}
+          in {{place_working}}
+        </p>
+        <p>5.2. Hợp đồng này được làm thành 2 bản, Người sử dụng lao động giữ 1 bản và Người lao động giữ 1 bản/ This
+          Contract is made in 2 copies, 1 copies will be kept by the Employer and 1 copy to be kept by the Employee.
+
+      </div>
+    </div>
+    <div class="p-t">
+      <div class="left p" style="float: left">
+        <p>Người sử dụng lao động/ Employer</p>
+        </br />
+        </br />
+        <p>{{employer}}</p>
+      </div>
+      <div class="right p" style="float: right">
+        <p>Người lao động/ Employee</p>
+        </br />
+        </br />
+        <p>{{full_name}}</p>
+      </div>
+    </div>
+    <div class="footer bpurchase-top text-center small m-t"></div>
+  </section>
+</body>
+
+</html>

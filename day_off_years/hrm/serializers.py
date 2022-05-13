@@ -107,6 +107,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
         day_off_year = DayOffYears.objects.filter(id=instance.id).first()    
         if status==True:
             day_off_year.status=status
+            day_off_year.is_print=False
             day_off_year.save()
             updated_instance = super().update(instance, validated_data)
             staff = Staffs.objects.filter(id=instance.staff.id).first()
@@ -122,6 +123,7 @@ class DayOffYearsSerializer(serializers.ModelSerializer):
             day_off_year.status=status
             day_off_year.approved_by=None
             day_off_year.save()
+            day_off_year.is_print=False
             updated_instance = super().update(instance, validated_data)
             staff = Staffs.objects.filter(id=instance.staff.id).first()
             user = User.objects.filter(

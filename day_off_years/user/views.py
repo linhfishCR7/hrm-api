@@ -6,7 +6,8 @@ from day_off_years.models import DayOffYears
 from day_off_year_details.models import DayOffYearDetails
 from .serializers import (
     DayOffYearsSerializer,
-    RetrieveAndListDayOffYearsSerializer
+    RetrieveAndListDayOffYearsSerializer,
+    ListDayOffYearsSerializer
 )
 from rest_framework import filters, generics, status
 from django_filters.rest_framework import (
@@ -88,3 +89,32 @@ class RetrieveUpdateDestroyDayOffYearsAPIView(generics.RetrieveUpdateDestroyAPIV
             return DayOffYearsSerializer
         else: 
             return RetrieveAndListDayOffYearsSerializer
+
+
+class ListDayOffYearsAPIView(generics.ListAPIView):
+    
+    model = DayOffYears
+    permission_classes = [IsUser]
+    serializer_class = ListDayOffYearsSerializer
+    pagination_class = ItemIndexPagination
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    search_fields = ['date']
+    filter_fields = {
+        'date': ['exact', 'in'],
+        'staff__id': ['exact', 'in'],
+        'id': ['exact', 'in'],
+    }
+    
+    def get_queryset(self):
+        return DayOffYears.objects.filter(
+            is_deleted=False,
+            deleted_at=None,
+        ).order_by("-created_at")
+    
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
+
