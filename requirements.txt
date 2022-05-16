@@ -36,7 +36,7 @@ envs==1.4
 et-xmlfile==1.1.0
 filelock==3.1.0
 flower==1.0.0
-fonttools==4.33.3
+fonttools==4.27.1
 future==0.18.2
 html5lib==1.1
 humanize==4.0.0
