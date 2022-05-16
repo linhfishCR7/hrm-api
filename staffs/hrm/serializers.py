@@ -486,7 +486,7 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
             if item['type']=='temporary_residence_address':
                 response['temporary_residence_address'] = item['address']
             
-        # if instance.is_print==True:
+        # if instance.is_print==False:
         #     data = {
         #         "staff": instance.staff,
         #         "place_of_birth": response['place_of_birth'],

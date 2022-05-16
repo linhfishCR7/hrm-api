@@ -135,7 +135,8 @@ class ListAllSalaryReportAPIView(generics.ListCreateAPIView):
                 HTML(string=context).write_pdf(f)
                 f.close()
                 key = MediaUpLoad().upload_pdf_to_s3(os.path.join(settings.BASE_DIR, filename), filename)
-                
+                if os.path.exists(filename):
+                    os.remove(filename)
                 key_salary_data = MediaUpLoad().get_file_url(key)
                 Salary.objects.filter(id__in=list_id).update(
                     link_list_salary=key_salary_data,
@@ -190,7 +191,8 @@ class ListAllSalaryReportAPIView(generics.ListCreateAPIView):
             HTML(string=context).write_pdf(f)
             f.close()
             key = MediaUpLoad().upload_pdf_to_s3(os.path.join(settings.BASE_DIR, filename), filename)
-            
+            if os.path.exists(filename):
+                os.remove(filename)
             key_salary_data = MediaUpLoad().get_file_url(key)
             Salary.objects.filter(id__in=list_id).update(
                 link_list_salary=key_salary_data,

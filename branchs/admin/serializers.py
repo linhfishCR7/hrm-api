@@ -54,5 +54,6 @@ class RetrieveAndListBranchsSerializer(serializers.ModelSerializer):
         """
         response = super().to_representation(instance)
         response['company_data'] = instance.company.name
+        response['company_id'] = instance.company.id
 
         return response

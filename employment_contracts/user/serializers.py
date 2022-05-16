@@ -241,7 +241,7 @@ class RetrieveAndListEmploymentContractReportSerializer(serializers.ModelSeriali
             if item['addresses__type']=='permanent_address':
                 response['permanent_address'] = item['addresses__address']
             
-        if instance.is_print==True:
+        if instance.is_print==False:
             data = {
                 "company": instance.staff.department.branch.company.name,
                 "full_name": f"{instance.staff.user.last_name} {instance.staff.user.first_name}",

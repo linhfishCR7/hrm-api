@@ -217,7 +217,7 @@ class RetrieveAndListDayOffYearsReportSerializer(serializers.ModelSerializer):
         response['year'] = f"{instance.date:%Y}"
         response['day_off_year_detail'] = DayOffYearDetails.objects.filter(day_off_years=instance).select_related('day_off_types').values('from_date', 'to_date', 'amount', 'note' ,'day_off_types__name')
             
-        if instance.is_print==True:
+        if instance.is_print==False:
             data = {
                 "staff": instance.staff,
                 "full_name": f"{instance.staff.user.last_name} {instance.staff.user.first_name}",
