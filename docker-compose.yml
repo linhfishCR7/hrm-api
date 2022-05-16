@@ -1,0 +1,30 @@
+version: "3"
+services:
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    command: gunicorn api.wsgi:application --bind 0.0.0.0:8899 --worker=4
+    volumes:
+          - .:/app
+
+#    command: gunicorn api.wsgi --bind 0.0.0.0:8899 --worker=3
+
+  api-celery:
+    network_mode: "host"
+    build: .
+    restart: always
+    command: bash -c "export C_FORCE_ROOT="true" && celery -A api worker -l info"
+    volumes:
+      - .:/app
+
+  # api-celery-beat:
+  #   network_mode: "host"
+  #   build: .
+  #   restart: always
+  #   command: bash -c "export C_FORCE_ROOT="true" && celery -A api beat"
+  #   volumes:
+  #     - .:/app
