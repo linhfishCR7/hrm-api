@@ -39,7 +39,7 @@ flower==1.0.0
 fonttools==4.27.1
 future==0.18.2
 html5lib==1.1
-humanize==4.0.0
+humanize==3.14.0
 idna==3.3
 jmespath==0.10.0
 kombu==5.2.2
