@@ -17,6 +17,7 @@ click-plugins==1.1.1
 click-repl==0.2.0
 cryptography==36.0.2
 # cssselect2==0.6.0
+corsheaders
 distlib==0.3.4
 Django==3.2.6
 django-celery-beat==2.2.1
