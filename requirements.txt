@@ -51,7 +51,7 @@ pandas==1.1.5
 pdfkit==1.0.0
 phonenumbers==8.12.42
 Pillow==8.4.0
-platformdirs==2.5.1
+platformdirs==2.4.0
 prometheus-client==0.13.1
 prompt-toolkit==3.0.28
 protobuf==3.19.4
