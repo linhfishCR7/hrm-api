@@ -42,7 +42,7 @@ html5lib==1.1
 humanize==3.14.0
 idna==3.3
 jmespath==0.10.0
-kombu==5.2.2
+kombu==5.1.0
 lxml==4.8.0
 numpy==1.22.3
 openpyxl==3.0.9
