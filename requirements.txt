@@ -83,7 +83,7 @@ s3transfer==0.5.1
 six==1.16.0
 sqlparse==0.4.1
 #stripe==2.60.0
-svglib==1.2.1
+svglib
 tinycss2==1.1.1
 tornado==6.1
 tqdm==4.64.0
@@ -96,5 +96,5 @@ virtualenv==20.8.1
 wcwidth==0.2.5
 weasyprint==54.3
 webencodings==0.5.1
-xhtml2pdf==0.2.7
+xhtml2pdf
 zopfli==0.1.9
