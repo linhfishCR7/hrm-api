@@ -29,5 +29,5 @@ COPY . /app
 # COPY --from=builder /app/ /app/
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
-ENV PATH=/root/.local/bin:$PATH
-ENTRYPOINT gunicorn api.wsgi --workers=1 --threads=2 --worker-class=gthread --bind 0.0.0.0:8080 --log-level debug
+# ENV PATH=/root/.local/bin:$PATH
+# ENTRYPOINT gunicorn api.wsgi --workers=1 --threads=2 --worker-class=gthread --bind 0.0.0.0:8080 --log-level debug
