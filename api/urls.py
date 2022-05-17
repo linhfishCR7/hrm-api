@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/admin/companies/', include('companies.admin.urls')),
     path('api/admin/branchs/', include('branchs.admin.urls')),
     path('api/admin/dashboard/', include('dashboard.admin.urls')),
+    path('api/admin/departments/', include('departments.admin.urls')),
 
     #################################################################################
 
