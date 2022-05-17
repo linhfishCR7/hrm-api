@@ -98,3 +98,4 @@ weasyprint==54.3
 webencodings==0.5.1
 xhtml2pdf
 zopfli==0.1.9
+gunicorn

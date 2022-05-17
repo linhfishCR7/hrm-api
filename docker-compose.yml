@@ -6,8 +6,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
-    command: gunicorn api.wsgi:application --bind 0.0.0.0:8000 --worker=4
+    ports:    
+          - "8000:8000"
+    depends_on:
+          - redis
+    command: gunicorn api.wsgi:application --bind 0.0.0.0:8000
     volumes:
           - .:/app
 
@@ -28,3 +31,10 @@ services:
   #   command: bash -c "export C_FORCE_ROOT="true" && celery -A api beat"
   #   volumes:
   #     - .:/app
+  redis:
+    image: bitnami/redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
