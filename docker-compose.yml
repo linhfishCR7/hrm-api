@@ -20,9 +20,11 @@ services:
     network_mode: "host"
     build: .
     restart: always
+    depends_on:
+          - redis
     command: bash -c "export C_FORCE_ROOT="true" && celery -A api worker -l info"
     volumes:
-      - .:/app
+          - .:/app
 
   # api-celery-beat:
   #   network_mode: "host"
