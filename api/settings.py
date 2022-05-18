@@ -58,15 +58,18 @@ CORS_ORIGIN_WHITELIST = (
     'https://localhost:3000',
     'https://127.0.0.1:3000',
     'https://havanlinh.tech/',
-    'https://havanlinh.tech',
+    'https://havanlinh.tech:8000',
+    'https://api.havanlinh.tech:8000',
     'https://hrm.havanlinh.tech',
     'https://user.havanlinh.tech',
 )
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3030',
     'https://hrm.havanlinh.tech',
     'https://user.havanlinh.tech',
     'https://havanlinh.tech',
+    'https://api.havanlinh.tech:8000',
 ]
 # Application definition
 
