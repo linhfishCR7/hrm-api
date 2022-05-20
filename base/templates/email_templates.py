@@ -59,7 +59,7 @@ class BaseTemplate:
                         letter-spacing: 0.24px;
                     ">
                     Copyright &copy; {year}
-                    <a href="https://havanlinh.tk/" target="_blank" style="
+                    <a href="https://havanlinh.tech/" target="_blank" style="
                         color: rgb(0, 0, 0);
                         text-decoration: none;
                         ">HRM</a>
@@ -73,7 +73,7 @@ class BaseTemplate:
 
 class EmailTemplate:
     class WelcomeEmail:
-        SUBJECT = "Welcome to HRM!"
+        SUBJECT = "Chào mừng bạn đến với hệ thống HRM!"
         def BODY(name):
             return f"""
                         <table cellpadding="0" cellspacing="0" width="680px" style="
@@ -109,7 +109,7 @@ class EmailTemplate:
                                         font-weight: 400;
                                         font-size: 32px;
                                         ">
-                                        Welcome to HRM! 
+                                        Chào mừng bạn đến với hệ thống HRM! 
                                     </h1>
                                     </td>
                                 </tr>
@@ -123,11 +123,10 @@ class EmailTemplate:
                                         font-size: 18px;
                                         letter-spacing: -0.36px;
                                         ">
-                                        Hello {name}, Welcome to the HRM community, we're excited to
-                                        have you with us!
+                                        Xin chào {name}, Chào mừng bạn đã gia nhập vào công ty
                                     </h3>
                                     <p style="color: #fff; margin-bottom: 32px; font-size: 16px;">
-                                        Now that you're all set up, let's get you networking! 
+                                        Hãy tiến hành truy cập vào hệ thống để khám phá! 
                                     </p>
                                     
                                     </td>
@@ -135,19 +134,11 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
-                                        padding: 12px 41px; text-decoration: none; " href="#" target="_blank">Go to my profile</a>
+                                        padding: 12px 41px; text-decoration: none; " href="#" target="_blank">Đăng nhập</a>
                                     </td>
                                 </tr>
                                 
-                                <tr>
-                                    <td colspan="2">
-                                    
-                                    <p style="margin: 20px; font-size: 16px; color: #fff">
-                                        Visit havanlinh.tk to see HRM's full features.
-                                    </p>
-                                    </td>
-                                </tr>
-                                
+                     
                                 <tr id="thanks">
                                     <td colspan="2">
                                     <p style="font-size: 16px;color: #fff; margin-top: 32px;">HRM Team.</p>
@@ -161,7 +152,7 @@ class EmailTemplate:
 
     class EmailToNewUser:
         def SUBJECT(name):
-            return f"Welcome to {name}"
+            return f"Chào mừng {name}"
         def BODY(name, password, link, email):
             return f"""
                         <table cellpadding="0" cellspacing="0" width="680px" style="
@@ -197,7 +188,7 @@ class EmailTemplate:
                                         font-weight: 400;
                                         font-size: 32px;
                                         ">
-                                        Welcome to HRM! 
+                                        Chào mừng bạn đến với hệ thống HRM! 
                                     </h1>
                                     </td>
                                 </tr>
@@ -211,14 +202,13 @@ class EmailTemplate:
                                         font-size: 18px;
                                         letter-spacing: -0.36px;
                                         ">
-                                        Hello {name}, Welcome to the HRM community, we're excited to
-                                        have you with us!
+                                        Xin chào {name}, Chào mừng bạn đã gia nhập vào công ty
                                     </h3>
                                     <p style="color: #fff; margin-bottom: 32px; font-size: 16px;">
-                                        Now that you're all set up, let's get you networking! 
-                                        This is your account information <br />
+                                        Bên nhân sự đã tạo 1 tài khoản nhân viên cho bạn, 
+                                        vui lòng nhận thông tin và dùng chúng để đăng nhập hệ thống <br /><br />
                                         Email: {email} <br />
-                                        Password: {password} <br />
+                                        Mật khẩu: {password} <br />
                                     </p>
                                     
                                     </td>
@@ -226,19 +216,10 @@ class EmailTemplate:
                                 <tr>
                                     <td>
                                     <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
-                                        padding: 12px 41px; text-decoration: none; " href={link} target="_blank">Go to login</a>
+                                        padding: 12px 41px; text-decoration: none; " href={link} target="_blank">Đăng nhập</a>
                                     </td>
                                 </tr>
-                                
-                                <tr>
-                                    <td colspan="2">
-                                    
-                                    <p style="margin: 20px; font-size: 16px; color: #fff">
-                                        Visit havanlinh.tk to see HRM's full features.
-                                    </p>
-                                    </td>
-                                </tr>
-                                
+  
                                 <tr id="thanks">
                                     <td colspan="2">
                                     <p style="font-size: 16px;color: #fff; margin-top: 32px;">HRM Team.</p>
@@ -250,7 +231,7 @@ class EmailTemplate:
                         </table>
                     """
     class DayOffYearEmail:
-        SUBJECT = "The user has been created day off year"
+        SUBJECT = "Người dùng tạo phiếu báo nghỉ phép"
         def BODY(name, link):
             return f"""
                         <table cellpadding="0" cellspacing="0" width="680px" style="
@@ -286,7 +267,7 @@ class EmailTemplate:
                                         font-weight: 400;
                                         font-size: 32px;
                                         ">
-                                        Welcome to HRM! 
+                                        Chào mừng bạn đến với hệ thống HRM! 
                                     </h1>
                                     </td>
                                 </tr>
@@ -300,24 +281,9 @@ class EmailTemplate:
                                         font-size: 18px;
                                         letter-spacing: -0.36px;
                                         ">
-                                        Hello {name}, The user has been created day off year
+                                        Nhân viên {name}, có tạo đơn báo nghỉ phép
                                     </h3>
                                    
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
-                                        padding: 12px 41px; text-decoration: none; " href="{link}" target="_blank">Go to my profile</a>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td colspan="2">
-                                   
-                                    <p style="margin: 20px; font-size: 16px; color: #fff">
-                                        Visit havanlinh.tk to see HRM's full features.
-                                    </p>
                                     </td>
                                 </tr>
                                 
@@ -334,7 +300,7 @@ class EmailTemplate:
     
     
     class DayOffYearEmailToUser:
-        SUBJECT = "HRM approved your day off year"
+        SUBJECT = "HRM đã chấp nhận phiếu báo nghỉ phép của bạn"
         def BODY(name, link):
             return f"""
                         <table cellpadding="0" cellspacing="0" width="680px" style="
@@ -370,7 +336,7 @@ class EmailTemplate:
                                         font-weight: 400;
                                         font-size: 32px;
                                         ">
-                                        Welcome to HRM! 
+                                        Chào mừng bạn đến với hệ thống HRM! 
                                     </h1>
                                     </td>
                                 </tr>
@@ -384,26 +350,13 @@ class EmailTemplate:
                                         font-size: 18px;
                                         letter-spacing: -0.36px;
                                         ">
-                                        Hello {name}, Day off  is approved
+                                        Xin chào {name}, Phiếu báo nghỉ phép của bạn đã được chấp nhận
                                     </h3>
                                    
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                    <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
-                                        padding: 12px 41px; text-decoration: none; " href="{link}" target="_blank">Go to my details</a>
-                                    </td>
-                                </tr>
                                 
-                                <tr>
-                                    <td colspan="2">
-                                    
-                                    <p style="margin: 20px; font-size: 16px; color: #fff">
-                                        Visit havanlinh.tk to see HRM's full features.
-                                    </p>
-                                    </td>
-                                </tr>
+                            
                                 
                                 <tr id="thanks">
                                     <td colspan="2">
@@ -418,7 +371,7 @@ class EmailTemplate:
 
 
     class DayOffYearRefuseEmailToUser:
-        SUBJECT = "HRM refuse your day off year"
+        SUBJECT = "HRM đã từ chối đơn báo nghỉ phép của bạn"
         def BODY(name, link):
             return f"""
                         <table cellpadding="0" cellspacing="0" width="680px" style="
@@ -454,7 +407,7 @@ class EmailTemplate:
                                         font-weight: 400;
                                         font-size: 32px;
                                         ">
-                                        Welcome to HRM! 
+                                        Chào mừng bạn đến với hệ thống HRM! 
                                     </h1>
                                     </td>
                                 </tr>
@@ -468,27 +421,13 @@ class EmailTemplate:
                                         font-size: 18px;
                                         letter-spacing: -0.36px;
                                         ">
-                                        Hello {name}, Day off  is refused
-                                        Please contact with hrm get more information
+                                        Xin chào {name}, đơn báo nghỉ phép của bạn đã bị từ chối
+                                        Liên hệ quản lý nhân sự để biết thêm thông tin
                                     </h3>
                                    
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                    <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
-                                        padding: 12px 41px; text-decoration: none; " href="{link}" target="_blank">Go to my details</a>
-                                    </td>
-                                </tr>
                                 
-                                <tr>
-                                    <td colspan="2">
-                                    
-                                    <p style="margin: 20px; font-size: 16px; color: #fff">
-                                        Visit havanlinh.tk to see HRM's full features.
-                                    </p>
-                                    </td>
-                                </tr>
                                 
                                 <tr id="thanks">
                                     <td colspan="2">
@@ -505,7 +444,7 @@ class EmailTemplate:
 
     class SalaryEmailToAllUser:
         def SUBJECT(month, year):
-            return f"New salary {month} in {year}"
+            return f"Phiếu báo lương tháng {month} năm {year}"
         def BODY(name, link):
             return f"""
                         <table cellpadding="0" cellspacing="0" width="680px" style="
@@ -541,7 +480,7 @@ class EmailTemplate:
                                         font-weight: 400;
                                         font-size: 32px;
                                         ">
-                                        Welcome to HRM! 
+                                        Chào mừng bạn đến với hệ thống HRM! 
                                     </h1>
                                     </td>
                                 </tr>
@@ -555,25 +494,13 @@ class EmailTemplate:
                                         font-size: 18px;
                                         letter-spacing: -0.36px;
                                         ">
-                                        Hello {name}, Company send to you salary
+                                        Xin chào {name}, công ty đã gửi phiếu báo lương đến bạn
+                                        Xem và phản hồi nếu có sai lệch
                                     </h3>
                                    
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                    <a style="color: white;background-color: #c11428; border-radius: 22px;font-size: 16px;
-                                        padding: 12px 41px; text-decoration: none; " href="{link}" target="_blank">Go to my details</a>
-                                    </td>
-                                </tr>
                                 
-                                <tr>
-                                    <td colspan="2">
-                                    <p style="margin: 20px; font-size: 16px; color: #fff">
-                                        Visit havanlinh.tk to see HRM's full features.
-                                    </p>
-                                    </td>
-                                </tr>
                                 
                                 <tr id="thanks">
                                     <td colspan="2">
