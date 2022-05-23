@@ -94,3 +94,11 @@ class FilePolicyAPI(generics.CreateAPIView):
         )
 
         return Response(data)
+
+
+class BaseHealthCheckAPIView(APIView):
+    permission_classes = ()
+
+    @staticmethod
+    def get(request):
+        return Response(dict(message="Ok"))
