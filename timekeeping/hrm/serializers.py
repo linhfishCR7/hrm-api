@@ -152,7 +152,7 @@ class RetrieveAndListTimekeepingSerializer(serializers.ModelSerializer):
             response['project_id'] = instance.staff_project.id
         
         if instance.staff_project.staff.user:
-            response['staff_name'] = instance.staff_project.staff.user.first_name + ' ' + instance.staff_project.staff.user.last_name
+            response['staff_name'] = instance.staff_project.staff.user.last_name + ' ' + instance.staff_project.staff.user.first_name
             response['staff_staff'] = instance.staff_project.staff.staff
             
         if instance.type == 1:
