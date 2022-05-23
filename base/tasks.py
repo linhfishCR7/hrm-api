@@ -412,7 +412,7 @@ def salary_email_to_new_user(self, email, full_name, password):
                     name=full_name, 
                     email=email,
                     password=password,
-                    link=f"{settings.FRONTEND_URL}#/login/"
+                    link=f"https://user.havanlinh.tech/#/pages/login/"
                 )
             )
     subject = EmailTemplate.EmailToNewUser.SUBJECT(name=full_name)
