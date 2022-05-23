@@ -98,6 +98,11 @@ class DayOffYearDetailsSerializer(serializers.ModelSerializer):
             day_off_types=validated_data['day_off_types']
         )
         
+        DayOffYears.objects.filter(id=day_off_year_detail.day_off_years.id).update(
+            is_print=False,
+            status=False
+        )
+        
         user = User.objects.filter(
             id=validated_data['user'],
             is_deleted=False,
@@ -108,7 +113,18 @@ class DayOffYearDetailsSerializer(serializers.ModelSerializer):
         push_hrn_notification_user_created_day_off_year.delay(metadata=user.id, name=f'{user.first_name} {user.last_name}')
         
         return day_off_year_detail
+    
+    def update(self, instance, validated_data):
         
+        day_off_year_detail = DayOffYearDetails.objects.filter(id=instance.id).first()
+        day_off_year_detail.save()
+        DayOffYears.objects.filter(id=day_off_year_detail.day_off_years.id).update(
+            is_print=False,
+            status=False
+        )
+        updated_instance = super().update(instance, validated_data)
+        
+        return updated_instance
     
 class RetrieveAndListDayOffYearDetailsSerializer(serializers.ModelSerializer):
     day_off_years = DayOffYearsSerializer()

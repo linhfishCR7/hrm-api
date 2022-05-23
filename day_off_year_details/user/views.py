@@ -12,6 +12,7 @@ from django_filters.rest_framework import (
     DjangoFilterBackend,
 )
 from rest_framework.filters import OrderingFilter, SearchFilter
+from day_off_years.models import DayOffYears
 
 
 class ListCreateDayOffYearDetailsAPIView(generics.ListCreateAPIView):
@@ -65,11 +66,22 @@ class RetrieveUpdateDestroyDayOffYearDetailsAPIView(generics.RetrieveUpdateDestr
             deleted_at=None,
         )
     
+    def perform_update(self, serializer):
+        serializer.save(
+            modified_at=timezone.now(),
+            modified_by=self.request.user.id,
+        )
+    
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
+        DayOffYears.objects.filter(id=instance.day_off_years.id).update(
+            is_print=False,
+            status=False
+        )
         instance.save()
+        
 
     def get_serializer_class(self):
         if self.request.method == 'PUT':

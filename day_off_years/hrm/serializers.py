@@ -215,7 +215,11 @@ class RetrieveAndListDayOffYearsReportSerializer(serializers.ModelSerializer):
             
         response['month'] = f"{instance.date:%m}"
         response['year'] = f"{instance.date:%Y}"
-        response['day_off_year_detail'] = DayOffYearDetails.objects.filter(day_off_years=instance).select_related('day_off_types').values('from_date', 'to_date', 'amount', 'note' ,'day_off_types__name')
+        response['day_off_year_detail'] = DayOffYearDetails.objects.filter(
+            day_off_years=instance,
+            is_deleted=False,
+            deleted_at=None
+        ).select_related('day_off_types').values('from_date', 'to_date', 'amount', 'note' ,'day_off_types__name')
             
         if instance.is_print==False:
             data = {
