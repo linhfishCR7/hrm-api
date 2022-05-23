@@ -149,5 +149,5 @@ class RetrieveAndListDayOffYearDetailsSerializer(serializers.ModelSerializer):
         response['day_off_type_name'] = instance.day_off_types.name
         response['day_off_years_id'] = instance.day_off_years.id
         response['day_off_years_status'] = instance.day_off_years.status
-        response['full_name'] = f"{instance.day_off_years.staff.user.first_name} {instance.day_off_years.staff.user.last_name}"
+        response['full_name'] = f"{instance.day_off_years.staff.user.last_name} {instance.day_off_years.staff.user.first_name}"
         return response

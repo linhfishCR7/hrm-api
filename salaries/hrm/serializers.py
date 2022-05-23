@@ -381,7 +381,7 @@ class RetrieveAndListSalarySerializer(serializers.ModelSerializer):
         response['staff_data'] = instance.staff.staff
         response['department_name_data'] = instance.staff.department.name
         response['position_name_data'] = instance.staff.position.name
-        response['user_fullname'] = f"{instance.staff.user.first_name} {instance.staff.user.last_name}"
+        response['user_fullname'] = f"{instance.staff.user.last_name} {instance.staff.user.first_name}"
         
         # if instance.is_print==False:
         #     data = {
@@ -484,7 +484,7 @@ class RetrieveAndListReportSalarySerializer(serializers.ModelSerializer):
         response['staff_data'] = instance.staff.staff
         response['department_name_data'] = instance.staff.department.name
         response['position_name_data'] = instance.staff.position.name
-        response['user_fullname'] = f"{instance.staff.user.first_name} {instance.staff.user.last_name}"
+        response['user_fullname'] = f"{instance.staff.user.last_name} {instance.staff.user.first_name}"
         
         if instance.is_print==False:
             data = {
