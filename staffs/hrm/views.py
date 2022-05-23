@@ -52,6 +52,7 @@ class ListCreateStaffsAPIView(generics.ListCreateAPIView):
         'department__name': ['exact', 'in'],
         'department__id': ['exact', 'in'],
         'is_active': ['exact', 'in'],
+        'department__branch__id': ['exact', 'in'],
     }
 
     def perform_create(self, serializer):
@@ -282,6 +283,7 @@ class ListStaffsReportAPIView(generics.ListCreateAPIView):
         'literacy__name': ['exact', 'in'],
         'department__name': ['exact', 'in'],
         'department__id': ['exact', 'in'],
+        'department__branch__id': ['exact', 'in'],
         'is_active': ['exact', 'in'],
     }
 

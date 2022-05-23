@@ -470,9 +470,9 @@ class RetrieveAndListStaffsSerializer(serializers.ModelSerializer):
         #     response['last_name'] = ''
 
         if instance.is_active == False:
-            response['is_active_data'] = 'Nghỉ Làm'
+            response['is_active_data'] = 'Nghỉ Làm/Mới Tạo (Chưa Kích Hoạt)'
         else:
-            response['is_active_data'] = 'Đang Làm'
+            response['is_active_data'] = 'Đang Làm (Đã Kích Hoạt)'
 
         response['phone'] = str(instance.user.phone)
         
@@ -629,9 +629,9 @@ class ListAllStaffsReportSerializer(serializers.ModelSerializer):
 
        
         if instance.is_active == False:
-            response['is_active_data'] = 'Nghỉ Làm'
+            response['is_active_data'] = 'Nghỉ Làm/Mới Tạo (Chưa Kích Hoạt)'
         else:
-            response['is_active_data'] = 'Đang Làm'
+            response['is_active_data'] = 'Đang Làm (Đã Kích Hoạt)'
 
         response['phone'] = str(instance.user.phone)
         
@@ -741,9 +741,9 @@ class ListStaffsReportSerializer(serializers.ModelSerializer):
 
 
         if instance.is_active == False:
-            response['is_active_data'] = 'Nghỉ Làm'
+            response['is_active_data'] = 'Nghỉ Làm/Mới Tạo (Chưa Kích Hoạt)'
         else:
-            response['is_active_data'] = 'Đang Làm'
+            response['is_active_data'] = 'Đang Làm (Đã Kích Hoạt)'
 
         response['phone'] = str(instance.user.phone)
         
