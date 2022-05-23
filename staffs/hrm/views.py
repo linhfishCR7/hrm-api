@@ -291,6 +291,7 @@ class ListStaffsReportAPIView(generics.ListCreateAPIView):
         return Staffs.objects.filter(
             is_deleted=False,
             deleted_at=None,
+            is_active=True
         ).order_by("-created_at")
         
     @property
