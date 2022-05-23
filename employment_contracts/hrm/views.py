@@ -108,6 +108,7 @@ class ListEmploymentContractAPIView(generics.ListAPIView):
         'staff__user__last_name': ['exact', 'in'],
         'staff__user__first_name': ['exact', 'in'],
         'staff__id': ['exact', 'in'],
+        'id': ['exact', 'in'],
     }
     
     def get_queryset(self):
