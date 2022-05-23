@@ -41,6 +41,7 @@ class ListCreateSalaryAPIView(generics.ListCreateAPIView):
     filter_fields = {
         'staff__id': ['exact', 'in'],
         'staff__department__id': ['exact', 'in'],
+        'staff__department__branch__id': ['exact', 'in'],
     }    
     def perform_create(self, serializer):
         serializer.save(
@@ -389,6 +390,7 @@ class ListPastalaryAPIView(generics.ListAPIView):
     search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
     filter_fields = {
         'staff__id': ['exact', 'in'],
+        'staff__department__branch__id': ['exact', 'in'],
     }
     
 
@@ -417,6 +419,7 @@ class ListCurrentalaryAPIView(generics.ListAPIView):
     search_fields = ['staff__user__first_name', 'staff__user__last_name', 'date__month']
     filter_fields = {
         'staff__id': ['exact', 'in'],
+        'staff__department__branch__id': ['exact', 'in'],
     }
     
 
@@ -473,23 +476,25 @@ class ActiveSalaryAPIView(APIView):
     def get(self, request, *args, **kwargs):
         salary = Salary.objects.filter(
             is_deleted=False,
-            # is_active=False,
+            staff__department__branch__id=self.request.GET.get('branch', None),
             date__month=timezone.now().month,
-            date__year=timezone.now().year
+            date__year=timezone.now().year,
+            is_active=False
         ).count()
         if salary > 0:
             salary_email_to_all_user.delay()
             push_all_user_notification_hrm_approved_send_salary.delay()
             Salary.objects.filter(
                 is_deleted=False,
+                staff__department__branch__id=self.request.GET.get('branch', None),
                 date__month=timezone.now().month,
                 date__year=timezone.now().year
             ).update(is_active=True)
 
         
-            return Response(dict(message='Active Phiếu Lương Thành Công'))
+            return Response(dict(message='Gửi Phiếu Lương Thành Công'))
         else:
-            return Response(dict(message='Đã Active Phiếu Lương Tháng Này'))
+            return Response(dict(message='Đã Gửi Phiếu Lương Tháng Này'))
         
 class CheckSalaryAPIView(APIView):
     
@@ -499,7 +504,8 @@ class CheckSalaryAPIView(APIView):
 
         staff_all = Staffs.objects.filter(
             is_deleted=False,
-            is_active=True
+            is_active=True,
+            department__branch__id=self.request.GET.get('branch', None)
         ).values_list('id', flat=True)
 
         staff_salary = Salary.objects.filter(
@@ -529,6 +535,7 @@ class ListSalaryReportAPIView(generics.ListAPIView):
     filter_fields = {
         'staff__id': ['exact', 'in'],
         'staff__department__id': ['exact', 'in'],
+        'staff__department__branch__id': ['exact', 'in'],
     }
     
     def get_queryset(self):
