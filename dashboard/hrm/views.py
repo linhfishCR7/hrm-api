@@ -21,24 +21,28 @@ class Dashboard(APIView):
         total_staff = Staffs.objects.filter(
             is_deleted=False,
             deleted_at=None,
+            department__branch__id=self.request.GET.get('branch', None)
         ).count()
         
         """Count Customer"""
         total_customer = Customers.objects.filter(
             is_deleted=False,
             deleted_at=None,
+            created_by=request.user.id
         ).count()
 
         """Count project"""
         total_project = Projects.objects.filter(
             is_deleted=False,
             deleted_at=None,
+            created_by=request.user.id
         ).count() 
 
         """Count department"""
         total_department = Departments.objects.filter(
             is_deleted=False,
             deleted_at=None,
+            department__branch__id=self.request.GET.get('branch', None)
         ).count() 
         
         return Response({
@@ -59,7 +63,8 @@ class ProjectsByTime(APIView):
             Q(
                 created_at__year=current_year,
                 is_deleted=False,
-                deleted_at=None
+                deleted_at=None,
+                created_by=request.user.id
             )
         ).annotate( 
             month=Extract(F('created_at'), 'month'),
@@ -99,7 +104,8 @@ class StaffByTime(APIView):
             Q(
                 created_at__year=current_year,
                 is_deleted=False,
-                deleted_at=None
+                deleted_at=None,
+                department__branch__id=self.request.GET.get('branch', None)
             )
         ).annotate( 
             month=Extract(F('created_at'), 'month'),
@@ -139,7 +145,8 @@ class CustomerByTime(APIView):
             Q(
                 created_at__year=current_year,
                 is_deleted=False,
-                deleted_at=None
+                deleted_at=None,
+                created_by=request.user.id
             )
         ).annotate( 
             month=Extract(F('created_at'), 'month'),

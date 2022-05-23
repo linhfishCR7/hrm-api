@@ -24,6 +24,7 @@ class ListCreateDepartmentsAPIView(generics.ListCreateAPIView):
     search_fields = ['name', 'department']
     filter_fields = {
         'name': ['exact', 'in'],
+        'branch__id': ['exact', 'in'],
     }
     
     def get_queryset(self):
