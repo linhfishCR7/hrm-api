@@ -42,7 +42,7 @@ class Dashboard(APIView):
         total_department = Departments.objects.filter(
             is_deleted=False,
             deleted_at=None,
-            department__branch__id=self.request.GET.get('branch', None)
+            branch__id=self.request.GET.get('branch', None)
         ).count() 
         
         return Response({
@@ -146,7 +146,7 @@ class CustomerByTime(APIView):
                 created_at__year=current_year,
                 is_deleted=False,
                 deleted_at=None,
-                created_by=request.user.id
+                created_by=self.request.user.id
             )
         ).annotate( 
             month=Extract(F('created_at'), 'month'),

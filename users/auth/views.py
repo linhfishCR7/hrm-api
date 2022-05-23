@@ -173,7 +173,7 @@ class CompleteSignupAPIView(generics.CreateAPIView):
                 literacy=None,
                 position=None,
                 user=user,
-                is_active=False,
+                is_active=True,
                 staff=generate_staff(
                     department=department.department,
                     first_name=serializer.validated_data['first_name'],

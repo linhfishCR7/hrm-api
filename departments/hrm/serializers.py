@@ -33,7 +33,7 @@ class DepartmentsSerializer(serializers.ModelSerializer):
             'name',
             'branch'
         ]
-        
+             
 
 class RetrieveAndListDepartmentsSerializer(serializers.ModelSerializer):
     branch = BranchSerializer(read_only=True)
@@ -46,3 +46,9 @@ class RetrieveAndListDepartmentsSerializer(serializers.ModelSerializer):
             'name',
             'branch'
         ]
+    
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['data'] = f"{instance.branch.company.name} - {instance.branch.name} - {instance.name}"
+        
+        return response

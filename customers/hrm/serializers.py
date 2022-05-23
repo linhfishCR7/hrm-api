@@ -85,6 +85,7 @@ class CustomersSerializer(serializers.ModelSerializer):
             website=validated_data['website'],
             file=validated_data['file'],
             company=validated_data['company'],
+            created_by=validated_data['created_by']
         )
                 
         # """ add addresses """

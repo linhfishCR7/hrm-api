@@ -59,7 +59,8 @@ class ProjectsSerializer(serializers.ModelSerializer):
         project = Projects.objects.create(
             **validated_data,
             project=f"{validated_data['name']}-{validated_data['signing_date']}",
-            status=ProjectStatus.PENDING_PROJECT
+            status=ProjectStatus.PENDING_PROJECT,
+            created_by=validated_data['created_by']
         )
         
         return project

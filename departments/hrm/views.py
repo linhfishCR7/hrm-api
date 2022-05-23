@@ -74,7 +74,7 @@ class ListDepartmentsAPIView(generics.ListAPIView):
     
     model = Departments
     permission_classes = []
-    serializer_class = DepartmentsSerializer
+    serializer_class = RetrieveAndListDepartmentsSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
     ordering_fields = '__all__'
     search_fields = ['name', 'branch']
