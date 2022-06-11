@@ -17,6 +17,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import OrderingFilter, SearchFilter
 
 # Application imports
 # Base imports
@@ -27,12 +28,14 @@ from base.decorators import (
     uuid_error_handler,
 )
 from base.constants.common import AppConstants
+from base.constants.common import AppConstants, ViewConstants
 
 from base.serializers import (
     BaseUploadFileSerializer,
     UploadResourceSerializer
 )
 from base.utils import print_value
+from base.paginations import ItemIndexPagination
 
 
 # Upload Media - Large and Multiple File - Presigned
@@ -102,3 +105,83 @@ class BaseHealthCheckAPIView(APIView):
     @staticmethod
     def get(request):
         return Response(dict(message="Ok"))
+
+
+class BaseListCreateAPIView(generics.ListCreateAPIView):
+    model = None
+    action = None
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    pagination_class = ItemIndexPagination
+    
+    @property
+    def paginator(self):
+        if self.request.query_params.get('no_pagination', '') == 'true':
+            return None
+        return super().paginator
+
+    # Set action
+    def get(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.LIST
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.CREATE
+        return self.create(request, *args, **kwargs)
+
+    # Set default query, create
+    @uuid_error_handler
+    def get_queryset(self):
+        return self.model.objects.filter(deleted_at=None, is_deleted=False)
+
+    def perform_create(self, serializer):
+        instance = serializer.save(created_by=self.request.user.id)
+        return instance
+
+
+class BaseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    model = None
+    action = None
+
+    # Set action
+    @uuid_error_handler
+    def get(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.RETRIEVE
+        return self.retrieve(request, *args, **kwargs)
+
+    @uuid_error_handler
+    def put(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.UPDATE
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.UPDATE
+        return self.partial_update(request, *args, **kwargs)
+
+    @uuid_error_handler
+    def delete(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.DELETE
+        return self.destroy(request, *args, **kwargs)
+
+    # Set default query, update, destroy
+    @uuid_error_handler
+    def get_queryset(self):
+        return self.model.objects.filter(deleted_at=None, is_deleted=False)
+
+    def perform_update(self, serializer):
+        instance = serializer.save(
+            modified_by=self.request.user.id,
+            modified_at=timezone.now(),
+        )
+        return instance
+
+    @uuid_error_handler
+    def partial_update(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    @uuid_error_handler
+    def perform_destroy(self, instance):
+        instance.is_deleted = True
+        instance.deleted_at = timezone.now()
+        instance.deleted_by = self.request.user.id
+        instance.save()
