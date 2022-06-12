@@ -185,3 +185,124 @@ class BaseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         instance.deleted_at = timezone.now()
         instance.deleted_by = self.request.user.id
         instance.save()
+
+
+class BaseListAPIView(generics.ListAPIView):
+    model = None
+    action = None
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter,)
+    ordering_fields = '__all__'
+    pagination_class = ItemIndexPagination
+    
+    @property
+    def paginator(self):
+        if self.request.query_params.get("no_pagination", "") == "true":
+            return None
+        return super().paginator
+
+    # Set action
+    def get(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.LIST
+        return self.list(request, *args, **kwargs)
+
+    # Set default query, create
+    def get_queryset(self):
+        return self.model.objects.filter(deleted_at=None, is_deleted=False)
+
+
+class BaseCreateAPIView(generics.CreateAPIView):
+    model = None
+    action = None
+
+    # Set action
+    def post(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.CREATE
+        return self.create(request, *args, **kwargs)
+
+    # Set default query, create
+    def get_queryset(self):
+        return self.model.objects.filter(deleted_at=None, is_deleted=False)
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user.id)
+
+
+class BaseRetrieveAPIView(generics.RetrieveAPIView):
+    model = None
+    action = None
+
+    # Set action
+    @uuid_error_handler
+    def get(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.RETRIEVE
+        return self.retrieve(request, *args, **kwargs)
+
+    # Set default query, update, destroy
+    def get_queryset(self):
+        return self.model.objects.filter(deleted_at=None, is_deleted=False)
+
+
+class BaseUpdateAPIView(generics.UpdateAPIView):
+    model = None
+    action = None
+
+    @uuid_error_handler
+    def put(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.UPDATE
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.UPDATE
+        return self.partial_update(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.filter(deleted_at=None, is_deleted=False)
+
+    def perform_update(self, serializer):
+        serializer.save(
+            modified_by=self.request.user.id, 
+            modified_at=timezone.now(),
+        )
+
+
+class BaseDestroyAPIView(generics.DestroyAPIView):
+    model = None
+    action = None
+
+    def delete(self, request, *args, **kwargs):
+        self.action = ViewConstants.Action.DELETE
+        return self.destroy(request, *args, **kwargs)
+
+    def perform_destroy(self, instance):
+        instance.is_deleted = True
+        instance.deleted_at = timezone.now()
+        instance.deleted_by = self.request.user.id
+        instance.save()
+
+
+class BaseActivateAPIView(APIView):
+    model = None
+    action = None
+
+    def put(self, request, pk):
+        self.action = ViewConstants.Action.UPDATE
+        entity = self.model.objects.filter(id=pk, deleted_at=None, is_active=False).first()
+        if entity:
+            entity.is_active = True
+            entity.save()
+            return Response(dict(message='ACTIVATED'))
+        raise Http404
+
+
+class BaseDeactivateAPIView(APIView):
+    model = None
+    action = None
+
+    def put(self, request, pk):
+        self.action = ViewConstants.Action.UPDATE
+        entity = self.model.objects.filter(id=pk, deleted_at=None, is_active=True).first()
+        if entity:
+            entity.is_active = False
+            entity.save()
+            return Response(dict(message='DEACTIVATED'))
+        raise Http404
