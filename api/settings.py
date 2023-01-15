@@ -72,16 +72,14 @@ CORS_ALLOWED_ORIGINS = [
     'https://api.havanlinh.tech:8000',
 ]
 # Application definition
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
+BASE_MODULES = [
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-#     'corsheaders',
     'tests',
     'users',
     'degree_types',
@@ -123,7 +121,27 @@ INSTALLED_APPS = [
     'trainning_requirement',
     'trainning_requirement_detail',
     'dashboard',
-    'on_business'
+    'on_business',
+]
+
+THIRD_PARTY_MODULES = [
+    # 3rd parties.
+    # 'corsheaders',
+]
+
+ADMIN_MODULES = [
+    # Admin support libraries.
+    'jazzmin',
+    'django.contrib.humanize',
+    # Custom admin module applications.
+    'addons.admin_django.apps.CustomAdminAppConfig',
+    'addons.admin_django.apps.CustomAdminConfig',
+]
+
+INSTALLED_APPS = [
+    *ADMIN_MODULES,
+    *BASE_MODULES,
+    *THIRD_PARTY_MODULES,
 ]
 
 MIDDLEWARE = [
@@ -155,10 +173,10 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
             'libraries' : {
-                'order_filters': 'django.templatetags.static', 
+                'order_filters': 'django.templatetags.static',
             }
         },
-        
+
     },
 ]
 
@@ -242,12 +260,12 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'django_cognito_jwt.JSONWebTokenAuthentication'
     ],
-    
+
     # Pagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'PAGINATE_BY_PARAM': 'page_size',
-    
+
     'EXCEPTION_HANDLER': 'base.utils.custom_exception_handler',
 }
 JWT_AUTH = {
@@ -298,3 +316,77 @@ DEFAULT_FROM_EMAIL = 'HRM <havanlinh19042000@gmail.com>'
 FCM_SERVER_KEY = env('FCM_SERVER_KEY')
 
 FRONTEND_URL = env('FRONTEND_URL')
+
+# Custom Admin interface settings.
+JAZZMIN_SETTINGS = {
+    # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "FlooringDeals Admin",
+
+    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_header": "FlooringDeals",
+
+    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+    "site_brand": "FlooringDeals",
+
+    # Logo to use for your site, must be present in static files, used for brand on top left
+    "site_logo": "logo_site.jpg",
+
+    # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
+    "login_logo": "logo_site.png",
+
+    # Logo to use for login form in dark themes (defaults to login_logo)
+    "login_logo_dark": "logo_site.png",
+
+    # CSS classes that are applied to the logo above
+    "site_logo_classes": "img-square img-fluid",
+
+    # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
+    "site_icon": 'favicon-32x32.png',
+
+    # Welcome text on the login screen
+    "welcome_sign": "Welcome to the FlooringDeals",
+
+    # Copyright on the footer
+    "copyright": "FlooringDeals Ltd",
+
+    #################
+    # Related Modal #
+    #################
+    # Use modals instead of popups
+    "related_modal_active": True,
+
+    #############
+    # UI Tweaks #
+    #############
+    "show_ui_builder": True,
+
+    # Relative paths to custom CSS/JS scripts (must be present in static files)
+    # To modify this, please custom files in the admin_django/static folder
+    # "custom_css": "jazzmin/css/bootstrap_default.css",
+
+    #############
+    # Side Menu #
+    #############
+    # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free
+    # for the full list of 5.13.0 free icon classes
+    "icons": {
+        # Users.
+        "user.adminstaff": "fas fa-user-tag",
+        "user.staff": "fas fa-user",
+        "user.usersummary": "fas fa-users-cog",
+        # Others.
+        "manufacturer.manufacturer": "fas fa-store",
+        "brand.brand": "fas fa-landmark",
+        "material.material": "fas fa-certificate",
+        "project.customer": "fas fa-users",
+        "project.project": "fas fa-project-diagram",
+        "notification.notification": "fas fa-bell",
+    },
+    # Icons that are used when one is not manually specified
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "body_small_text": True,
+}

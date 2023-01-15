@@ -15,15 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from addons.admin_django.admin import admin_site
+
 
 urlpatterns = [
+    path('admin/', admin_site.urls),
     # COMMON API METHODS.
     path('api/common/', include('base.urls'), name='common'),
     # Auth
     path('api/auth/', include('users.auth.urls')),
     #################################################################################
     # User
-    
+
     path('api/user/day-off-years/', include('day_off_years.user.urls')),
     path('api/user/day-off-year-details/', include('day_off_year_details.user.urls')),
     path('api/user/day-off-types/', include('day_off_types.user.urls')),
@@ -35,7 +38,7 @@ urlpatterns = [
 
     #################################################################################
     # Admin
-    
+
     path('admin/', admin.site.urls),
     path('api/admin/user/', include('users.admin.urls')),
     path('api/admin/notification/', include('notification.admin.urls')),

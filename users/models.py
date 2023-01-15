@@ -2,8 +2,13 @@ from django.db import models
 from base.models import AbstractBaseUser, BaseModel
 from phonenumber_field.modelfields import PhoneNumberField
 
-# Create your models here.
+
 class User(AbstractBaseUser):
+    REQUIRED_VERIFY_FIELDS = ['is_verified_email']  # Add this to modify the which fields need to be verified for user authentication.
+    REQUIRED_REGISTER_FIELDS = ['email', 'password']
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
     # Profile
     username = models.CharField(max_length=100, null=True, unique=True)
     first_name = models.CharField(max_length=200, null=True, blank=True)
@@ -11,7 +16,7 @@ class User(AbstractBaseUser):
     image = models.TextField(blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
     is_staff = models.BooleanField(default=False)
-    email = models.EmailField(max_length=255)
+    email = models.EmailField(max_length=255, unique=True)
     is_verified_email = models.BooleanField(default=False)
     verified_email_at = models.DateTimeField(null=True)
     phone = PhoneNumberField(null=True, blank=True)
